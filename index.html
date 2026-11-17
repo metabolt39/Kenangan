@@ -113,7 +113,7 @@ button{cursor:pointer}
 .sky{width:38px;height:38px;flex:none;display:block;overflow:visible}
 .wx{display:inline-flex;align-items:center;gap:6px;margin-top:8px;min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:99px;background:var(--surface);font-size:13px;font-weight:600;color:var(--ink-2)}
 .wx b{color:var(--ink)}
-.cityf{display:flex;gap:6px;margin-top:8px;max-width:340px}
+.cityf{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-width:340px}
 .cityf input{flex:1;min-width:0;min-height:38px;padding:0 12px;border:1px solid var(--line);border-radius:99px;background:var(--surface);font-size:15px}
 .cityf .btn{min-height:38px;padding:0 14px;font-size:14px;border-radius:99px}
 .wxrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:8px}
@@ -439,7 +439,7 @@ button{cursor:pointer}
       <p class="mood" id="mood"></p>
       <p class="sub" id="sub"></p>
       <div class="wxrow"><button type="button" class="wx" id="wx" data-act="wx"></button><button type="button" class="lnk" id="wxc" data-act="city">Tukar bandar</button></div>
-      <form class="cityf" id="cityf" hidden><input id="cityi" type="text" maxlength="60" placeholder="cth. Ipoh, Kuching, Johor Bahru" aria-label="Nama bandar" autocomplete="off"><button class="btn" type="submit">Cari</button></form>
+      <form class="cityf" id="cityf" hidden><input id="cityi" type="text" maxlength="60" placeholder="cth. Ipoh, Kuching, Johor Bahru" aria-label="Nama bandar" autocomplete="off"><button class="btn" type="submit">Cari</button><button class="btn ghost" type="button" data-act="gps">📍 Guna lokasi</button></form>
     </div>
     <button type="button" class="icon-btn" data-act="skins" aria-label="Tukar tema warna" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-palette"></use></svg></button>
     <span id="me-av"></span>
@@ -570,7 +570,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -1062,6 +1062,32 @@ function wxFrom(code,phrase){
   return 'cerah';
 }
 const AW='AccuWeather®';
+async function tryGps(manual){
+  if(!navigator.geolocation){if(manual)toast('Phone ini tidak menyokong GPS.');return false;}
+  const pos=await new Promise(res=>{try{navigator.geolocation.getCurrentPosition(res,res,{enableHighAccuracy:false,timeout:10000,maximumAge:300000});}catch(e){res(e);}});
+  if(!pos||!pos.coords){
+    if(pos&&pos.code===1){S.gpsOn=false;try{localStorage.setItem('kk-gps','0');}catch(e){}toast('Lokasi tidak dibenarkan. Guna bandar yang dipilih.');}
+    else if(manual)toast('Lokasi tidak dapat dikesan. Cuba lagi.');
+    return false;
+  }
+  const key=pos.coords.latitude.toFixed(3)+','+pos.coords.longitude.toFixed(3);
+  if(key!==S.lk||!S.cityName){
+    let name='';
+    try{
+      const r=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&accept-language=ms&lat='+pos.coords.latitude+'&lon='+pos.coords.longitude);
+      if(r.ok){const a=(await r.json()).address||{};name=a.suburb||a.neighbourhood||a.city_district||a.village||a.town||a.city||a.county||'';}
+    }catch(e){}
+    S.cityName=String(name||'Lokasi anda').slice(0,40);
+  }
+  S.lk=key; S.gpsAt=Date.now();
+  try{localStorage.setItem('kk-lk',S.lk);localStorage.setItem('kk-cityname',S.cityName);}catch(e){}
+  return true;
+}
+async function refreshWx(){
+  if(!S.mcp)return;
+  if(S.gpsOn)await tryGps(false);
+  loadWx();
+}
 async function loadWx(force){
   const m=S.mcp; if(!m)return;
   try{
@@ -1500,6 +1526,12 @@ document.addEventListener('click',e=>{
   else if(a==='signout'){if(window.__signOut)window.__signOut();}
   else if(a==='shuf'){S.memN++;render();}
   else if(a==='city'){const f=$('cityf');f.hidden=!f.hidden;if(!f.hidden){$('cityi').value=S.city;$('cityi').focus();}}
+  else if(a==='gps'){
+    if(!S.mcp){toast('Cuaca langsung belum tersedia di sini.');return;}
+    S.gpsOn=true;try{localStorage.setItem('kk-gps','1');}catch(x){}
+    toast('Mengesan lokasi…');
+    tryGps(true).then(ok=>{if(ok){$('cityf').hidden=true;loadWx().then(()=>toast('Cuaca di '+S.cityName+'. Lokasi dikesan automatik.'));}});
+  }
   else if(a==='wx'&&S.live){toast(S.live.phrase+' di '+S.live.city+'. Kemas kini automatik setiap 10 minit.');}
   else if(a==='wx'){const i=WXS.findIndex(x=>x[0]===S.wx);S.wx=WXS[(i+1)%WXS.length][0];try{localStorage.setItem('kk-wx',S.wx);}catch(x){}paintSky();}
   else if(a==='tab')go(v);
@@ -1564,7 +1596,7 @@ document.addEventListener('submit',async e=>{
     const prev=[S.city,S.lk];
     S.city=v; S.lk='';
     const ok=await loadWx(true);
-    if(ok){try{localStorage.setItem('kk-city',v);}catch(x){} $('cityf').hidden=true;}
+    if(ok){try{localStorage.setItem('kk-city',v);localStorage.setItem('kk-gps','0');}catch(x){} S.gpsOn=false; $('cityf').hidden=true;}
     else{S.city=prev[0];S.lk=prev[1];}
     return;
   }
@@ -1596,7 +1628,8 @@ async function init(){
   let cl=window.claude;
   for(let i=0;i<20&&(!cl||!cl.use);i++){await new Promise(r=>setTimeout(r,150));cl=window.claude;}
   if(!cl||!cl.use){S.noDb=true;S.ready=true;render();return;}
-  cl.use('mcp').then(m=>{S.mcp=m;if(m){loadWx();setInterval(()=>{if(!document.hidden)loadWx();},6e5);}}).catch(()=>{});
+  try{S.gpsOn=localStorage.getItem('kk-gps')!=='0';}catch(e){}
+  cl.use('mcp').then(m=>{S.mcp=m;if(m){loadWx();if(S.gpsOn)tryGps(false).then(ok=>{if(ok)loadWx();});setInterval(()=>{if(!document.hidden)refreshWx();},6e5);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-S.gpsAt>3e5&&S.gpsOn)refreshWx();});}}).catch(()=>{});
   const got=await Promise.all([cl.use('db'),cl.use('user'),cl.use('assets')]);
   S.db=got[0];S.user=got[1];S.assets=got[2];
   if(S.user){
