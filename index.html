@@ -420,6 +420,7 @@ button{cursor:pointer}
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 12v7h14v-7"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l.9 12.5h9.2L17.5 7M10 11v5M14 11v5"/></symbol>
   <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17l5-4.5 3.5 3L16 12l4 4"/></symbol>
   <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
@@ -907,6 +908,7 @@ function postHtml(p,m){
     '<div class="acts">'+
       '<button type="button" class="act'+(liked?' liked':'')+(S.popKey===p.id&&liked?' likepop':'')+'" '+(demo?dm:'data-act="like" data-id="'+esc(p.id)+'" aria-pressed="'+liked+'"')+'>'+icon('heart')+'<span>Suka'+(nL?' · '+nL:'')+'</span></button>'+
       '<button type="button" class="act" '+(demo?dm:'data-act="cm" data-id="'+esc(p.id)+'" aria-expanded="'+open+'"')+'>'+icon('chat')+'<span>Komen'+(cms.length?' · '+cms.length:'')+'</span></button>'+
+      (demo?'':'<button type="button" class="act" data-act="share" data-id="'+esc(p.id)+'">'+icon('share')+'<span>Kongsi</span></button>')+
       (demo||S.myId?'<button type="button" class="act" '+(demo?dm:'data-act="note" data-id="'+esc(p.id)+'"')+'>'+icon('note')+'<span>Nota</span></button>':'')+
     '</div>'+
     (demo?'':noteHtml(p))+
@@ -1226,6 +1228,81 @@ function imgUrl(id){
   if(!IMG.has(id))loadImg(id);
   return IMG.get(id)||BLANK;
 }
+async function imgData(id){
+  if(id.slice(0,3)==='ex_')return scene(id);
+  if(id.slice(0,2)!=='d_')return '/_blob/'+id;
+  if(IMG.has(id))return IMG.get(id);
+  try{const sn=await S.db.doc('imgs/'+id).get();const d=sn.exists?sn.data().data:'';if(typeof d==='string'&&d.indexOf('data:image/')===0){IMG.set(id,d);return d;}}catch(e){}
+  return '';
+}
+function loadEl(src){return new Promise(r=>{if(!src)return r(null);const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=src;});}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function cover(c,im,x,y,w,h,r,more){
+  c.save();rr(c,x,y,w,h,r);c.clip();
+  if(im){const k=Math.max(w/im.width,h/im.height),dw=im.width*k,dh=im.height*k;c.drawImage(im,x+(w-dw)/2,y+(h-dh)/2,dw,dh);}
+  else{c.fillStyle='rgba(128,128,128,.25)';c.fillRect(x,y,w,h);}
+  if(more){c.fillStyle='rgba(0,0,0,.5)';c.fillRect(x,y,w,h);c.fillStyle='#fff';c.font='700 72px system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('+'+more,x+w/2,y+h/2);}
+  c.restore();
+}
+function wrapText(c,text,maxW,maxLines){
+  const out=[];
+  text.split(/\n+/).forEach(par=>{
+    let line='';
+    par.split(/\s+/).filter(Boolean).forEach(w=>{
+      const t=line?line+' '+w:w;
+      if(c.measureText(t).width>maxW&&line){out.push(line);line=w;}else line=t;
+    });
+    if(line)out.push(line);
+  });
+  if(out.length>maxLines){out.length=maxLines;let l=out[maxLines-1];while(l.length&&c.measureText(l+'…').width>maxW)l=l.slice(0,-1);out[maxLines-1]=l+'…';}
+  return out;
+}
+async function sharePost(id){
+  const p=S.posts.find(x=>x.id===id); if(!p)return;
+  toast('Menyediakan gambar…');
+  const W=1080, M=48, IW=W-2*M, G=16;
+  const cs=getComputedStyle(document.documentElement), cv=(n,d)=>(cs.getPropertyValue(n)||'').trim()||d;
+  const bg=cv('--bg','#FFFBF3'), ink=cv('--ink','#2B2118'), ink2=cv('--ink-2','#6B5C4D'), acc=cv('--accent','#2F7D6D'), line=cv('--line','#E6DCCB');
+  const show=p.photos.slice(0,6), more=p.photos.length>6?p.photos.length-6:0;
+  const ims=await Promise.all(show.map(async pid=>loadEl(await imgData(pid))));
+  const n=ims.length;
+  const cells=[]; let ph=0;
+  if(n===1){const im=ims[0],r=im?Math.min(1.25,Math.max(.75,im.width/im.height)):1;ph=Math.round(IW/r);cells.push([0,0,IW,ph]);}
+  else if(n===2){ph=620;const w=(IW-G)/2;cells.push([0,0,w,ph],[w+G,0,w,ph]);}
+  else if(n===3){const w=(IW-G)/2;ph=560+G+400;cells.push([0,0,IW,560],[0,576,w,400],[w+G,576,w,400]);}
+  else if(n===4){const w=(IW-G)/2;ph=420*2+G;cells.push([0,0,w,420],[w+G,0,w,420],[0,436,w,420],[w+G,436,w,420]);}
+  else if(n===5){const w=(IW-G)/2,t=(IW-2*G)/3;ph=440+G+320;cells.push([0,0,w,440],[w+G,0,w,440],[0,456,t,320],[t+G,456,t,320],[2*(t+G),456,t,320]);}
+  else if(n>=6){const t=(IW-2*G)/3;ph=t*2+G;for(let i=0;i<6;i++)cells.push([(i%3)*(t+G),Math.floor(i/3)*(t+G),t,t]);}
+  const m=document.createElement('canvas').getContext('2d');
+  m.font='400 42px Georgia,"Times New Roman",serif';
+  const lines=p.text?wrapText(m,p.text,IW,9):[];
+  const alb=albumById(p.album);
+  const label=(alb?alb.emoji+' '+alb.name:(p.emoji?p.emoji+' ':'')+CAT[p.cat][1]);
+  const meta=[p.place?'📍 '+p.place:'',p.takenOn?fmtDate(p.takenOn):''].filter(Boolean);
+  const top=M+50, textTop=top+(n?ph+36:0);
+  const H=Math.round(textTop+(lines.length?lines.length*58+18:0)+(meta.length?meta.length*50+12:0)+120);
+  const cvs=document.createElement('canvas'); cvs.width=W; cvs.height=Math.max(H,900);
+  const c=cvs.getContext('2d');
+  c.fillStyle=bg;c.fillRect(0,0,W,cvs.height);
+  c.textBaseline='alphabetic';c.textAlign='left';
+  c.fillStyle=acc;c.font='700 30px system-ui,-apple-system,"Segoe UI",sans-serif';c.fillText(label.toUpperCase(),M,M+30);
+  cells.forEach((q,i)=>cover(c,ims[i],M+q[0],top+q[1],q[2],q[3],28,i===5?more:0));
+  let y=textTop;
+  if(lines.length){c.fillStyle=ink;c.font='400 42px Georgia,"Times New Roman",serif';lines.forEach(l=>{y+=58;c.fillText(l,M,y-14);});y+=18;}
+  meta.forEach((t,i)=>{c.fillStyle=i===0?acc:ink2;c.font=(i===0?'700 34px':'italic 34px')+' system-ui,-apple-system,"Segoe UI",sans-serif';y+=50;c.fillText(t,M,y-10);});
+  const fy=cvs.height-70;
+  c.fillStyle=line;c.fillRect(M,fy-40,IW,2);
+  c.fillStyle=ink2;c.font='600 28px system-ui,-apple-system,"Segoe UI",sans-serif';c.textAlign='center';c.fillText('Kenangan Keluarga Ahmad',W/2,fy+8);
+  const blob=await new Promise(r=>cvs.toBlob(r,'image/jpeg',0.9));
+  if(!blob){toast('Gambar tidak dapat disediakan.');return;}
+  const file=new File([blob],'kenangan-'+(p.takenOn||'keluarga')+'.jpg',{type:'image/jpeg'});
+  try{
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return;}
+  }catch(e){if(e&&e.name==='AbortError')return;}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast('Gambar disimpan. Boleh hantar kepada sesiapa.');
+}
 function editPost(id){
   const p=S.posts.find(x=>x.id===id);
   if(!p||p.authorId!==S.myId||!canAct())return;
@@ -1433,6 +1510,7 @@ document.addEventListener('click',e=>{
   else if(a==='emoji'){F.emoji=F.emoji===v?'':v;renderEmoji();}
   else if(a==='submit')submit();
   else if(a==='edit')editPost(id);
+  else if(a==='share')sharePost(id);
   else if(a==='cat'){S.cat=v;S.place='';S.album='';go('galeri');}
   else if(a==='catf'){S.cat=v;render();}
   else if(a==='gmode'){S.gmode=v;render();}
