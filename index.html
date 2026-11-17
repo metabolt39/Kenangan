@@ -1195,13 +1195,14 @@ function closeLB(){
 }
 
 /* ---------- borang kenangan ---------- */
-const F={files:[],busy:false,prevFocus:null,emoji:'',edit:''};
+const F={files:[],busy:false,prevFocus:null,emoji:'',edit:'',dateTouched:false};
 function renderEmoji(){
   $('emo').innerHTML=EMOJIS.map(e=>'<button type="button" data-act="emoji" data-v="'+e+'" aria-pressed="'+(F.emoji===e)+'" aria-label="Tag '+e+'">'+e+'</button>').join('');
 }
 function openSheet(){
   if(!canAct())return;
   F.prevFocus=document.activeElement;
+  F.dateTouched=false;
   const d=$('f-date'); d.max=ymd(new Date()); if(!d.value)d.value=ymd(new Date());
   const note=$('asset-note'); $('pick').disabled=false;
   if(!S.assets){note.hidden=false;note.textContent='Gambar akan dikecilkan sedikit supaya muat disimpan dalam album.';}else note.hidden=true;
@@ -1214,7 +1215,7 @@ function openSheet(){
 }
 function resetForm(){
   F.files.forEach(f=>{if(f.file)try{URL.revokeObjectURL(f.url);}catch(e){}});
-  F.files=[];F.emoji='';F.edit='';
+  F.files=[];F.emoji='';F.edit='';F.dateTouched=false;
   $('f-story').value='';$('f-place').value='';$('f-date').value='';
   $('sheet-t').textContent='Kenangan baharu';$('submit').textContent='Kongsi dengan keluarga';
   renderPreviews();renderEmoji();
@@ -1230,7 +1231,7 @@ function editPost(id){
   if(!p||p.authorId!==S.myId||!canAct())return;
   openSheet();
   F.files.forEach(f=>{if(f.file)try{URL.revokeObjectURL(f.url);}catch(e){}});
-  F.edit=id;
+  F.edit=id;F.dateTouched=true;
   F.files=p.photos.map(pid=>({file:null,url:imgUrl(pid),id:pid}));
   $('f-story').value=p.text;$('f-place').value=p.place;$('f-date').value=p.takenOn||'';
   $('f-cat').value=p.cat;$('f-album').value=albumById(p.album)?p.album:'';
@@ -1250,13 +1251,51 @@ function renderPreviews(){
   $('prev').innerHTML=F.files.map((it,i)=>'<div class="th"><img src="'+it.url+'" alt="Gambar dipilih '+(i+1)+'"><button type="button" data-act="rm-file" data-i="'+i+'" aria-label="Buang gambar '+(i+1)+'">'+icon('x')+'</button></div>').join('');
   $('pick-t').textContent=F.files.length?'Tambah lagi ('+F.files.length+' dipilih)':'Pilih gambar';
 }
+function exifDate(v,t){
+  const le=v.getUint16(t)===0x4949;
+  const u16=o=>v.getUint16(o,le), u32=o=>v.getUint32(o,le);
+  const find=(ifd,tag)=>{const n=u16(ifd);for(let i=0;i<n&&i<200;i++){const e=ifd+2+i*12;if(u16(e)===tag)return e;}return 0;};
+  const ifd0=t+u32(t+4); let e=0;
+  const ex=find(ifd0,0x8769);
+  if(ex){const ifd=t+u32(ex+8);e=find(ifd,0x9003)||find(ifd,0x9004);}
+  if(!e)e=find(ifd0,0x0132);
+  if(!e)return '';
+  const o=t+u32(e+8); let str='';
+  for(let i=0;i<19;i++)str+=String.fromCharCode(v.getUint8(o+i));
+  const m=/^(\d{4}):(\d\d):(\d\d)/.exec(str);
+  return m&&m[1]!=='0000'?m[1]+'-'+m[2]+'-'+m[3]:'';
+}
+async function photoDate(file){
+  try{
+    const v=new DataView(await file.slice(0,262144).arrayBuffer());
+    if(v.getUint16(0)===0xFFD8){
+      let o=2;
+      while(o+4<v.byteLength){
+        const m=v.getUint16(o); if(m<0xFF00||m===0xFFDA)break;
+        if(m===0xFFE1&&v.getUint32(o+4)===0x45786966){const d=exifDate(v,o+10);if(d)return d;break;}
+        o+=2+v.getUint16(o+2);
+      }
+    }
+  }catch(e){}
+  return file.lastModified?ymd(new Date(file.lastModified)):'';
+}
+async function autoDate(files){
+  if(F.dateTouched||F.edit)return;
+  const today=ymd(new Date()); let best='';
+  for(const f of files){const d=await photoDate(f);if(validDate(d)&&d<=today&&(!best||d<best))best=d;}
+  if(!best||F.dateTouched)return;
+  const el=$('f-date'); if(el.value===best)return;
+  el.value=best; toast('Tarikh diambil daripada gambar: '+fmtDate(best)+'. Boleh ubah kalau salah.');
+}
 function addFiles(list){
+  const added=[];
   for(const f of Array.from(list)){
     if(F.files.length>=8){toast('Maksimum 8 gambar bagi setiap kenangan.');break;}
     if(!f.type||f.type.indexOf('image/')!==0)continue;
-    F.files.push({file:f,url:URL.createObjectURL(f),id:''});
+    F.files.push({file:f,url:URL.createObjectURL(f),id:''});added.push(f);
   }
   renderPreviews();
+  if(added.length)autoDate(added);
 }
 async function bitmapOf(file){
   try{return await createImageBitmap(file,{imageOrientation:'from-image'});}
@@ -1433,6 +1472,7 @@ document.addEventListener('change',e=>{
   else if(e.target.id==='f-import'){const f=e.target.files[0];e.target.value='';if(f)doImport(f);}
 });
 document.addEventListener('input',e=>{
+  if(e.target.id==='f-date')F.dateTouched=true;
   if(e.target.id==='al-name'){S.alName=e.target.value;return;}
   const el=e.target;
   if(el.id&&el.id.indexOf('ci-')===0)S.drafts[el.id.slice(3)]=el.value;
