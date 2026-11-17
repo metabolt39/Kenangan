@@ -230,6 +230,27 @@ button{cursor:pointer}
 .ahead .em{font-size:36px;line-height:1}
 .ahead h2{margin:0;font:700 24px/1.2 var(--font-display);overflow-wrap:anywhere}
 .ahead p{margin:2px 0 0;color:var(--ink-2);font-size:14px}
+.ahead .grow{flex:1;min-width:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag.evt{border:0;cursor:pointer;font-family:inherit;background:var(--coral-soft);color:var(--ink)}
+.newb{margin-left:auto;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:99px;background:var(--accent);color:var(--accent-ink)}
+.nbanner{display:flex;align-items:center;gap:12px;margin-top:16px;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--teal-soft)}
+.nbanner span{flex:1;min-width:0;font-weight:600;font-size:14px;line-height:1.35}
+.evs{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin-inline:-2px;padding-inline:2px}
+.evs::-webkit-scrollbar{display:none}
+.ev{flex:none;width:148px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;background:var(--surface);overflow:hidden;text-align:left;padding:0}
+.ev .evc{position:relative;display:block;height:96px;background:var(--surface-2);background:linear-gradient(135deg,color-mix(in srgb,var(--tint,var(--surface-2)) 55%,var(--surface)),var(--surface-2))}
+.ev .evc img{width:100%;height:100%;object-fit:cover;display:block}
+.ev .evc b{position:absolute;inset:0;display:grid;place-items:center;font-size:34px;font-weight:400}
+.ev .evt2{display:flex;flex-direction:column;gap:2px;padding:10px 12px 12px}
+.ev .evt2 strong{font-size:14px;line-height:1.25;overflow-wrap:anywhere}
+.ev .evt2 span{font-size:12px;color:var(--ink-2)}
+.ev.add{align-items:center;justify-content:center;gap:6px;min-height:150px;border-style:dashed;color:var(--accent);font-weight:700;font-size:14px;background:transparent}
+.ev.add .plus{font-size:30px;line-height:1}
+.evform{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+.evform input[type=text]{width:100%;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit}
+.evform .emo{margin-top:10px}
+.evform .row{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
 
 /* Galeri masonry */
 .masonry{column-count:2;column-gap:8px;margin-top:14px}
@@ -472,6 +493,10 @@ button{cursor:pointer}
         <option value="lain">Lain-lain</option>
       </select>
     </div>
+    <div class="field" id="f-album-w" hidden>
+      <label class="lbl" for="f-album">Acara bersama</label>
+      <select id="f-album"><option value="">Tiada</option></select>
+    </div>
     <div class="field">
       <span class="lbl" id="emo-l">Tag emoji</span>
       <div class="emo" id="emo" role="group" aria-labelledby="emo-l"></div>
@@ -543,7 +568,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -648,8 +673,12 @@ function normPost(id,d){
   const cat=CAT[d.cat]?d.cat:(OLDTAG[d.tag]||'keluarga');
   return {id:id,authorId:str(d.authorId),text:str(d.text).slice(0,2000),place:str(d.place).trim().slice(0,120),
     takenOn:validDate(d.takenOn)?d.takenOn:'',cat:cat,emoji:EMOJIS.indexOf(d.emoji)>=0?d.emoji:'',
-    photos:Array.isArray(d.photos)?d.photos.filter(isId).slice(0,12):[],createdAt:num(d.createdAt)};
+    photos:Array.isArray(d.photos)?d.photos.filter(isId).slice(0,12):[],album:str(d.album).slice(0,40),createdAt:num(d.createdAt)};
 }
+const ALEMO=['🎉','🕌','🎂','🌴','⛱️','🍜','🚗','⛺','🎓','💍','🏔️','⚽'];
+function normAlbum(id,d){return {id:id,name:str(d.name).trim().slice(0,40),emoji:ALEMO.indexOf(d.emoji)>=0?d.emoji:'🎉',createdBy:str(d.createdBy),createdAt:num(d.createdAt)};}
+function albumById(id){return id?S.albums.find(a=>a.id===id):null;}
+function isNew(p){return !p.demo&&S.seenBase>0&&!!p.authorId&&p.authorId!==S.myId&&p.createdAt>S.seenBase;}
 function normComment(id,d){return {id:id,postId:str(d.postId),authorId:str(d.authorId),text:str(d.text).slice(0,500),createdAt:num(d.createdAt)};}
 function normLike(id,d){return {id:id,postId:str(d.postId),uid:str(d.uid)};}
 
@@ -675,7 +704,7 @@ function derive(){
   return {likeMap:likeMap,cmap:cmap};
 }
 function byMemory(a,b){return dateOf(b).localeCompare(dateOf(a))||(b.createdAt-a.createdAt);}
-function filt(arr){return arr.filter(p=>(S.cat==='semua'||p.cat===S.cat)&&(!S.place||pk(p.place)===S.place));}
+function filt(arr){return arr.filter(p=>(S.cat==='semua'||p.cat===S.cat)&&(!S.place||pk(p.place)===S.place)&&(!S.album||p.album===S.album));}
 function placesList(){
   const map=new Map();
   P.slice().sort(byMemory).forEach(p=>{
@@ -796,6 +825,27 @@ function albumsHtml(){
   const wide='<button type="button" class="acard wide" data-act="cat" data-v="jalan"'+tintAttr(jc[0])+'>'+(jc[0]?'<img class="cover"'+isrc(jc[0])+' alt="" loading="lazy" decoding="async">':'<span class="cover"></span>')+'<span class="ac-t"><strong>🌴 Jalan-jalan</strong><span>'+esc(jm)+'</span><span>'+j.length+' kenangan'+(jn?' · '+jn+' tempat':'')+'</span></span></button>';
   return '<div class="cards">'+card(CATS[0])+card(CATS[2])+wide+(by.lain.length?card(CATS[3]):'')+'</div>';
 }
+function acaraHtml(){
+  const cards=S.albums.slice().sort((a,b)=>b.createdAt-a.createdAt).map(a=>{
+    const l=P.filter(p=>p.album===a.id).sort(byMemory); let cv='',n=0;
+    l.forEach(p=>{n+=p.photos.length;if(!cv&&p.photos.length)cv=p.photos[0];});
+    return '<button type="button" class="ev" data-act="album" data-v="'+esc(a.id)+'"'+tintAttr(cv)+'><span class="evc">'+(cv?'<img'+isrc(cv)+' alt="" loading="lazy" decoding="async">':'<b aria-hidden="true">'+a.emoji+'</b>')+'</span><span class="evt2"><strong>'+a.emoji+' '+esc(a.name)+'</strong><span>'+(l.length?l.length+' kenangan · '+n+' gambar':'Belum ada gambar')+'</span></span></button>';
+  }).join('');
+  const add=S.canWrite===false?'':'<button type="button" class="ev add" data-act="album-new"><span class="plus" aria-hidden="true">+</span>Buat acara</button>';
+  let h=sec('Acara bersama','<span class="lnk" style="color:var(--ink-2)">Semua tambah gambar</span>');
+  h+='<div class="evs">'+cards+add+'</div>';
+  if(S.alOpen){
+    h+='<div class="evform"><label class="lbl" for="al-name">Nama acara</label><input type="text" id="al-name" maxlength="40" placeholder="cth. Raya 2026" autocomplete="off" value="'+esc(S.alName)+'"><div class="emo" role="group" aria-label="Pilih emoji acara">'+
+      ALEMO.map(e=>'<button type="button" data-act="al-emoji" data-v="'+e+'" aria-pressed="'+(S.alEmoji===e)+'" aria-label="Emoji '+e+'">'+e+'</button>').join('')+'</div>'+
+      '<div class="row"><button type="button" class="btn sm ghost" data-act="album-new">Batal</button><button type="button" class="btn sm" data-act="album-save">Simpan acara</button></div></div>';
+  }
+  return h;
+}
+function newBannerHtml(){
+  const nw=S.posts.filter(isNew); if(!nw.length)return '';
+  const names=Array.from(new Set(nw.map(p=>nameOf(p.authorId)))).slice(0,3).join(', ');
+  return '<div class="nbanner"><span>'+nw.length+' kenangan baharu daripada '+esc(names)+'</span><button type="button" class="btn sm'+(S.onlyNew?' ghost':'')+'" data-act="only-new">'+(S.onlyNew?'Papar semua':'Lihat')+'</button></div>';
+}
 function sec(title,right){return '<div class="sec"><h2>'+esc(title)+'</h2>'+(right||'')+'</div>';}
 function mapCard(){
   const md=mapData();
@@ -846,11 +896,12 @@ function postHtml(p,m){
   const dm='data-act="demo"';
   return '<article class="post" id="post-'+esc(p.id)+'">'+
     '<header class="phead">'+(demo?'<span class="av av-fb" aria-hidden="true">'+esc(name.charAt(0))+'</span>':av(p.authorId))+'<div class="who"><strong>'+esc(name)+'</strong><span>'+(demo?'Contoh kenangan':esc(ago(p.createdAt)))+'</span></div>'+
+    (isNew(p)?'<span class="newb">Baharu</span>':'')+
     (demo?'<span class="eg">Contoh</span>':'')+
     (canDel?'<button type="button" class="icon-btn" data-act="del-ask" data-id="'+esc(p.id)+'" aria-label="Padam kenangan">'+icon('trash')+'</button>':'')+'</header>'+
     (S.confirmDel===p.id?'<div class="confirm" role="alert"><span>Padam kenangan ini untuk semua orang?</span><button type="button" class="btn sm ghost" data-act="del-no">Batal</button><button type="button" class="btn sm" data-act="del-yes" data-id="'+esc(p.id)+'">Ya, padam</button></div>':'')+
     photosHtml(p)+
-    '<div class="body">'+(p.text?'<p class="story">'+esc(p.text)+'</p>':'')+stamp+'<span class="tag">'+(p.emoji?'<span aria-hidden="true">'+p.emoji+'</span>':'')+esc(CAT[p.cat][1])+'</span></div>'+
+    '<div class="body">'+(p.text?'<p class="story">'+esc(p.text)+'</p>':'')+stamp+'<div class="tags"><span class="tag">'+(p.emoji?'<span aria-hidden="true">'+p.emoji+'</span>':'')+esc(CAT[p.cat][1])+'</span>'+(albumById(p.album)?'<button type="button" class="tag evt" data-act="album" data-v="'+esc(p.album)+'"><span aria-hidden="true">'+albumById(p.album).emoji+'</span>'+esc(albumById(p.album).name)+'</button>':'')+'</div></div>'+
     '<div class="acts">'+
       '<button type="button" class="act'+(liked?' liked':'')+(S.popKey===p.id&&liked?' pop':'')+'" '+(demo?dm:'data-act="like" data-id="'+esc(p.id)+'" aria-pressed="'+liked+'"')+'>'+icon('heart')+'<span>Suka'+(nL?' · '+nL:'')+'</span></button>'+
       '<button type="button" class="act" '+(demo?dm:'data-act="cm" data-id="'+esc(p.id)+'" aria-expanded="'+open+'"')+'>'+icon('chat')+'<span>Komen'+(cms.length?' · '+cms.length:'')+'</span></button>'+
@@ -866,10 +917,13 @@ function postHtml(p,m){
 function utamaHtml(m){
   let h='';
   if(DEMO)h+=demoBanner();
+  if(!DEMO)h+=newBannerHtml();
   h+=memoryHtml();
+  if(!DEMO&&S.albumsOk)h+=acaraHtml();
   h+=sec('Album')+albumsHtml();
   h+=sec('Peta memori','<button type="button" class="lnk" data-act="tab" data-v="peta">Buka peta</button>')+mapCard();
   let list=P.filter(p=>!S.place||pk(p.place)===S.place);
+  if(S.onlyNew)list=list.filter(isNew);
   list=list.slice().sort(S.sort==='kenangan'?byMemory:(a,b)=>(b.createdAt-a.createdAt)||byMemory(a,b));
   h+=sec('Terkini','<select id="sort" aria-label="Susun kenangan"><option value="tambah"'+(S.sort==='tambah'?' selected':'')+'>Terbaru ditambah</option><option value="kenangan"'+(S.sort==='kenangan'?' selected':'')+'>Tarikh kenangan</option></select>');
   if(S.place)h+='<div class="chips"><button type="button" class="chip" data-act="clear-place" aria-pressed="true">'+icon('pin')+esc(placeName(S.place))+icon('x')+'</button></div>';
@@ -884,10 +938,16 @@ function galeriHtml(){
     CATS.filter(c=>P.some(p=>p.cat===c[0])||S.cat===c[0]).map(c=>'<button type="button" class="chip" data-act="catf" data-v="'+c[0]+'" aria-pressed="'+(S.cat===c[0])+'"><span aria-hidden="true">'+c[2]+'</span>'+esc(c[1])+'</button>').join('')+
     (S.place?'<button type="button" class="chip" data-act="clear-place" aria-pressed="true">'+icon('pin')+esc(placeName(S.place))+icon('x')+'</button>':'')+'</div>';
   const nPh=f.reduce((a,p)=>a+p.photos.length,0);
-  if(S.cat!=='semua'||S.place){
-    const c=CAT[S.cat]||CAT.keluarga, cover=(f.find(p=>p.photos.length)||{photos:[]}).photos[0];
-    h+='<div class="ahead"'+tintAttr(cover)+'><span class="em" aria-hidden="true">'+(S.place?'📍':c[2])+'</span><div><h2>'+esc(S.place?placeName(S.place):c[1])+'</h2><p>'+f.length+' kenangan · '+nPh+' gambar</p></div></div>';
+  if(S.cat!=='semua'||S.place||S.album){
+    const c=CAT[S.cat]||CAT.keluarga, cover=(f.find(p=>p.photos.length)||{photos:[]}).photos[0], al=albumById(S.album);
+    const who=al?Array.from(new Set(f.map(p=>p.authorId).filter(Boolean))).slice(0,4).map(nameOf).join(', '):'';
+    const canDelAl=al&&!!S.myId&&(al.createdBy===S.myId||S.canEdit);
+    h+='<div class="ahead"'+tintAttr(cover)+'><span class="em" aria-hidden="true">'+(al?al.emoji:S.place?'📍':c[2])+'</span><div class="grow"><h2>'+esc(al?al.name:S.place?placeName(S.place):c[1])+'</h2><p>'+f.length+' kenangan · '+nPh+' gambar'+(who?' · '+esc(who):'')+'</p></div>'+
+      (al?'<button type="button" class="btn sm ghost" data-act="clear-album">Tutup</button>':'')+
+      (canDelAl?'<button type="button" class="icon-btn" data-act="album-del-ask" aria-label="Padam acara">'+icon('trash')+'</button>':'')+'</div>';
+    if(al&&S.alDel)h+='<div class="confirm" role="alert" style="border-radius:14px;margin-top:8px"><span>Padam acara ini? Kenangan di dalamnya kekal.</span><button type="button" class="btn sm ghost" data-act="album-del-no">Batal</button><button type="button" class="btn sm" data-act="album-del-yes">Ya, padam</button></div>';
   }
+  if(!f.length&&S.album)return h+'<div class="empty"><h2>Acara ini masih kosong</h2><p>Tekan + dan pilih acara ini untuk tambah gambar pertama.</p><button type="button" class="btn" data-act="new">Tambah kenangan</button></div>';
   if(!f.length)return h+'<div class="empty"><h2>Tiada kenangan untuk penapis ini</h2><button type="button" class="btn ghost" data-act="reset-filter">Papar semua</button></div>';
   if(S.gmode==='grid'){
     GL=[]; f.forEach(p=>p.photos.forEach(id=>{GL.push({id:id,post:p});}));
@@ -1144,6 +1204,8 @@ function openSheet(){
   const note=$('asset-note'); $('pick').disabled=false;
   if(!S.assets){note.hidden=false;note.textContent='Gambar akan dikecilkan sedikit supaya muat disimpan dalam album.';}else note.hidden=true;
   if(S.cat!=='semua'&&CAT[S.cat])$('f-cat').value=S.cat;
+  const as=$('f-album'); as.innerHTML='<option value="">Tiada</option>'+S.albums.slice().sort((a,b)=>b.createdAt-a.createdAt).map(a=>'<option value="'+esc(a.id)+'">'+a.emoji+' '+esc(a.name)+'</option>').join('');
+  as.value=albumById(S.album)?S.album:''; $('f-album-w').hidden=!S.albums.length;
   renderEmoji(); setStatus('');
   $('sheet').hidden=false;document.body.style.overflow='hidden';
   $('f-story').focus();
@@ -1212,7 +1274,7 @@ function upErr(e){
 }
 async function submit(){
   if(F.busy)return;
-  const text=$('f-story').value.trim(), place=$('f-place').value.trim(), takenOn=$('f-date').value, cat=$('f-cat').value;
+  const text=$('f-story').value.trim(), place=$('f-place').value.trim(), takenOn=$('f-date').value, cat=$('f-cat').value, alb=$('f-album').value;
   if(!F.files.length&&!text){setStatus('Tambah sekurang-kurangnya satu gambar atau cerita.',true);return;}
   F.busy=true;$('submit').disabled=true;
   try{
@@ -1241,12 +1303,12 @@ async function submit(){
       ids.push(it.id);
     }
     setStatus('Menyimpan…');
-    await S.db.collection('posts').add({authorId:S.myId,text:text,place:place,takenOn:validDate(takenOn)?takenOn:'',cat:CAT[cat]?cat:'keluarga',emoji:F.emoji,photos:ids,createdAt:Date.now()});
+    await S.db.collection('posts').add({authorId:S.myId,text:text,place:place,takenOn:validDate(takenOn)?takenOn:'',cat:CAT[cat]?cat:'keluarga',emoji:F.emoji,photos:ids,album:albumById(alb)?alb:'',createdAt:Date.now()});
     F.files.forEach(f=>URL.revokeObjectURL(f.url)); F.files=[]; F.emoji=''; renderPreviews();
     $('f-story').value='';$('f-place').value='';$('f-date').value='';
     F.busy=false; $('submit').disabled=false; setStatus('');
     closeSheet(); toast('Kenangan dikongsi dengan keluarga.');
-    S.cat='semua';S.place='';
+    S.cat='semua';S.place='';S.album='';
     if(location.hash!=='#utama')location.hash='#utama'; else render();
     window.scrollTo(0,0);
   }catch(e){
@@ -1256,6 +1318,22 @@ async function submit(){
   }
 }
 
+async function saveAlbum(){
+  if(!canAct())return;
+  const i=$('al-name'), name=((i?i.value:S.alName)||'').trim().slice(0,40);
+  if(!name){toast('Tulis nama acara dahulu.');return;}
+  if(S.albums.some(a=>a.name.toLowerCase()===name.toLowerCase())){toast('Acara dengan nama itu sudah ada.');return;}
+  try{
+    await S.db.collection('albums').add({name:name,emoji:S.alEmoji,createdBy:S.myId,createdAt:Date.now()});
+    S.alOpen=false;S.alName='';render();toast('Acara dibuat. Semua ahli boleh tambah gambar.');
+  }catch(e){toast('Acara belum boleh dibuat. Pastikan peraturan Firebase sudah dikemas kini.');}
+}
+async function deleteAlbum(){
+  if(!canAct())return;
+  const id=S.album; S.alDel=false;
+  try{await S.db.doc('albums/'+id).delete();S.album='';render();toast('Acara dipadam.');}
+  catch(e){toast('Acara tidak dapat dipadam.');render();}
+}
 /* ---------- acara ---------- */
 document.addEventListener('click',e=>{
   if(e.target===$('sheet')){closeSheet();return;}
@@ -1276,13 +1354,22 @@ document.addEventListener('click',e=>{
   else if(a==='rm-file'){const i=+t.dataset.i;const f=F.files[i];if(f){URL.revokeObjectURL(f.url);F.files.splice(i,1);renderPreviews();}}
   else if(a==='emoji'){F.emoji=F.emoji===v?'':v;renderEmoji();}
   else if(a==='submit')submit();
-  else if(a==='cat'){S.cat=v;S.place='';go('galeri');}
+  else if(a==='cat'){S.cat=v;S.place='';S.album='';go('galeri');}
   else if(a==='catf'){S.cat=v;render();}
   else if(a==='gmode'){S.gmode=v;render();}
   else if(a==='asc'){S.asc=!S.asc;render();}
   else if(a==='clear-place'){S.place='';render();}
-  else if(a==='reset-filter'){S.cat='semua';S.place='';render();}
-  else if(a==='place'){S.place=v;S.cat='semua';go('galeri');}
+  else if(a==='reset-filter'){S.cat='semua';S.place='';S.album='';render();}
+  else if(a==='place'){S.place=v;S.cat='semua';S.album='';go('galeri');}
+  else if(a==='album'){S.album=v;S.cat='semua';S.place='';S.alDel=false;go('galeri');}
+  else if(a==='clear-album'){S.album='';S.alDel=false;render();}
+  else if(a==='only-new'){S.onlyNew=!S.onlyNew;render();}
+  else if(a==='album-new'){const i=$('al-name');if(i)S.alName=i.value;S.alOpen=!S.alOpen;render();if(S.alOpen){const x=$('al-name');if(x)x.focus();}}
+  else if(a==='al-emoji'){const i=$('al-name');if(i)S.alName=i.value;S.alEmoji=v;render();}
+  else if(a==='album-save')saveAlbum();
+  else if(a==='album-del-ask'){S.alDel=true;render();}
+  else if(a==='album-del-no'){S.alDel=false;render();}
+  else if(a==='album-del-yes')deleteAlbum();
   else if(a==='pin'){S.pin=(S.pin===v&&S.tab==='peta')?'':v;if(S.tab!=='peta')go('peta');else render();}
   else if(a==='like')toggleLike(id);
   else if(a==='cm'){if(S.open.has(id))S.open.delete(id);else S.open.add(id);render();}
@@ -1306,6 +1393,7 @@ document.addEventListener('change',e=>{
   else if(e.target.id==='f-import'){const f=e.target.files[0];e.target.value='';if(f)doImport(f);}
 });
 document.addEventListener('input',e=>{
+  if(e.target.id==='al-name'){S.alName=e.target.value;return;}
   const el=e.target;
   if(el.id&&el.id.indexOf('ci-')===0)S.drafts[el.id.slice(3)]=el.value;
   else if(el.id&&el.id.indexOf('nt-')===0)S.drafts['n'+el.id.slice(3)]=el.value;
@@ -1372,8 +1460,20 @@ async function init(){
   },fail);
   S.db.collection('likes').onSnapshot(snap=>{S.likes=snap.docs.map(d=>normLike(d.id,d.data()||{}));render();},fail);
   S.db.collection('comments').onSnapshot(snap=>{S.comments=snap.docs.map(d=>normComment(d.id,d.data()||{}));render();},fail);
+  S.db.collection('albums').onSnapshot(snap=>{
+    S.albums=snap.docs.map(d=>normAlbum(d.id,d.data()||{})).filter(a=>a.name);
+    S.albumsOk=true;
+    if(S.album&&!S.albums.some(a=>a.id===S.album))S.album='';
+    render();
+  },()=>{});
   if(S.myId){
     S.db.collection('data/users/'+S.myId).onSnapshot(snap=>{
+      if(!S.seenSet&&!snap.metadata.fromCache){
+        S.seenSet=true;
+        const sd=snap.docs.find(d=>d.id==='seen'), t=sd?num((sd.data()||{}).t):0;
+        S.seenBase=t||Date.now();
+        setTimeout(()=>{S.db.collection('data/users/'+S.myId).doc('seen').set({t:Date.now()}).catch(()=>{});},5000);
+      }
       const n={}; snap.docs.forEach(d=>{if(d.id.indexOf('note_')===0){const x=d.data()||{};if(str(x.text))n[d.id.slice(5)]=str(x.text).slice(0,600);}});
       S.notes=n;render();
     },()=>{});
