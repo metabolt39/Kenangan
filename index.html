@@ -495,6 +495,7 @@ button{cursor:pointer}
 </div>
 
 <div class="rain" id="rain" aria-hidden="true" hidden></div>
+<input type="file" id="f-import" accept="application/json,.json" hidden>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -522,7 +523,7 @@ function applySkin(k){
   const r=document.documentElement;
   if(k==='kampung'||!SKINS.some(x=>x[0]===k))r.removeAttribute('data-skin'); else r.setAttribute('data-skin',k);
   S.skin=SKINS.some(x=>x[0]===k)?k:'kampung';
-  $('skins').innerHTML=SKINS.map(x=>'<button type="button" class="skin" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+x[1]+'</button>').join('')+(window.__signOut?'<button type="button" class="skin" data-act="signout">Log keluar</button>':'');
+  $('skins').innerHTML=SKINS.map(x=>'<button type="button" class="skin" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+x[1]+'</button>').join('')+(S.isOwner?'<button type="button" class="skin" data-act="import">Import kenangan lama</button>':'')+(window.__signOut?'<button type="button" class="skin" data-act="signout">Log keluar</button>':'');
 }
 const VIEWS=['utama','galeri','peta'];
 
@@ -1017,6 +1018,33 @@ async function loadWx(force){
     paintSky(); return false;
   }
 }
+async function doImport(file){
+  if(!canAct()||!S.myId)return;
+  let d;
+  try{d=JSON.parse(await file.text());}catch(e){toast('Fail import tidak sah.');return;}
+  if(!d||d.kind!=='kenangan-export'||!Array.isArray(d.posts)){toast('Fail ini bukan eksport kenangan.');return;}
+  const imgs=d.imgs&&typeof d.imgs==='object'?Object.keys(d.imgs):[], posts=d.posts, cms=Array.isArray(d.comments)?d.comments:[];
+  const total=imgs.length+posts.length+cms.length; let n=0;
+  const step=()=>{n++;toast('Mengimport '+n+' / '+total+'…');};
+  try{
+    for(const id of imgs){
+      const u=d.imgs[id]; if(!isId(id)||id.slice(0,2)!=='d_'||typeof u!=='string'||u.indexOf('data:image/')!==0)continue;
+      await S.db.doc('imgs/'+id).set({data:u,by:S.myId,createdAt:Date.now()}); step();
+    }
+    for(const p of posts){
+      if(!p||!/^[A-Za-z0-9]{8,40}$/.test(String(p.id)))continue;
+      const x=normPost(String(p.id),p);
+      await S.db.doc('posts/'+x.id).set({authorId:S.myId,text:x.text,place:x.place,takenOn:x.takenOn,cat:x.cat,emoji:x.emoji,photos:x.photos,createdAt:x.createdAt||Date.now()}); step();
+    }
+    for(const c of cms){
+      if(!c||!/^[A-Za-z0-9]{8,40}$/.test(String(c.id)))continue;
+      const x=normComment(String(c.id),c);
+      await S.db.doc('comments/'+x.id).set({postId:x.postId,authorId:S.myId,text:x.text,createdAt:x.createdAt||Date.now()}); step();
+    }
+    toast('Siap. '+posts.length+' kenangan diimport.');
+    S.cat='semua';S.place='';go('utama');
+  }catch(e){toast('Import terhenti di '+n+' / '+total+'. Cuba lagi, data yang dah masuk tak akan berganda.');}
+}
 function toast(msg){const t=$('toast');t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},3200);}
 function route(){
   const h=location.hash.replace('#','');
@@ -1235,6 +1263,7 @@ document.addEventListener('click',e=>{
   const a=t.dataset.act, id=t.dataset.id, v=t.dataset.v;
   if(a==='skins'){const f=$('skins');f.hidden=!f.hidden;t.setAttribute('aria-expanded',String(!f.hidden));}
   else if(a==='skin'){applySkin(v);try{localStorage.setItem('kk-skin',v);}catch(x){}}
+  else if(a==='import'){$('f-import').click();}
   else if(a==='signout'){if(window.__signOut)window.__signOut();}
   else if(a==='shuf'){S.memN++;render();}
   else if(a==='city'){const f=$('cityf');f.hidden=!f.hidden;if(!f.hidden){$('cityi').value=S.city;$('cityi').focus();}}
@@ -1274,6 +1303,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   if(e.target.id==='sort'){S.sort=e.target.value;try{localStorage.setItem('kk-sort',S.sort);}catch(x){}render();}
   else if(e.target.id==='f-photos'){addFiles(e.target.files);e.target.value='';}
+  else if(e.target.id==='f-import'){const f=e.target.files[0];e.target.value='';if(f)doImport(f);}
 });
 document.addEventListener('input',e=>{
   const el=e.target;
@@ -1328,6 +1358,7 @@ async function init(){
       const me=await S.user.me();
       S.myId=me.id||'';S.isOwner=!!me.isOwner;S.canEdit=!!me.canEdit;
       S.canWrite=await S.user.can('data.write');
+      applySkin(S.skin);
     }catch(e){}
   }
   if(!S.db){S.noDb=true;S.ready=true;render();return;}
