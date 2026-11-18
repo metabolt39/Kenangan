@@ -498,6 +498,55 @@ button{cursor:pointer}
 /* bar: avatar tepat di tengah, cincin tanpa offset */
 .me .av{margin:0;width:34px;height:34px;box-shadow:none;outline:2px solid var(--ring,var(--gold));outline-offset:1px}
 .me{border-radius:50%}
+
+/* hari lahir, pada hari ini, cetak */
+.thr{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.thr button{flex:none;position:relative;width:132px;aspect-ratio:3/4;border:0;padding:0;border-radius:16px;overflow:hidden;background:var(--surface-2);scroll-snap-align:start;cursor:pointer;box-shadow:0 2px 10px rgb(0 0 0/.12)}
+.thr img{width:100%;height:100%;object-fit:cover;display:block}
+.thr .tk{position:absolute;left:0;right:0;bottom:0;padding:22px 9px 8px;color:#fff;text-align:left;font:600 12px/1.25 var(--font-body,inherit);background:linear-gradient(transparent,rgb(0 0 0/.72))}
+.thr .tk b{display:block;font:700 14px var(--font-display);margin-bottom:1px}
+.bds{display:grid;gap:8px}
+.bd{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.bd .bi{font-size:24px;line-height:1;flex:none}
+.bd .bt{min-width:0;flex:1}
+.bd .bt strong{display:block;font-size:15px}
+.bd .bt span{font-size:13px;color:var(--ink-2)}
+.bd.today{border-color:var(--gold);background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 22%,var(--surface)),var(--surface))}
+.bd.today .bt span{color:var(--ink);font-weight:600}
+.bd-f{display:grid;gap:8px;grid-template-columns:1fr auto;margin-top:8px}
+.bd-f input{min-width:0;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)}
+.bd-f .btn{grid-column:1/-1}
+.bd-l{display:grid;gap:6px;margin-top:6px}
+.bd-l>div{display:flex;align-items:center;gap:8px;font-size:14px;padding:6px 2px}
+.bd-l>div span{flex:1;min-width:0}
+.bd-l>div small{color:var(--ink-2)}
+#pbook{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  html,body{background:#fff!important;color:#222!important}
+  body.printing>*:not(#pbook){display:none!important}
+  body.printing::before{display:none!important}
+  body.printing #pbook{display:block}
+  #pbook{font-family:Georgia,'Times New Roman',serif;color:#222}
+  #pbook .bkcover{height:250mm;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;page-break-after:always;break-after:page}
+  #pbook .bkcover .bke{font-size:64px}
+  #pbook .bkcover h1{font-size:34px;margin:14px 0 6px}
+  #pbook .bkcover p{font-size:15px;color:#666;margin:2px 0}
+  #pbook .bkcover img{max-width:150mm;max-height:110mm;border-radius:6px;margin-top:18px}
+  #pbook .bkp{page-break-inside:avoid;break-inside:avoid;page-break-after:always;break-after:page;padding-bottom:4mm}
+  #pbook .bkp:last-child{page-break-after:auto;break-after:auto}
+  #pbook .bkm{font:600 12px Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:#888;margin-bottom:3mm}
+  #pbook .bkph{display:grid;gap:3mm;margin-bottom:4mm}
+  #pbook .bkph img{width:100%;object-fit:cover;border-radius:3px;display:block}
+  #pbook .bkph.n1 img{max-height:175mm;object-fit:contain;background:#f4f1ea}
+  #pbook .bkph.n2{grid-template-columns:1fr}
+  #pbook .bkph.n2 img{max-height:112mm}
+  #pbook .bkph.n3,#pbook .bkph.n4{grid-template-columns:1fr 1fr}
+  #pbook .bkph.n3 img:first-child,#pbook .bkph.n4 img:first-child{grid-column:1/-1;max-height:105mm}
+  #pbook .bkph.n3 img,#pbook .bkph.n4 img{max-height:70mm}
+  #pbook .bkt{font-size:15px;line-height:1.6;white-space:pre-wrap}
+  #pbook .bka{font:12px Arial,sans-serif;color:#888;margin-top:3mm}
+}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -548,6 +597,7 @@ button{cursor:pointer}
   </div>
 </nav>
 
+<div id="pbook" aria-hidden="true"></div>
 <div class="scrim" id="set" hidden>
   <section class="sheet setp" role="dialog" aria-modal="true" aria-labelledby="set-t">
     <div class="sheet-h"><h2 id="set-t">Tetapan</h2><button type="button" class="icon-btn" data-act="set-close" aria-label="Tutup tetapan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
@@ -560,6 +610,12 @@ button{cursor:pointer}
     <p class="set-p" id="set-loc"></p>
     <div class="set-row"><button type="button" class="btn sm" data-act="gps">📍 Guna lokasi automatik</button><button type="button" class="btn sm ghost" data-act="city">Tukar bandar</button></div>
     <form class="cityf" id="cityf" hidden><input id="cityi" type="text" maxlength="60" placeholder="cth. Ipoh, Kuching, Johor Bahru" aria-label="Nama bandar" autocomplete="off"><button class="btn" type="submit">Cari</button><button class="btn ghost" type="button" data-act="gps">📍 Guna lokasi</button></form>
+    <h3 class="set-h">Notifikasi</h3>
+    <p class="set-p" id="set-nt"></p>
+    <div class="set-row"><button type="button" class="btn sm" data-act="nt" id="nt-b">Hidupkan notifikasi</button></div>
+    <h3 class="set-h">Hari lahir keluarga</h3>
+    <div class="bd-l" id="set-bdl"></div>
+    <div class="bd-f"><input id="bd-n" type="text" maxlength="40" placeholder="Nama (cth. Atok)" aria-label="Nama" autocomplete="off"><input id="bd-d" type="date" aria-label="Tarikh lahir" max="2100-12-31"><button type="button" class="btn sm" data-act="bd-add">Tambah hari lahir</button></div>
     <div id="set-admin" hidden>
       <h3 class="set-h">Pentadbir</h3>
       <div class="set-list">
@@ -679,6 +735,9 @@ function renderSet(){
   const city=(S.live&&S.live.city)||S.cityName||S.city||'';
   $('set-loc').textContent=S.gpsOn?'Mengikut lokasi anda'+(city?': '+city:'')+'.':'Bandar dipilih'+(city?': '+city:'')+'.';
   $('set-admin').hidden=!S.isOwner;
+  const nt=ntOn(); $('nt-b').textContent=nt?'Matikan notifikasi':'Hidupkan notifikasi';
+  $('set-nt').textContent=nt?'Hidup. Anda dapat pemberitahuan bila ada kenangan, komen atau reaksi baharu, selagi app terbuka di latar belakang.':'Dapatkan pemberitahuan bila ada kenangan, komen atau reaksi baharu. Berfungsi bila app terbuka di latar belakang; app yang ditutup sepenuhnya tidak boleh menghantar pemberitahuan.';
+  $('set-bdl').innerHTML=S.bd.length?S.bd.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(b=>'<div><span>🎂 '+esc(b.name)+' <small>'+esc(fmtDate(b.date))+'</small></span>'+((b.by===S.myId||S.canEdit)?'<button type="button" class="icon-btn" data-act="bd-del" data-id="'+esc(b.id)+'" aria-label="Padam '+esc(b.name)+'">'+icon('trash')+'</button>':'')+'</div>').join(''):'<p class="set-p">Belum ada. Tambah hari lahir ahli keluarga supaya app ingatkan.</p>';
 }
 function openSet(){
   S.setPrev=document.activeElement; renderSet();
@@ -714,7 +773,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,bd:[],nt:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -1040,10 +1099,103 @@ function popHtml(md){
 
 /* ---------- komponen ---------- */
 function dayOfYear(){const n=new Date();return Math.floor((n-new Date(n.getFullYear(),0,0))/864e5);}
+
+/* ---------- hari lahir ---------- */
+function normBd(id,d){return {id:id,name:str(d.name).trim().slice(0,40),date:validDate(d.date)?d.date:'',by:str(d.by)};}
+function bdInfo(b){
+  const t=new Date(); const t0=new Date(t.getFullYear(),t.getMonth(),t.getDate());
+  const p=b.date.split('-').map(Number); let y=t0.getFullYear(); let n=new Date(y,p[1]-1,p[2]);
+  if(n<t0){y++;n=new Date(y,p[1]-1,p[2]);}
+  return {days:Math.round((n-t0)/864e5),age:p[0]>=1900?y-p[0]:0,md:p[2]+' '+(BULAN[p[1]-1]||'')};
+}
+function bdHtml(){
+  const l=S.bd.filter(b=>b.date).map(b=>({b:b,i:bdInfo(b)})).filter(x=>x.i.days<=45).sort((a,c)=>a.i.days-c.i.days).slice(0,4);
+  if(!l.length)return '';
+  return sec('Hari lahir','<button type="button" class="lnk" data-act="settings">Urus</button>')+'<div class="bds">'+l.map(x=>{
+    const t=x.i.days===0;
+    return '<div class="bd'+(t?' today':'')+'"><span class="bi" aria-hidden="true">'+(t?'🎉':'🎂')+'</span><div class="bt"><strong>'+esc(x.b.name)+'</strong><span>'+(t?'Hari ini hari lahir'+(x.i.age?' ke-'+x.i.age:'')+'! Ucaplah selamat.':(x.i.days===1?'Esok':'Dalam '+x.i.days+' hari')+' · '+esc(x.i.md)+(x.i.age?' · ke-'+x.i.age:''))+'</span></div></div>';
+  }).join('')+'</div>';
+}
+function throwHtml(){
+  const now=new Date(), md=pad(now.getMonth()+1)+'-'+pad(now.getDate()), yr=now.getFullYear();
+  const l=P.filter(p=>!p.demo&&p.photos.length).map(p=>({p:p,d:dateOf(p)})).filter(x=>x.d&&x.d.slice(5)===md&&+x.d.slice(0,4)<yr).sort((a,b)=>b.d.localeCompare(a.d));
+  if(!l.length)return '';
+  return sec('Pada hari ini','<span class="lnk" style="color:var(--ink-2)">'+now.getDate()+' '+BULAN[now.getMonth()]+'</span>')+'<div class="thr">'+l.map(x=>{
+    const n=yr-(+x.d.slice(0,4));
+    return '<button type="button" data-act="photo" data-id="'+esc(x.p.id)+'" data-idx="0" aria-label="Buka kenangan '+n+' tahun lalu"'+tintAttr(x.p.photos[0])+'><img'+isrc(x.p.photos[0])+' alt="" loading="lazy" decoding="async"><span class="tk"><b>'+n+' tahun lalu</b>'+esc(x.p.place||fmtDate(x.d))+'</span></button>';
+  }).join('')+'</div>';
+}
+async function bdAdd(){
+  if(!canAct())return;
+  const n=($('bd-n').value||'').trim().slice(0,40), d=$('bd-d').value||'';
+  if(!n||!validDate(d)){toast('Isi nama dan tarikh lahir.');return;}
+  const id='b_'+Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>(b%36).toString(36)).join('');
+  try{await S.db.doc('bdays/'+id).set({name:n,date:d,by:S.myId});$('bd-n').value='';$('bd-d').value='';toast('Hari lahir disimpan.');}
+  catch(e){toast('Tak dapat simpan. Pastikan rules terbaharu sudah di-Publish.');}
+}
+async function bdDel(id){
+  try{await S.db.doc('bdays/'+id).delete();}catch(e){toast('Tak dapat dipadam.');}
+}
+/* ---------- notifikasi ---------- */
+const NT={known:{}};
+function ntOn(){return !!S.nt&&('Notification' in window)&&Notification.permission==='granted';}
+async function ntToggle(){
+  if(ntOn()){S.nt=false;try{localStorage.setItem('kk-nt','0');}catch(e){}renderSet();return;}
+  if(!('Notification' in window)){toast('Peranti ini tidak menyokong notifikasi.');return;}
+  let r=Notification.permission; if(r!=='granted'){try{r=await Notification.requestPermission();}catch(e){}}
+  if(r==='granted'){S.nt=true;try{localStorage.setItem('kk-nt','1');}catch(e){}toast('Notifikasi dihidupkan.');}
+  else toast('Kebenaran notifikasi ditolak. Boleh ubah dalam tetapan pelayar.');
+  renderSet();
+}
+function notify(t,b,tag){
+  if(!document.hidden){toast(t+(b?': '+b:''));return;}
+  if(!ntOn()||!navigator.serviceWorker)return;
+  navigator.serviceWorker.ready.then(r=>r.showNotification(t,{body:b||'',icon:'icon-192.png',badge:'icon-192.png',tag:tag||'kk'})).catch(()=>{});
+}
+function ntScan(k,snap){
+  if(snap.metadata.fromCache)return;
+  const ids=new Set(snap.docs.map(d=>d.id)), prev=NT.known[k]; NT.known[k]=ids;
+  if(!prev||!S.myId)return;
+  ids.forEach(id=>{
+    if(prev.has(id))return;
+    if(k==='posts'){const p=S.posts.find(x=>x.id===id);if(p&&p.authorId&&p.authorId!==S.myId)notify(nameOf(p.authorId)+' tambah kenangan baharu',p.place||p.text.slice(0,70),'p'+id);}
+    else if(k==='comments'){const c=S.comments.find(x=>x.id===id),p=c&&S.posts.find(x=>x.id===c.postId);if(c&&p&&c.authorId!==S.myId&&p.authorId===S.myId)notify(nameOf(c.authorId)+' mengulas kenangan anda',c.text.slice(0,90),'c'+id);}
+    else if(k==='likes'){const l=S.likes.find(x=>x.id===id),p=l&&S.posts.find(x=>x.id===l.postId);if(l&&p&&l.uid!==S.myId&&p.authorId===S.myId)notify(l.r+' '+nameOf(l.uid)+' bereaksi pada kenangan anda','','l'+id);}
+  });
+}
+function updBadge(){
+  try{const n=S.posts.filter(isNew).length;if(n&&navigator.setAppBadge)navigator.setAppBadge(n).catch(()=>{});else if(!n&&navigator.clearAppBadge)navigator.clearAppBadge().catch(()=>{});}catch(e){}
+}
+/* ---------- cetak buku ---------- */
+async function printBook(){
+  const f=filt(P).filter(p=>!p.demo).slice().sort((a,b)=>dateOf(a).localeCompare(dateOf(b)));
+  if(!f.length){toast('Tiada kenangan untuk dicetak.');return;}
+  const al=albumById(S.album), c=CAT[S.cat];
+  const title=al?al.name:S.place?placeName(S.place):(S.cat!=='semua'&&c?c[1]:'Kenangan Keluarga');
+  const emo=al?al.emoji:S.place?'📍':(S.cat!=='semua'&&c?c[2]:'🏡');
+  const total=f.reduce((a,p)=>a+Math.min(p.photos.length,4),0);
+  let n=0; const parts=[]; let cover='';
+  for(const p of f){
+    const imgs=[];
+    for(const id of p.photos.slice(0,4)){toast('Menyediakan buku… '+(++n)+' / '+total);const u=await fullData(id);if(u&&u.indexOf('data:image/')===0)imgs.push(u);}
+    if(!cover&&imgs[0])cover=imgs[0];
+    const meta=[fmtDate(dateOf(p)),p.place].filter(Boolean).join(' · ');
+    const tg=tagNames(p);
+    parts.push('<section class="bkp"><div class="bkm">'+esc(meta)+'</div>'+(imgs.length?'<div class="bkph n'+imgs.length+'">'+imgs.map(u=>'<img src="'+u+'" alt="">').join('')+'</div>':'')+(p.text?'<div class="bkt">'+esc(p.text)+'</div>':'')+'<div class="bka">'+esc(nameOf(p.authorId))+(tg.length?' · bersama '+esc(tg.join(', ')):'')+'</div></section>');
+  }
+  const d0=fmtDate(dateOf(f[0])), d1=fmtDate(dateOf(f[f.length-1]));
+  $('pbook').innerHTML='<section class="bkcover"><div class="bke">'+emo+'</div><h1>'+esc(title)+'</h1><p>'+f.length+' kenangan'+(d0?' · '+esc(d0)+(d1&&d1!==d0?' hingga '+esc(d1):''):'')+'</p><p>Kenangan Keluarga Ahmad</p>'+(cover?'<img src="'+cover+'" alt="">':'')+'</section>'+parts.join('');
+  document.body.classList.add('printing');
+  const done=()=>{document.body.classList.remove('printing');$('pbook').innerHTML='';window.removeEventListener('afterprint',done);};
+  window.addEventListener('afterprint',done);
+  toast('Pilih “Simpan sebagai PDF” untuk dapatkan buku.');
+  await new Promise(r=>setTimeout(r,700));
+  try{window.print();}catch(e){done();toast('Peranti ini tidak boleh cetak.');}
+}
 function memoryHtml(){
   const now=new Date(), md=pad(now.getMonth()+1)+'-'+pad(now.getDate()), yr=now.getFullYear(), doy=dayOfYear();
   const withPh=P.filter(p=>p.photos.length); if(!withPh.length)return '';
-  const past=withPh.filter(p=>p.takenOn&&p.takenOn.slice(5)===md&&+p.takenOn.slice(0,4)<yr);
+  const past=[];
   let p,label;
   const sh=S.memN;
   if(past.length&&!sh){p=past[0];label='Pada hari ini, '+(yr-(+p.takenOn.slice(0,4)))+' tahun lalu';}
@@ -1178,6 +1330,8 @@ function utamaHtml(m){
   let h='';
   if(DEMO)h+=demoBanner();
   if(!DEMO)h+=newBannerHtml();
+  if(!DEMO)h+=bdHtml();
+  if(!DEMO)h+=throwHtml();
   h+=memoryHtml();
   if(!DEMO&&S.albumsOk)h+=acaraHtml();
   h+=sec('Album')+albumsHtml();
@@ -1207,7 +1361,7 @@ function galeriHtml(){
     const who=al?Array.from(new Set(f.map(p=>p.authorId).filter(Boolean))).slice(0,4).map(nameOf).join(', '):'';
     const canDelAl=al&&!!S.myId&&(al.createdBy===S.myId||S.canEdit);
     h+='<div class="ahead"'+tintAttr(cover)+'><span class="em" aria-hidden="true">'+(al?al.emoji:S.place?'📍':c[2])+'</span><div class="grow"><h2>'+esc(al?al.name:S.place?placeName(S.place):c[1])+'</h2><p>'+f.length+' kenangan · '+nPh+' gambar'+(who?' · '+esc(who):'')+'</p></div>'+
-      (al?'<button type="button" class="btn sm ghost" data-act="clear-album">Tutup</button>':'')+
+      '<button type="button" class="icon-btn" data-act="print-book" aria-label="Cetak sebagai buku PDF" title="Cetak buku">🖨️</button>'+(al?'<button type="button" class="btn sm ghost" data-act="clear-album">Tutup</button>':'')+
       (canDelAl?'<button type="button" class="icon-btn" data-act="album-del-ask" aria-label="Padam acara">'+icon('trash')+'</button>':'')+'</div>';
     if(al&&S.alDel)h+='<div class="confirm" role="alert" style="border-radius:14px;margin-top:8px"><span>Padam acara ini? Kenangan di dalamnya kekal.</span><button type="button" class="btn sm ghost" data-act="album-del-no">Batal</button><button type="button" class="btn sm" data-act="album-del-yes">Ya, padam</button></div>';
   }
@@ -1248,7 +1402,7 @@ function petaHtml(){
   h+=sec('Semua tempat');
   if(!pl.length)h+='<div class="empty"><h2>Belum ada tempat disimpan</h2><p>Isi ruangan Tempat bila menambah kenangan.</p></div>';
   else h+='<ul class="places">'+pl.map(x=>'<li class="place"><button type="button" class="place-main" data-act="place" data-v="'+esc(x.key)+'">'+
-    (x.thumb?'<img class="pt"'+isrc(x.thumb)+' alt="" loading="lazy">':'<span class="pt">'+icon('pin')+'</span>')+
+    (x.thumb?'<img class="bkt"'+isrc(x.thumb)+' alt="" loading="lazy">':'<span class="bkt">'+icon('pin')+'</span>')+
     '<span class="pi"><strong>'+esc(x.name)+'</strong><span>'+x.count+' kenangan'+(x.last?' · '+esc(fmtMonth(x.last)):'')+'</span></span></button>'+
     (DEMO?'':'<a class="map" href="'+esc(mapUrl(x.name))+'" target="_blank" rel="noopener">Peta</a>')+'</li>').join('')+'</ul>';
   if(md.off.length&&!DEMO){
@@ -1264,6 +1418,7 @@ function loadingHtml(){return (S.slow?'<p class="note">Sambungan lambat. Kenanga
 function noticeHtml(){return '<div class="empty"><h2>Kenangan belum boleh dibuka</h2><p>Sambungan ke pangkalan data keluarga belum disediakan. Ikut panduan pemasangan, kemudian muat semula halaman.</p></div>';}
 
 async function render(){
+  updBadge();
   const tok=++renderTok;
   const ae=document.activeElement, view=$('view');
   const fid=(ae&&ae.id&&view.contains(ae))?ae.id:'';
@@ -1866,6 +2021,10 @@ document.addEventListener('click',e=>{
   else if(a==='import'){$('f-import').click();}
   else if(a==='invite')inviteMember();
   else if(a==='backup')backupAll();
+  else if(a==='nt')ntToggle();
+  else if(a==='bd-add')bdAdd();
+  else if(a==='bd-del')bdDel(id);
+  else if(a==='print-book')printBook();
   else if(a==='signout'){if(window.__signOut)window.__signOut();}
   else if(a==='shuf'){S.memN++;render();}
   else if(a==='city'){const f=$('cityf');f.hidden=!f.hidden;if(!f.hidden){$('cityi').value=S.city;$('cityi').focus();}}
@@ -2026,6 +2185,7 @@ async function init(){
   try{const s=localStorage.getItem('kk-sort');if(s==='tambah'||s==='kenangan')S.sort=s;}catch(e){}
   try{const w=localStorage.getItem('kk-wx');if(WXS.some(x=>x[0]===w))S.wx=w;}catch(e){}
   try{const c=localStorage.getItem('kk-city');if(c)S.city=c.slice(0,60);S.lk=localStorage.getItem('kk-lk')||'';S.cityName=localStorage.getItem('kk-cityname')||'';if(!S.cityName)S.lk='';}catch(e){}
+  try{S.nt=localStorage.getItem('kk-nt')==='1';}catch(e){}
   try{applyBig(parseInt(localStorage.getItem('kk-big')||'0',10)||0);}catch(e){}
   try{applySkin(localStorage.getItem('kk-skin')||'kampung');}catch(e){applySkin('kampung');}
   route();
@@ -2049,16 +2209,17 @@ async function init(){
   const live=snap=>{if(!snap.metadata.fromCache){clearTimeout(timer);S.slow=false;}};
   const fail=e=>{S.err=(e&&e.code)||'ralat';S.ready=true;render();};
   S.db.collection('posts').onSnapshot(snap=>{
-    S.posts=snap.docs.map(d=>normPost(d.id,d.data()||{}));
+    S.posts=snap.docs.map(d=>normPost(d.id,d.data()||{}));ntScan('posts',snap);
     if(!snap.metadata.fromCache||snap.size>0)S.ready=true;
     live(snap);render();
   },fail);
-  S.db.collection('likes').onSnapshot(snap=>{S.likes=snap.docs.map(d=>normLike(d.id,d.data()||{}));render();},fail);
-  S.db.collection('comments').onSnapshot(snap=>{S.comments=snap.docs.map(d=>normComment(d.id,d.data()||{}));render();},fail);
+  S.db.collection('likes').onSnapshot(snap=>{S.likes=snap.docs.map(d=>normLike(d.id,d.data()||{}));ntScan('likes',snap);render();},fail);
+  S.db.collection('comments').onSnapshot(snap=>{S.comments=snap.docs.map(d=>normComment(d.id,d.data()||{}));ntScan('comments',snap);render();},fail);
   S.db.collection('members').onSnapshot(snap=>{
     S.members=snap.docs.map(d=>({id:d.id,name:str((d.data()||{}).name)})).filter(m=>m.name);
     render();
   },()=>{});
+  S.db.collection('bdays').onSnapshot(snap=>{S.bd=snap.docs.map(d=>normBd(d.id,d.data()||{})).filter(b=>b.name&&b.date);render();if(!$('set').hidden)renderSet();},()=>{});
   S.db.collection('albums').onSnapshot(snap=>{
     S.albums=snap.docs.map(d=>normAlbum(d.id,d.data()||{})).filter(a=>a.name);
     S.albumsOk=true;
