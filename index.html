@@ -231,6 +231,9 @@ button{cursor:pointer}
 .ahead h2{margin:0;font:700 24px/1.2 var(--font-display);overflow-wrap:anywhere}
 .ahead p{margin:2px 0 0;color:var(--ink-2);font-size:14px}
 .ahead .grow{flex:1;min-width:0}
+.sbar{display:flex;gap:8px;align-items:center;margin:6px 0 2px}
+.sbar input{flex:1;min-width:0;min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
+.sbar input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .tags{display:flex;flex-wrap:wrap;gap:6px}
 .tag.evt{border:0;cursor:pointer;font-family:inherit;background:var(--coral-soft);color:var(--ink)}
 .newb{margin-left:auto;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:99px;background:var(--accent);color:var(--accent-ink)}
@@ -421,6 +424,7 @@ button{cursor:pointer}
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></symbol>
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 12v7h14v-7"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l.9 12.5h9.2L17.5 7M10 11v5M14 11v5"/></symbol>
   <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17l5-4.5 3.5 3L16 12l4 4"/></symbol>
   <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
@@ -441,10 +445,12 @@ button{cursor:pointer}
       <div class="wxrow"><button type="button" class="wx" id="wx" data-act="wx"></button><button type="button" class="lnk" id="wxc" data-act="city">Tukar bandar</button></div>
       <form class="cityf" id="cityf" hidden><input id="cityi" type="text" maxlength="60" placeholder="cth. Ipoh, Kuching, Johor Bahru" aria-label="Nama bandar" autocomplete="off"><button class="btn" type="submit">Cari</button><button class="btn ghost" type="button" data-act="gps">📍 Guna lokasi</button></form>
     </div>
+    <button type="button" class="icon-btn" data-act="search" aria-label="Cari kenangan" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-search"></use></svg></button>
     <button type="button" class="icon-btn" data-act="skins" aria-label="Tukar tema warna" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-palette"></use></svg></button>
     <span id="me-av"></span>
   </header>
   <div class="skins" id="skins" hidden role="group" aria-label="Tema warna"></div>
+  <div class="sbar" id="sbar" hidden role="search"><input id="q" type="search" placeholder="Cari cerita, tempat, nama, tarikh…" aria-label="Cari kenangan" autocomplete="off" enterkeyhint="search"><button type="button" class="btn sm ghost" data-act="clear-q">Kosongkan</button></div>
   <main id="view" aria-live="polite"></main>
 </div>
 
@@ -570,7 +576,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -602,17 +608,60 @@ function isrc(id){
   if(!IMG.has(id))loadImg(id);
   return ' src="'+(IMG.get(id)||BLANK)+'" data-iid="'+id+'"';
 }
+const FULL=new Map();
+let IDB=null;
+function idb(){
+  if(IDB)return IDB;
+  IDB=new Promise(res=>{try{const r=indexedDB.open('kk-img',1);r.onupgradeneeded=()=>r.result.createObjectStore('i');r.onsuccess=()=>res(r.result);r.onerror=()=>res(null);}catch(e){res(null);}});
+  return IDB;
+}
+async function idbGet(k){const d=await idb();if(!d)return '';return new Promise(res=>{try{const q=d.transaction('i').objectStore('i').get(k);q.onsuccess=()=>res(q.result||'');q.onerror=()=>res('');}catch(e){res('');}});}
+async function idbPut(k,v){const d=await idb();if(!d)return;try{d.transaction('i','readwrite').objectStore('i').put(v,k);}catch(e){}}
+function isImgData(d){return typeof d==='string'&&d.indexOf('data:image/')===0;}
+function toThumb(u){
+  return new Promise((res,rej)=>{
+    const im=new Image();
+    im.onload=()=>{
+      const k=Math.min(1,640/Math.max(im.width,im.height));
+      const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));
+      const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+      res(c.toDataURL('image/jpeg',0.7));
+    };
+    im.onerror=()=>rej(new Error('img'));im.src=u;
+  });
+}
+async function fullData(id){
+  if(id.slice(0,3)==='ex_')return scene(id);
+  if(id.slice(0,2)!=='d_')return '/_blob/'+id;
+  if(FULL.has(id))return FULL.get(id);
+  let d=await idbGet('f:'+id);
+  if(!d){
+    try{const sn=await S.db.doc('imgs/'+id).get();const x=sn.exists?sn.data().data:'';if(isImgData(x)){d=x;idbPut('f:'+id,d);}}catch(e){}
+  }
+  if(d){FULL.set(id,d);if(FULL.size>12)FULL.delete(FULL.keys().next().value);}
+  return d||'';
+}
 function loadImg(id){
   if(IMGWAIT.has(id)||!S.db)return;
   IMGWAIT.add(id);
-  S.db.doc('imgs/'+id).get().then(s=>{
-    const d=s.exists?s.data().data:'';
-    if(typeof d==='string'&&d.indexOf('data:image/')===0){
+  (async()=>{
+    let d=await idbGet('t:'+id);
+    if(!d){
+      try{const sn=await S.db.doc('thumbs/'+id).get();if(sn.exists&&isImgData(sn.data().data))d=sn.data().data;}catch(e){}
+      if(!d){
+        const full=await fullData(id);
+        if(full){
+          try{d=await toThumb(full);S.db.doc('thumbs/'+id).set({data:d,by:S.myId,createdAt:Date.now()}).catch(()=>{});}catch(e){d=full;}
+        }
+      }
+      if(d)idbPut('t:'+id,d);
+    }
+    if(d){
       IMG.set(id,d);
       document.querySelectorAll('img[data-iid="'+id+'"]').forEach(im=>{im.src=d;});
       if(document.querySelector('[data-tint="'+id+'"]'))computeTint(id);
     }
-  }).catch(()=>{}).then(()=>{IMGWAIT.delete(id);});
+  })().catch(()=>{}).then(()=>{IMGWAIT.delete(id);});
 }
 function mimg(id,cls,alt){
   const r=RATIO.get(id)||(id.slice(0,3)==='ex_'?(SCN[id].w/SCN[id].hh):1.33);
@@ -706,7 +755,16 @@ function derive(){
   return {likeMap:likeMap,cmap:cmap};
 }
 function byMemory(a,b){return dateOf(b).localeCompare(dateOf(a))||(b.createdAt-a.createdAt);}
-function filt(arr){return arr.filter(p=>(S.cat==='semua'||p.cat===S.cat)&&(!S.place||pk(p.place)===S.place)&&(!S.album||p.album===S.album));}
+function nrm(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+function hay(p){
+  const al=albumById(p.album);
+  return nrm([p.text,p.place,CAT[p.cat]?CAT[p.cat][1]:'',al?al.name:'',nameOf(p.authorId),fmtDate(p.takenOn),p.takenOn,S.comments.filter(c=>c.postId===p.id).map(c=>c.text).join(' ')].join(' '));
+}
+function matchQ(p,terms){const h=hay(p);return terms.every(t=>h.indexOf(t)>=0);}
+function filt(arr){
+  const terms=S.q?nrm(S.q).split(/\s+/).filter(Boolean):[];
+  return arr.filter(p=>(S.cat==='semua'||p.cat===S.cat)&&(!S.place||pk(p.place)===S.place)&&(!S.album||p.album===S.album)&&(!terms.length||matchQ(p,terms)));
+}
 function placesList(){
   const map=new Map();
   P.slice().sort(byMemory).forEach(p=>{
@@ -937,11 +995,14 @@ function utamaHtml(m){
 }
 function galeriHtml(){
   const f=filt(P).slice().sort(byMemory);
-  let h='<div class="seg" role="group" aria-label="Cara paparan"><button type="button" data-act="gmode" data-v="grid" aria-pressed="'+(S.gmode==='grid')+'">Grid</button><button type="button" data-act="gmode" data-v="timeline" aria-pressed="'+(S.gmode==='timeline')+'">Garis masa</button></div>';
+  let h=S.q?'':'<div class="seg" role="group" aria-label="Cara paparan"><button type="button" data-act="gmode" data-v="grid" aria-pressed="'+(S.gmode==='grid')+'">Grid</button><button type="button" data-act="gmode" data-v="timeline" aria-pressed="'+(S.gmode==='timeline')+'">Garis masa</button></div>';
   h+='<div class="chips" role="group" aria-label="Tapis album"><button type="button" class="chip" data-act="catf" data-v="semua" aria-pressed="'+(S.cat==='semua')+'">Semua</button>'+
     CATS.filter(c=>P.some(p=>p.cat===c[0])||S.cat===c[0]).map(c=>'<button type="button" class="chip" data-act="catf" data-v="'+c[0]+'" aria-pressed="'+(S.cat===c[0])+'"><span aria-hidden="true">'+c[2]+'</span>'+esc(c[1])+'</button>').join('')+
     (S.place?'<button type="button" class="chip" data-act="clear-place" aria-pressed="true">'+icon('pin')+esc(placeName(S.place))+icon('x')+'</button>':'')+'</div>';
   const nPh=f.reduce((a,p)=>a+p.photos.length,0);
+  if(S.q){
+    h+='<div class="ahead"><span class="em" aria-hidden="true">🔍</span><div class="grow"><h2>Carian: “'+esc(S.q)+'”</h2><p>'+f.length+' kenangan'+(nPh?' · '+nPh+' gambar':'')+'</p></div><button type="button" class="btn sm ghost" data-act="clear-q">Tutup</button></div>';
+  }
   if(S.cat!=='semua'||S.place||S.album){
     const c=CAT[S.cat]||CAT.keluarga, cover=(f.find(p=>p.photos.length)||{photos:[]}).photos[0], al=albumById(S.album);
     const who=al?Array.from(new Set(f.map(p=>p.authorId).filter(Boolean))).slice(0,4).map(nameOf).join(', '):'';
@@ -952,8 +1013,9 @@ function galeriHtml(){
     if(al&&S.alDel)h+='<div class="confirm" role="alert" style="border-radius:14px;margin-top:8px"><span>Padam acara ini? Kenangan di dalamnya kekal.</span><button type="button" class="btn sm ghost" data-act="album-del-no">Batal</button><button type="button" class="btn sm" data-act="album-del-yes">Ya, padam</button></div>';
   }
   if(!f.length&&S.album)return h+'<div class="empty"><h2>Acara ini masih kosong</h2><p>Tekan + dan pilih acara ini untuk tambah gambar pertama.</p><button type="button" class="btn" data-act="new">Tambah kenangan</button></div>';
+  if(!f.length&&S.q)return h+'<div class="empty"><h2>Tiada hasil untuk “'+esc(S.q)+'”</h2><p>Cuba perkataan lain: nama tempat, nama ahli keluarga atau bulan.</p><button type="button" class="btn ghost" data-act="clear-q">Kosongkan carian</button></div>';
   if(!f.length)return h+'<div class="empty"><h2>Tiada kenangan untuk penapis ini</h2><button type="button" class="btn ghost" data-act="reset-filter">Papar semua</button></div>';
-  if(S.gmode==='grid'){
+  if(S.gmode==='grid'&&!S.q){
     GL=[]; f.forEach(p=>p.photos.forEach(id=>{GL.push({id:id,post:p});}));
     if(!GL.length)return h+'<div class="empty"><h2>Belum ada gambar</h2><p>Kenangan yang ada gambar akan muncul di sini.</p></div>';
     return h+'<div class="masonry">'+GL.map((it,i)=>'<button type="button" class="mi" data-act="gphoto" data-i="'+i+'" aria-label="Buka gambar">'+mimg(it.id,'mimg','')+(it.post.place?'<span class="cap">'+esc(it.post.place)+'</span>':'')+'</button>').join('')+'</div>';
@@ -1186,10 +1248,10 @@ async function deletePost(id){
   const p=S.posts.find(x=>x.id===id); if(!p)return;
   S.confirmDel='';
   try{
-    await S.db.doc('posts/'+id).delete();
     for(const l of S.likes.filter(x=>x.postId===id)){await S.db.doc('likes/'+l.id).delete();}
     for(const c of S.comments.filter(x=>x.postId===id)){await S.db.doc('comments/'+c.id).delete();}
-    for(const a of p.photos){try{if(a.slice(0,2)==='d_')await S.db.doc('imgs/'+a).delete();else if(S.assets)await S.assets.delete(a);}catch(e){}}
+    await S.db.doc('posts/'+id).delete();
+    for(const a of p.photos){try{if(a.slice(0,2)==='d_'){await S.db.doc('imgs/'+a).delete();S.db.doc('thumbs/'+a).delete().catch(()=>{});}else if(S.assets)await S.assets.delete(a);}catch(e){}}
     toast('Kenangan dipadam.');
   }catch(e){toast('Kenangan tidak dapat dipadam. Cuba lagi.');render();}
 }
@@ -1204,8 +1266,11 @@ function openLB(items,i){
 function showLB(){
   const it=LB.items[LB.i]; if(!it)return;
   const li=$('lb-img'), sid=it.id;
-  if(sid.slice(0,2)==='d_'){li.dataset.iid=sid;li.src=IMG.get(sid)||BLANK;if(!IMG.has(sid))loadImg(sid);}
-  else{delete li.dataset.iid;li.src=srcOf(sid);}
+  delete li.dataset.iid;
+  if(sid.slice(0,2)==='d_'){
+    li.src=FULL.get(sid)||IMG.get(sid)||BLANK;
+    if(!FULL.has(sid))fullData(sid).then(u=>{const cur=LB.items[LB.i];if(u&&cur&&cur.id===sid&&!$('lb').hidden)li.src=u;});
+  }else li.src=srcOf(sid);
   li.classList.remove('zin');void li.offsetWidth;li.classList.add('zin');
   {const u=srcOf(sid); $('lb').style.setProperty('--lbbg',u?'url("'+u+'")':'none');}
   $('lb-count').textContent=(LB.i+1)+' / '+LB.items.length;
@@ -1254,13 +1319,7 @@ function imgUrl(id){
   if(!IMG.has(id))loadImg(id);
   return IMG.get(id)||BLANK;
 }
-async function imgData(id){
-  if(id.slice(0,3)==='ex_')return scene(id);
-  if(id.slice(0,2)!=='d_')return '/_blob/'+id;
-  if(IMG.has(id))return IMG.get(id);
-  try{const sn=await S.db.doc('imgs/'+id).get();const d=sn.exists?sn.data().data:'';if(typeof d==='string'&&d.indexOf('data:image/')===0){IMG.set(id,d);return d;}}catch(e){}
-  return '';
-}
+async function imgData(id){return fullData(id);}
 function loadEl(src){return new Promise(r=>{if(!src)return r(null);const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=src;});}
 function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
 function cover(c,im,x,y,w,h,r,more){
@@ -1468,7 +1527,9 @@ async function submit(){
         if(!done){
           const u=await toDataUrl(it.file), nid=newImgId();
           await S.db.doc('imgs/'+nid).set({data:u,by:S.myId,createdAt:Date.now()});
-          IMG.set(nid,u); it.id=nid;
+          let th=u; try{th=await toThumb(u);}catch(e){}
+          if(th!==u)S.db.doc('thumbs/'+nid).set({data:th,by:S.myId,createdAt:Date.now()}).catch(()=>{});
+          IMG.set(nid,th); FULL.set(nid,u); idbPut('t:'+nid,th); idbPut('f:'+nid,u); it.id=nid;
         }
       }
       ids.push(it.id);
@@ -1479,7 +1540,7 @@ async function submit(){
       const old=S.posts.find(x=>x.id===F.edit);
       if(!old||old.authorId!==S.myId)throw {code:'permission-denied'};
       await S.db.doc('posts/'+F.edit).set(Object.assign({authorId:old.authorId,createdAt:old.createdAt},fields));
-      old.photos.filter(x=>x.slice(0,2)==='d_'&&ids.indexOf(x)<0).forEach(x=>{S.db.doc('imgs/'+x).delete().catch(()=>{});});
+      old.photos.filter(x=>x.slice(0,2)==='d_'&&ids.indexOf(x)<0).forEach(x=>{S.db.doc('imgs/'+x).delete().catch(()=>{});S.db.doc('thumbs/'+x).delete().catch(()=>{});});
       F.busy=false;$('submit').disabled=false;setStatus('');
       resetForm();closeSheet();toast('Perubahan disimpan.');
       return;
@@ -1535,6 +1596,8 @@ document.addEventListener('click',e=>{
   else if(a==='wx'&&S.live){toast(S.live.phrase+' di '+S.live.city+'. Kemas kini automatik setiap 10 minit.');}
   else if(a==='wx'){const i=WXS.findIndex(x=>x[0]===S.wx);S.wx=WXS[(i+1)%WXS.length][0];try{localStorage.setItem('kk-wx',S.wx);}catch(x){}paintSky();}
   else if(a==='tab')go(v);
+  else if(a==='search'){S.sOpen=!S.sOpen;$('sbar').hidden=!S.sOpen;t.setAttribute('aria-expanded',String(S.sOpen));if(S.sOpen)$('q').focus();else if(S.q){S.q='';$('q').value='';render();}}
+  else if(a==='clear-q'){S.q='';$('q').value='';if(!S.sOpen){render();}else{$('q').focus();render();}}
   else if(a==='new')openSheet();
   else if(a==='close-sheet')closeSheet();
   else if(a==='pick')$('f-photos').click();
@@ -1548,7 +1611,7 @@ document.addEventListener('click',e=>{
   else if(a==='gmode'){S.gmode=v;render();}
   else if(a==='asc'){S.asc=!S.asc;render();}
   else if(a==='clear-place'){S.place='';render();}
-  else if(a==='reset-filter'){S.cat='semua';S.place='';S.album='';render();}
+  else if(a==='reset-filter'){S.cat='semua';S.place='';S.album='';S.q='';if($('q'))$('q').value='';render();}
   else if(a==='place'){S.place=v;S.cat='semua';S.album='';go('galeri');}
   else if(a==='album'){S.album=v;S.cat='semua';S.place='';S.alDel=false;go('galeri');}
   else if(a==='clear-album'){S.album='';S.alDel=false;render();}
@@ -1581,7 +1644,13 @@ document.addEventListener('change',e=>{
   else if(e.target.id==='f-photos'){addFiles(e.target.files);e.target.value='';}
   else if(e.target.id==='f-import'){const f=e.target.files[0];e.target.value='';if(f)doImport(f);}
 });
+let qT=0;
 document.addEventListener('input',e=>{
+  if(e.target.id==='q'){
+    const v=e.target.value.slice(0,60);
+    clearTimeout(qT);qT=setTimeout(()=>{S.q=v.trim();if(S.q&&location.hash!=='#galeri'){S.cat='semua';S.place='';S.album='';go('galeri');}else render();},150);
+    return;
+  }
   if(e.target.id==='f-date')F.dateTouched=true;
   if(e.target.id==='al-name'){S.alName=e.target.value;return;}
   const el=e.target;
