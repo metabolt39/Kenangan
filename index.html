@@ -96,9 +96,6 @@ window.__setUse=r;})();
 html{-webkit-text-size-adjust:100%}
 :root[data-big="1"] body{zoom:1.2}
 :root[data-big="2"] body{zoom:1.4}
-:root[data-big] .top{flex-wrap:wrap;justify-content:flex-end}
-:root[data-big] .top-l{order:2;flex:1 1 100%}
-:root[data-big] .top .icon-btn,:root[data-big] .top #me-av{order:1}
 body{
   margin:0;background:radial-gradient(80% 30% at 100% 0%,rgba(226,169,59,.16),transparent 70%),radial-gradient(70% 30% at 0% 12%,rgba(238,123,94,.10),transparent 70%),var(--bg);color:var(--ink);
   font-family:var(--font-body);font-size:16px;line-height:1.5;padding-block:0 130px;
@@ -112,8 +109,12 @@ button{cursor:pointer}
 .i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 /* Kepala */
-.top{display:flex;align-items:center;gap:12px;padding-block:20px 6px}
-.top-l{flex:1;min-width:0}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:flex;align-items:center;gap:8px;padding:10px 0;margin-inline:-8px;padding-inline:8px;background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.brand{flex:1;min-width:0;margin:0;font:700 clamp(18px,5vw,22px)/1.2 var(--font-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn.rnd{border:1px solid var(--line);border-radius:50%;background:var(--surface);width:42px;height:42px}
+.me{flex:none;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:none;display:grid;place-items:center}
+.me:hover{filter:brightness(1.05)}
+.top{padding-block:6px 4px}
 .hi{margin:0;display:flex;align-items:center;gap:8px;font:italic 600 clamp(19px,5.4vw,24px)/1.2 var(--font-display);color:var(--gold-ink);letter-spacing:.01em}
 .sky{width:38px;height:38px;flex:none;display:block;overflow:visible}
 .wx{display:inline-flex;align-items:center;gap:6px;margin-top:8px;min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:99px;background:var(--surface);font-size:13px;font-weight:600;color:var(--ink-2)}
@@ -121,16 +122,15 @@ button{cursor:pointer}
 .cityf{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-width:340px}
 .cityf input{flex:1;min-width:0;min-height:38px;padding:0 12px;border:1px solid var(--line);border-radius:99px;background:var(--surface);font-size:15px}
 .cityf .btn{min-height:38px;padding:0 14px;font-size:14px;border-radius:99px}
-.wxrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:8px}
+.wxrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px}
 .wxrow .wx{margin-top:0}
 .wxrow .lnk{font-size:13px;padding:4px 0}
-.mood{margin:6px 0 0;font:italic 400 15px/1.45 var(--font-serif);color:var(--ink-2);text-wrap:balance;max-width:34ch}
+.mood{display:none;margin:6px 0 0;font:italic 400 15px/1.45 var(--font-serif);color:var(--ink-2);text-wrap:balance;max-width:34ch}
 .skins{display:flex;gap:8px;overflow-x:auto;padding:4px 0 2px;scrollbar-width:none}
 .skins::-webkit-scrollbar{display:none}
 .skin{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:14px}
 .skin i{width:28px;height:28px;border-radius:50%;display:block;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
 .skin[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
-.top .icon-btn{border:1px solid var(--line);border-radius:50%;background:var(--surface)}
 .memw{position:relative;margin-top:14px}
 .memw .mem{margin-top:0}
 .shuf{position:absolute;z-index:2;top:12px;right:12px;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:99px;background:rgba(255,253,248,.88);color:#2B1A06;font-weight:700;font-size:14px;backdrop-filter:blur(6px)}
@@ -156,8 +156,7 @@ button{cursor:pointer}
 @keyframes dr{0%{transform:translateY(-3px);opacity:0}30%{opacity:1}100%{transform:translateY(5px);opacity:0}}
 @keyframes fall{to{transform:translateY(115vh)}}
 @media (prefers-reduced-motion:reduce){.spin,.tw,.drop,.route,.pulse,.mem img{animation:none!important}.rain{display:none}}
-.top h1{margin:2px 0 0;font:700 clamp(22px,6.4vw,30px)/1.12 var(--font-display);text-wrap:balance}
-.sub{margin:4px 0 0;font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;min-height:1.4em}
+.sub{margin:0;font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .av{width:40px;height:40px;margin:2px;border-radius:50%;flex:none;display:block;background:var(--surface-2);object-fit:cover;box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--ring,var(--gold))}
 .av.sm{width:30px;height:30px}
 .av-fb{display:grid;place-items:center;font:700 15px var(--font-display);color:var(--ink-2)}
@@ -205,6 +204,24 @@ button{cursor:pointer}
 .pin .dot{fill:var(--gold);stroke:var(--coral);stroke-width:2}
 .pin.on .dot{stroke:var(--ink);stroke-width:2.5}
 .pin text{font:700 8px var(--font-body);fill:#2B1A06;text-anchor:middle;pointer-events:none}
+.set-me{display:flex;align-items:center;gap:12px;padding:14px 0 4px}
+.set-me .nm{flex:1;min-width:0;display:flex;flex-direction:column}
+.set-me .nm strong{font-size:17px;overflow-wrap:anywhere}
+.set-me .nm span{font-size:13px;color:var(--ink-2)}
+.set-h{margin:22px 0 10px;font:700 12px/1.2 var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px 12px;border:1px solid var(--line);border-radius:16px;background:var(--surface);font-weight:600;font-size:14px;color:var(--ink)}
+.tile i{width:44px;height:44px;border-radius:50%;display:block;box-shadow:inset 0 0 0 3px rgba(255,255,255,.55)}
+.tile[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.segc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;border-radius:16px;background:var(--surface-2)}
+.segc button{min-height:46px;border:0;border-radius:12px;background:none;font-weight:600;color:var(--ink-2)}
+.segc button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.set-p{margin:0 0 10px;font-size:15px;color:var(--ink)}
+.set-row{display:flex;flex-wrap:wrap;gap:8px}
+.set-list{display:flex;flex-direction:column;gap:8px}
+.set-item{display:flex;align-items:center;min-height:50px;width:100%;padding:0 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font-weight:600;text-align:left;color:var(--ink)}
+.setp .cityf{max-width:none;margin-top:12px}
+.ugrid{display:block}
 .hint{margin:6px 4px 0;font-size:13px;color:var(--ink-2)}
 .pinp{margin-top:12px;padding:16px;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--shadow)}
 .pinp h3{margin:0 0 2px;font:700 19px/1.25 var(--font-display);overflow-wrap:anywhere}
@@ -433,6 +450,34 @@ button{cursor:pointer}
   .mem:hover{transform:scale(1.01);box-shadow:0 22px 40px -18px rgba(80,60,20,.6)}
   .mi:hover,.pgrid button:hover,.tl-ph button:hover{transform:scale(1.04);box-shadow:0 10px 22px -10px rgba(0,0,0,.5);z-index:2}
 }
+@media (min-width:768px){
+  .wrap{max-width:860px}
+  .tabs-in{max-width:860px}
+  .mood{display:block}
+  .masonry{column-count:4}
+  .feed{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+  .places{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fab{right:max(24px,calc(50vw - 430px))}
+  .scrim{align-items:center;padding:24px}
+  .sheet{border-radius:22px;max-height:88vh;max-width:560px}
+  .tl{max-width:760px}
+  .tiles{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (min-width:1100px){
+  body{padding-left:calc(240px + 32px);padding-right:32px}
+  .tabs{top:0;bottom:auto;right:auto;width:240px;height:100vh;border-top:0;border-right:1px solid var(--line);padding:28px 16px}
+  .tabs-in{display:flex;flex-direction:column;gap:6px;max-width:none;margin:0}
+  .tab{flex-direction:row;justify-content:flex-start;gap:14px;min-height:50px;padding:0 18px;font-size:15px}
+  .wrap{max-width:1120px}
+  .fab{right:32px;bottom:32px}
+  .masonry{column-count:5}
+  .ugrid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:36px;align-items:start}
+  .ugrid>.uside{grid-column:2;grid-row:1;position:sticky;top:72px;max-height:calc(100vh - 92px);overflow-y:auto;padding-right:4px;scrollbar-width:thin}
+  .ugrid>.umain{grid-column:1;grid-row:1;min-width:0}
+  .ugrid .feed{grid-template-columns:minmax(0,1fr)}
+}
+@media (min-width:768px){.mem{aspect-ratio:16/9;max-height:440px}}
+@media (min-width:1100px){.uside .mem{aspect-ratio:4/5;max-height:520px}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -458,20 +503,16 @@ button{cursor:pointer}
 </svg>
 
 <div class="wrap">
+  <div class="bar">
+    <h1 class="brand">Kenangan Keluarga Ahmad</h1>
+    <button type="button" class="icon-btn rnd" data-act="search" aria-label="Cari kenangan" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-search"></use></svg></button>
+    <button type="button" class="me" data-act="settings" aria-label="Tetapan dan akaun" aria-haspopup="dialog"><span id="me-av"></span></button>
+  </div>
   <header class="top">
-    <div class="top-l">
-      <p class="hi"><span id="hi-ic"></span><span id="hi-t">Selamat datang</span></p>
-      <h1>Kenangan Keluarga Ahmad</h1>
-      <p class="mood" id="mood"></p>
-      <p class="sub" id="sub"></p>
-      <div class="wxrow"><button type="button" class="wx" id="wx" data-act="wx"></button><button type="button" class="lnk" id="wxc" data-act="city">Tukar bandar</button></div>
-      <form class="cityf" id="cityf" hidden><input id="cityi" type="text" maxlength="60" placeholder="cth. Ipoh, Kuching, Johor Bahru" aria-label="Nama bandar" autocomplete="off"><button class="btn" type="submit">Cari</button><button class="btn ghost" type="button" data-act="gps">📍 Guna lokasi</button></form>
-    </div>
-    <button type="button" class="icon-btn" data-act="search" aria-label="Cari kenangan" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-search"></use></svg></button>
-    <button type="button" class="icon-btn" data-act="skins" aria-label="Tukar tema warna" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-palette"></use></svg></button>
-    <span id="me-av"></span>
+    <p class="hi"><span id="hi-ic"></span><span id="hi-t">Selamat datang</span></p>
+    <p class="mood" id="mood"></p>
+    <div class="wxrow"><button type="button" class="wx" id="wx" data-act="wx"></button><span class="sub" id="sub"></span></div>
   </header>
-  <div class="skins" id="skins" hidden role="group" aria-label="Tema warna"></div>
   <div class="sbar" id="sbar" hidden role="search"><input id="q" type="search" placeholder="Cari cerita, tempat, nama, tarikh…" aria-label="Cari kenangan" autocomplete="off" enterkeyhint="search"><button type="button" class="btn sm ghost" data-act="clear-q">Kosongkan</button></div>
   <main id="view" aria-live="polite"></main>
 </div>
@@ -485,6 +526,29 @@ button{cursor:pointer}
     <button class="tab" type="button" data-act="tab" data-v="peta"><svg class="i" aria-hidden="true"><use href="#i-map"></use></svg>Peta</button>
   </div>
 </nav>
+
+<div class="scrim" id="set" hidden>
+  <section class="sheet setp" role="dialog" aria-modal="true" aria-labelledby="set-t">
+    <div class="sheet-h"><h2 id="set-t">Tetapan</h2><button type="button" class="icon-btn" data-act="set-close" aria-label="Tutup tetapan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <div class="set-me" id="set-me"></div>
+    <h3 class="set-h">Tema warna</h3>
+    <div class="tiles" id="set-skins" role="group" aria-label="Tema warna"></div>
+    <h3 class="set-h">Saiz tulisan</h3>
+    <div class="segc" id="set-big" role="group" aria-label="Saiz tulisan"></div>
+    <h3 class="set-h">Cuaca dan lokasi</h3>
+    <p class="set-p" id="set-loc"></p>
+    <div class="set-row"><button type="button" class="btn sm" data-act="gps">📍 Guna lokasi automatik</button><button type="button" class="btn sm ghost" data-act="city">Tukar bandar</button></div>
+    <form class="cityf" id="cityf" hidden><input id="cityi" type="text" maxlength="60" placeholder="cth. Ipoh, Kuching, Johor Bahru" aria-label="Nama bandar" autocomplete="off"><button class="btn" type="submit">Cari</button><button class="btn ghost" type="button" data-act="gps">📍 Guna lokasi</button></form>
+    <div id="set-admin" hidden>
+      <h3 class="set-h">Pentadbir</h3>
+      <div class="set-list">
+        <button type="button" class="set-item" data-act="invite">Jemput ahli keluarga</button>
+        <button type="button" class="set-item" data-act="backup">Sandarkan semua kenangan</button>
+        <button type="button" class="set-item" data-act="import">Import kenangan lama</button>
+      </div>
+    </div>
+  </section>
+</div>
 
 <div class="scrim" id="sheet" hidden>
   <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-t">
@@ -585,11 +649,30 @@ function applyBig(n){
   if(S.big)document.documentElement.setAttribute('data-big',String(S.big));else document.documentElement.removeAttribute('data-big');
   try{localStorage.setItem('kk-big',String(S.big));}catch(e){}
 }
+function renderSet(){
+  const sk=$('set-skins'); if(!sk)return;
+  sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('');
+  $('set-big').innerHTML=BIGL.map((l,i)=>'<button type="button" data-act="big" data-v="'+i+'" aria-pressed="'+(S.big===i)+'">'+l+'</button>').join('');
+  $('set-me').innerHTML=(S.myId?av(S.myId):'')+'<div class="nm"><strong>'+esc(S.myId?nameOf(S.myId):'Tetamu')+'</strong><span>'+(S.isOwner?'Pentadbir':'Ahli keluarga')+'</span></div>'+(window.__signOut?'<button type="button" class="btn sm ghost" data-act="signout">Log keluar</button>':'');
+  const city=(S.live&&S.live.city)||S.cityName||S.city||'';
+  $('set-loc').textContent=S.gpsOn?'Mengikut lokasi anda'+(city?': '+city:'')+'.':'Bandar dipilih'+(city?': '+city:'')+'.';
+  $('set-admin').hidden=!S.isOwner;
+}
+function openSet(){
+  S.setPrev=document.activeElement; renderSet();
+  $('set').hidden=false; document.body.style.overflow='hidden';
+  const c=$('set').querySelector('.icon-btn'); if(c)try{c.focus({preventScroll:true});}catch(e){}
+}
+function closeSet(){
+  $('set').hidden=true; $('cityf').hidden=true;
+  if($('lb').hidden&&$('sheet').hidden)document.body.style.overflow='';
+  if(S.setPrev&&S.setPrev.focus)try{S.setPrev.focus({preventScroll:true});}catch(e){}
+}
 function applySkin(k){
   const r=document.documentElement;
   if(k==='kampung'||!SKINS.some(x=>x[0]===k))r.removeAttribute('data-skin'); else r.setAttribute('data-skin',k);
   S.skin=SKINS.some(x=>x[0]===k)?k:'kampung';
-  $('skins').innerHTML=SKINS.map(x=>'<button type="button" class="skin" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+x[1]+'</button>').join('')+'<button type="button" class="skin" data-act="bigtext" aria-label="Saiz tulisan: '+BIGL[S.big]+'"><b aria-hidden="true">Aa</b> Tulisan: '+BIGL[S.big]+'</button>'+(S.isOwner?'<button type="button" class="skin" data-act="backup">Sandaran</button><button type="button" class="skin" data-act="invite">Jemput ahli</button><button type="button" class="skin" data-act="import">Import kenangan lama</button>':'')+(window.__signOut?'<button type="button" class="skin" data-act="signout">Log keluar</button>':'');
+  if(typeof renderSet==='function')renderSet();
 }
 const VIEWS=['utama','galeri','peta'];
 
@@ -1077,6 +1160,7 @@ function utamaHtml(m){
   if(!DEMO&&S.albumsOk)h+=acaraHtml();
   h+=sec('Album')+albumsHtml();
   h+=sec('Peta memori','<button type="button" class="lnk" data-act="tab" data-v="peta">Buka peta</button>')+mapCard();
+  const side=h; h='';
   let list=P.filter(p=>!S.place||pk(p.place)===S.place);
   if(S.onlyNew)list=list.filter(isNew);
   list=list.slice().sort(S.sort==='kenangan'?byMemory:(a,b)=>(b.createdAt-a.createdAt)||byMemory(a,b));
@@ -1084,7 +1168,7 @@ function utamaHtml(m){
   if(S.place)h+='<div class="chips"><button type="button" class="chip" data-act="clear-place" aria-pressed="true">'+icon('pin')+esc(placeName(S.place))+icon('x')+'</button></div>';
   h+='<div class="feed">'+list.map(p=>postHtml(p,m)).join('')+'</div>';
   h+=tipHtml();
-  return h;
+  return '<div class="ugrid"><div class="uside">'+side+'</div><div class="umain">'+h+'</div></div>';
 }
 function galeriHtml(){
   const f=filt(P).slice().sort(byMemory);
@@ -1747,12 +1831,14 @@ async function deleteAlbum(){
 /* ---------- acara ---------- */
 document.addEventListener('click',e=>{
   if(e.target===$('sheet')){closeSheet();return;}
+  if(e.target===$('set')){closeSet();return;}
   const t=e.target.closest('[data-act]'); if(!t)return;
   const a=t.dataset.act, id=t.dataset.id, v=t.dataset.v;
-  if(a==='skins'){const f=$('skins');f.hidden=!f.hidden;t.setAttribute('aria-expanded',String(!f.hidden));}
+  if(a==='settings')openSet();
+  else if(a==='set-close')closeSet();
+  else if(a==='big'){applyBig(parseInt(v,10)||0);renderSet();}
   else if(a==='skin'){applySkin(v);try{localStorage.setItem('kk-skin',v);}catch(x){}}
   else if(a==='import'){$('f-import').click();}
-  else if(a==='bigtext'){applyBig((S.big+1)%3);applySkin(S.skin);}
   else if(a==='invite')inviteMember();
   else if(a==='backup')backupAll();
   else if(a==='signout'){if(window.__signOut)window.__signOut();}
@@ -1762,9 +1848,9 @@ document.addEventListener('click',e=>{
     if(!S.mcp){toast('Cuaca langsung belum tersedia di sini.');return;}
     S.gpsOn=true;try{localStorage.setItem('kk-gps','1');}catch(x){}
     toast('Mengesan lokasi…');
-    tryGps(true).then(ok=>{if(ok){$('cityf').hidden=true;loadWx().then(()=>toast('Cuaca di '+S.cityName+'. Lokasi dikesan automatik.'));}});
+    tryGps(true).then(ok=>{if(ok){$('cityf').hidden=true;loadWx().then(()=>{renderSet();toast('Cuaca di '+S.cityName+'. Lokasi dikesan automatik.');});}});
   }
-  else if(a==='wx'&&S.live){toast(S.live.phrase+' di '+S.live.city+'. Kemas kini automatik setiap 10 minit.');}
+  else if(a==='wx'&&S.live){openSet();}
   else if(a==='wx'){const i=WXS.findIndex(x=>x[0]===S.wx);S.wx=WXS[(i+1)%WXS.length][0];try{localStorage.setItem('kk-wx',S.wx);}catch(x){}paintSky();}
   else if(a==='tab')go(v);
   else if(a==='search'){S.sOpen=!S.sOpen;$('sbar').hidden=!S.sOpen;t.setAttribute('aria-expanded',String(S.sOpen));if(S.sOpen)$('q').focus();else if(S.q){S.q='';$('q').value='';render();}}
@@ -1853,7 +1939,7 @@ document.addEventListener('submit',async e=>{
     const prev=[S.city,S.lk];
     S.city=v; S.lk='';
     const ok=await loadWx(true);
-    if(ok){try{localStorage.setItem('kk-city',v);localStorage.setItem('kk-gps','0');}catch(x){} S.gpsOn=false; $('cityf').hidden=true;}
+    if(ok){try{localStorage.setItem('kk-city',v);localStorage.setItem('kk-gps','0');}catch(x){} S.gpsOn=false; $('cityf').hidden=true; renderSet();}
     else{S.city=prev[0];S.lk=prev[1];}
     return;
   }
@@ -1863,7 +1949,8 @@ document.addEventListener('submit',async e=>{
 document.addEventListener('keydown',e=>{
   if(!$('lb').hidden){
     if(e.key==='Escape')closeLB(); else if(e.key==='ArrowLeft')stepLB(-1); else if(e.key==='ArrowRight')stepLB(1);
-  }else if(!$('sheet').hidden&&e.key==='Escape')closeSheet();
+  }else if(!$('set').hidden&&e.key==='Escape')closeSet();
+  else if(!$('sheet').hidden&&e.key==='Escape')closeSheet();
   else if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('pin')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}
 });
 const Z={s:1,x:0,y:0,d:0,s0:1,px:0,py:0,sx:0,sy:0,t:0,pinch:false,moved:false};
