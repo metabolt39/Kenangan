@@ -44,6 +44,7 @@ const mcp = {
 };
 
 /* ---------- Firebase ---------- */
+try { const k = new URLSearchParams(location.search).get('k'); if (k) { sessionStorage.setItem('kk-k', k.slice(0, 60)); history.replaceState(null, '', location.pathname + location.hash); } } catch (e) {}
 async function start() {
   if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
     gate('<p>Tetapan Firebase belum diisi. Buka fail <b>firebase-config.js</b> dan tampal tetapan awak, ikut panduan pemasangan.</p>');
@@ -112,7 +113,8 @@ async function start() {
   window.__signOut = () => Au.signOut(auth).then(() => location.reload());
 
   const loginView = (msg) => {
-    gate('<p>Simpan dan lihat semula gambar keluarga dalam satu tempat peribadi.</p><button class="btn" id="g-login">Log masuk dengan Google</button><div class="err" id="g-err">' + esc(msg || '') + '</div>');
+    let inv = ''; try { inv = sessionStorage.getItem('kk-k') ? '<p><b>Awak dijemput!</b> Log masuk dengan Google untuk menyertai.</p>' : ''; } catch (e) {}
+    gate(inv + '<p>Simpan dan lihat semula gambar keluarga dalam satu tempat peribadi.</p><button class="btn" id="g-login">Log masuk dengan Google</button><div class="err" id="g-err">' + esc(msg || '') + '</div>');
     $('g-login').onclick = async () => {
       $('g-err').textContent = '';
       try { await Au.signInWithPopup(auth, new Au.GoogleAuthProvider()); }
@@ -133,6 +135,7 @@ async function start() {
   const codeView = (user, msg) => new Promise(resolve => {
     gate('<p>Hai ' + esc((user.displayName || '').split(' ')[0] || '') + '. Masukkan kod keluarga untuk menyertai.</p><input id="g-code" type="text" autocomplete="off" autocapitalize="off" placeholder="Kod keluarga" aria-label="Kod keluarga"><button class="btn" id="g-join">Sertai</button><div class="err" id="g-err">' + esc(msg || '') + '</div><button class="lnk" id="g-out">Guna akaun lain</button>');
     $('g-out').onclick = () => Au.signOut(auth).then(() => location.reload());
+    let pre = ''; try { pre = sessionStorage.getItem('kk-k') || ''; sessionStorage.removeItem('kk-k'); } catch (e) {}
     $('g-join').onclick = async () => {
       const code = $('g-code').value.trim();
       if (!code) return;
@@ -145,6 +148,7 @@ async function start() {
         $('g-err').textContent = 'Kod tidak betul. Tanya kod daripada ahli keluarga yang menjemput awak.';
       }
     };
+    if (pre) { $('g-code').value = pre; $('g-join').click(); }
   });
 
   let ready;

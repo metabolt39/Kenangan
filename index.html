@@ -94,6 +94,11 @@ window.__setUse=r;})();
 :root[data-skin="senja"][data-theme="dark"]{--accent:#B79CE6;--teal:#B79CE6;--teal-soft:#33284A;--accent-soft:#33284A;--accent-ink:#1E1236;}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
+:root[data-big="1"] body{zoom:1.2}
+:root[data-big="2"] body{zoom:1.4}
+:root[data-big] .top{flex-wrap:wrap;justify-content:flex-end}
+:root[data-big] .top-l{order:2;flex:1 1 100%}
+:root[data-big] .top .icon-btn,:root[data-big] .top #me-av{order:1}
 body{
   margin:0;background:radial-gradient(80% 30% at 100% 0%,rgba(226,169,59,.16),transparent 70%),radial-gradient(70% 30% at 0% 12%,rgba(238,123,94,.10),transparent 70%),var(--bg);color:var(--ink);
   font-family:var(--font-body);font-size:16px;line-height:1.5;padding-block:0 130px;
@@ -554,11 +559,17 @@ const QUOTES=[
 ];
 const WXS=[['cerah','Cerah'],['mendung','Mendung'],['hujan','Hujan']];
 const SKINS=[['kampung','Kampung','linear-gradient(135deg,#3F8A7C,#E2A93B)'],['pantai','Pantai','linear-gradient(135deg,#1E8FB0,#FF8A6B)'],['raya','Raya','linear-gradient(135deg,#1F6F4A,#C9962B)'],['senja','Senja','linear-gradient(135deg,#7B5EA7,#F0A64B)']];
+const BIGL=['Biasa','Besar','Lebih besar'];
+function applyBig(n){
+  S.big=n>=0&&n<=2?n:0;
+  if(S.big)document.documentElement.setAttribute('data-big',String(S.big));else document.documentElement.removeAttribute('data-big');
+  try{localStorage.setItem('kk-big',String(S.big));}catch(e){}
+}
 function applySkin(k){
   const r=document.documentElement;
   if(k==='kampung'||!SKINS.some(x=>x[0]===k))r.removeAttribute('data-skin'); else r.setAttribute('data-skin',k);
   S.skin=SKINS.some(x=>x[0]===k)?k:'kampung';
-  $('skins').innerHTML=SKINS.map(x=>'<button type="button" class="skin" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+x[1]+'</button>').join('')+(S.isOwner?'<button type="button" class="skin" data-act="import">Import kenangan lama</button>':'')+(window.__signOut?'<button type="button" class="skin" data-act="signout">Log keluar</button>':'');
+  $('skins').innerHTML=SKINS.map(x=>'<button type="button" class="skin" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+x[1]+'</button>').join('')+'<button type="button" class="skin" data-act="bigtext" aria-label="Saiz tulisan: '+BIGL[S.big]+'"><b aria-hidden="true">Aa</b> Tulisan: '+BIGL[S.big]+'</button>'+(S.isOwner?'<button type="button" class="skin" data-act="invite">Jemput ahli</button><button type="button" class="skin" data-act="import">Import kenangan lama</button>':'')+(window.__signOut?'<button type="button" class="skin" data-act="signout">Log keluar</button>':'');
 }
 const VIEWS=['utama','galeri','peta'];
 
@@ -578,7 +589,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -1567,6 +1578,15 @@ async function submit(){
   }
 }
 
+async function inviteMember(){
+  const code=(window.prompt('Masukkan kod keluarga untuk dimasukkan dalam pautan jemputan:')||'').trim().slice(0,60);
+  if(!code)return;
+  const url=location.origin+location.pathname+'?k='+encodeURIComponent(code);
+  const text='Jom sertai album keluarga kita! Buka pautan ini, log masuk dengan Google, dan awak terus masuk.';
+  try{if(navigator.share){await navigator.share({title:'Kenangan Keluarga Ahmad',text:text,url:url});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  try{await navigator.clipboard.writeText(text+'\n'+url);toast('Pautan jemputan disalin. Tampal dalam WhatsApp.');}
+  catch(e){window.prompt('Salin pautan ini dan hantar kepada ahli keluarga:',url);}
+}
 async function saveAlbum(){
   if(!canAct())return;
   const i=$('al-name'), name=((i?i.value:S.alName)||'').trim().slice(0,40);
@@ -1591,6 +1611,8 @@ document.addEventListener('click',e=>{
   if(a==='skins'){const f=$('skins');f.hidden=!f.hidden;t.setAttribute('aria-expanded',String(!f.hidden));}
   else if(a==='skin'){applySkin(v);try{localStorage.setItem('kk-skin',v);}catch(x){}}
   else if(a==='import'){$('f-import').click();}
+  else if(a==='bigtext'){applyBig((S.big+1)%3);applySkin(S.skin);}
+  else if(a==='invite')inviteMember();
   else if(a==='signout'){if(window.__signOut)window.__signOut();}
   else if(a==='shuf'){S.memN++;render();}
   else if(a==='city'){const f=$('cityf');f.hidden=!f.hidden;if(!f.hidden){$('cityi').value=S.city;$('cityi').focus();}}
@@ -1702,6 +1724,7 @@ async function init(){
   try{const s=localStorage.getItem('kk-sort');if(s==='tambah'||s==='kenangan')S.sort=s;}catch(e){}
   try{const w=localStorage.getItem('kk-wx');if(WXS.some(x=>x[0]===w))S.wx=w;}catch(e){}
   try{const c=localStorage.getItem('kk-city');if(c)S.city=c.slice(0,60);S.lk=localStorage.getItem('kk-lk')||'';S.cityName=localStorage.getItem('kk-cityname')||'';if(!S.cityName)S.lk='';}catch(e){}
+  try{applyBig(parseInt(localStorage.getItem('kk-big')||'0',10)||0);}catch(e){}
   try{applySkin(localStorage.getItem('kk-skin')||'kampung');}catch(e){applySkin('kampung');}
   route();
   let cl=window.claude;
