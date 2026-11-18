@@ -325,6 +325,8 @@ button{cursor:pointer}
 .cm{display:flex;gap:10px;min-width:0}
 .cm-b{min-width:0;flex:1}
 .cm-b p{margin:0;overflow-wrap:anywhere;white-space:pre-wrap;font:400 15px/1.55 var(--font-serif)}
+.cm-x{flex:none;width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:10px;background:none;color:var(--ink-2);opacity:.75}
+.cm-q{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--ink-2)}
 .cm-b .t{font-size:12px;color:var(--ink-2);margin-left:6px}
 .cm-form{display:flex;gap:8px}
 .cm-form input{flex:1;min-width:0;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
@@ -576,7 +578,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -970,7 +972,12 @@ function postHtml(p,m){
       (demo||S.myId?'<button type="button" class="act" '+(demo?dm:'data-act="note" data-id="'+esc(p.id)+'"')+'>'+icon('note')+'<span>Nota</span></button>':'')+
     '</div>'+
     (demo?'':noteHtml(p))+
-    (open?'<div class="cms">'+cms.map(c=>'<div class="cm">'+av(c.authorId,'sm')+'<div class="cm-b"><div><strong>'+esc(nameOf(c.authorId))+'</strong><span class="t">'+esc(ago(c.createdAt))+'</span></div><p>'+esc(c.text)+'</p></div></div>').join('')+
+    (open?'<div class="cms">'+cms.map(c=>{
+        const mayDel=!ro&&!!S.myId&&(c.authorId===S.myId||p.authorId===S.myId||S.canEdit);
+        return '<div class="cm">'+av(c.authorId,'sm')+'<div class="cm-b"><div><strong>'+esc(nameOf(c.authorId))+'</strong><span class="t">'+esc(ago(c.createdAt))+'</span></div><p>'+esc(c.text)+'</p>'+
+          (S.cmDel===c.id?'<div class="cm-q" role="alert">Padam komen ini?<button type="button" class="btn sm ghost" data-act="cm-del-no">Batal</button><button type="button" class="btn sm" data-act="cm-del-yes" data-id="'+esc(c.id)+'">Ya, padam</button></div>':'')+'</div>'+
+          (mayDel&&S.cmDel!==c.id?'<button type="button" class="cm-x" data-act="cm-del-ask" data-id="'+esc(c.id)+'" aria-label="Padam komen">'+icon('trash')+'</button>':'')+'</div>';
+      }).join('')+
       (ro?'':'<form class="cm-form" data-id="'+esc(p.id)+'"><input id="ci-'+esc(p.id)+'" type="text" maxlength="500" placeholder="Tulis komen…" aria-label="Tulis komen" autocomplete="off" value="'+esc(S.drafts[p.id]||'')+'"><button class="btn sm" type="submit">Hantar</button></form>')+'</div>':'')+
   '</article>';
 }
@@ -1605,6 +1612,9 @@ document.addEventListener('click',e=>{
   else if(a==='emoji'){F.emoji=F.emoji===v?'':v;renderEmoji();}
   else if(a==='submit')submit();
   else if(a==='edit')editPost(id);
+  else if(a==='cm-del-ask'){S.cmDel=id;render();}
+  else if(a==='cm-del-no'){S.cmDel='';render();}
+  else if(a==='cm-del-yes'){S.cmDel='';S.db.doc('comments/'+id).delete().then(()=>toast('Komen dipadam.')).catch(()=>{toast('Komen tidak dapat dipadam.');render();});render();}
   else if(a==='share')sharePost(id);
   else if(a==='cat'){S.cat=v;S.place='';S.album='';go('galeri');}
   else if(a==='catf'){S.cat=v;render();}
