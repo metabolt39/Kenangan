@@ -508,6 +508,7 @@ button{cursor:pointer}
         <label class="lbl" for="f-place">Tempat</label>
         <input id="f-place" list="dl-places" maxlength="120" placeholder="cth. Pantai Cenang, Langkawi" autocomplete="off">
         <datalist id="dl-places"></datalist>
+        <div class="hint"><button type="button" class="lnk" data-act="gps-place">📍 Guna lokasi saya sekarang</button> <span id="f-gps-s"></span></div>
       </div>
       <div class="field">
         <label class="lbl" for="f-date">Tarikh kenangan</label>
@@ -608,7 +609,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -756,9 +757,10 @@ function normPost(id,d){
   const cat=CAT[d.cat]?d.cat:(OLDTAG[d.tag]||'keluarga');
   return {id:id,authorId:str(d.authorId),text:str(d.text).slice(0,2000),place:str(d.place).trim().slice(0,120),
     takenOn:validDate(d.takenOn)?d.takenOn:'',cat:cat,emoji:EMOJIS.indexOf(d.emoji)>=0?d.emoji:'',
-    photos:Array.isArray(d.photos)?d.photos.filter(isId).slice(0,12):[],album:str(d.album).slice(0,40),tags:Array.isArray(d.tags)?d.tags.filter(x=>typeof x==='string'&&x.length>0&&x.length<=64).slice(0,10):[],createdAt:num(d.createdAt)};
+    photos:Array.isArray(d.photos)?d.photos.filter(isId).slice(0,12):[],album:str(d.album).slice(0,40),lat:fin(d.lat),lon:fin(d.lon),tags:Array.isArray(d.tags)?d.tags.filter(x=>typeof x==='string'&&x.length>0&&x.length<=64).slice(0,10):[],createdAt:num(d.createdAt)};
 }
 const ALEMO=['🎉','🕌','🎂','🌴','⛱️','🍜','🚗','⛺','🎓','💍','🏔️','⚽'];
+function fin(v){return typeof v==='number'&&isFinite(v)&&v>0.5&&v<120?v:null;}
 function normAlbum(id,d){return {id:id,name:str(d.name).trim().slice(0,40),emoji:ALEMO.indexOf(d.emoji)>=0?d.emoji:'🎉',createdBy:str(d.createdBy),createdAt:num(d.createdAt)};}
 function albumById(id){return id?S.albums.find(a=>a.id===id):null;}
 function isNew(p){return !p.demo&&S.seenBase>0&&!!p.authorId&&p.authorId!==S.myId&&p.createdAt>S.seenBase;}
@@ -827,32 +829,74 @@ function geo(place){
   const c=GEO[s]; if(c&&c.length===2)return [s,c[0],c[1]];
   return null;
 }
+const MYB=(la,lo)=>la>0.5&&la<7.6&&lo>98.5&&lo<120;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function placeVariants(name){
+  const n=String(name||'').replace(/\s+/g,' ').trim(), out=[n];
+  const ab={ppd:'Pejabat Pendidikan Daerah',jpn:'Jabatan Pendidikan Negeri',sk:'Sekolah Kebangsaan',smk:'Sekolah Menengah Kebangsaan',sjk:'Sekolah Jenis Kebangsaan',hkl:'Hospital Kuala Lumpur'};
+  const w=n.split(' '), f0=(w[0]||'').toLowerCase().replace(/[.,]/g,'');
+  if(ab[f0]&&w.length>1)out.push(ab[f0]+' '+w.slice(1).join(' '));
+  const gen=/^(ppd|jpn|sk|smk|sjk|pejabat|klinik|hospital|masjid|surau|restoran|restaurant|kedai|cafe|kafe|pusat|dewan|sekolah|rumah|kampung|kg)$/i;
+  const rest=w.filter((x,i)=>!(i<2&&gen.test(x.replace(/[.,]/g,'')))).join(' ');
+  if(rest&&rest!==n)out.push(rest);
+  n.split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>out.push(x));
+  const ww=rest.split(' ').filter(Boolean); if(ww.length>2)out.push(ww.slice(-2).join(' '));
+  const seen=new Set(); return out.filter(x=>{const k=x.toLowerCase();if(!x||seen.has(k))return false;seen.add(k);return true;});
+}
+let lastNom=0;
+async function nomFind(q){
+  const wait=1100-(Date.now()-lastNom); if(wait>0)await sleep(wait); lastNom=Date.now();
+  const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=my&accept-language=ms&q='+encodeURIComponent(q));
+  if(!r.ok)return null; const a=await r.json(); const x=a&&a[0]; if(!x)return null;
+  const la=parseFloat(x.lat), lo=parseFloat(x.lon); return MYB(la,lo)?[la,lo]:null;
+}
+async function omFind(q){
+  const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&country_code=MY&language=ms&name='+encodeURIComponent(q));
+  if(!r.ok)return null; const j=await r.json(); const x=j&&j.results&&j.results[0]; if(!x)return null;
+  return MYB(x.latitude,x.longitude)?[x.latitude,x.longitude]:null;
+}
+async function findPlace(name,maxN){
+  const vs=placeVariants(name).slice(0,maxN||6);
+  for(let i=0;i<vs.length;i++){
+    try{const g=await nomFind(vs[i]); if(g)return [+g[0].toFixed(4),+g[1].toFixed(4)];}catch(e){}
+    try{const g=await omFind(vs[i]); if(g)return [+g[0].toFixed(4),+g[1].toFixed(4)];}catch(e){}
+  }
+  return null;
+}
+function getPos(){
+  return new Promise(res=>{
+    if(!navigator.geolocation){toast('Phone ini tidak menyokong GPS.');return res(null);}
+    navigator.geolocation.getCurrentPosition(p=>res({lat:+p.coords.latitude.toFixed(4),lon:+p.coords.longitude.toFixed(4)}),e=>{toast(e&&e.code===1?'Lokasi tidak dibenarkan. Benarkan lokasi dalam tetapan phone.':'Lokasi tidak dapat dikesan. Cuba lagi.');res(null);},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+  });
+}
 async function geoLookup(){
-  if(geoBusy||!S.mcp)return;
-  const todo=[]; P.forEach(p=>{const k=pk(p.place);if(k&&!p.demo&&!geo(p.place)&&!(k in GEO)&&!GTRY.has(k)&&!todo.some(t=>t[0]===k))todo.push([k,p.place]);});
+  if(geoBusy)return;
+  const todo=[]; P.forEach(p=>{const k=pk(p.place);if(k&&!p.demo&&!(p.lat!=null&&p.lon!=null)&&!geo(p.place)&&!(k in GEO)&&!GTRY.has(k)&&!todo.some(t=>t[0]===k))todo.push([k,p.place]);});
   if(!todo.length)return;
   geoBusy=true; let changed=false;
-  for(const t of todo.slice(0,4)){
+  for(const t of todo.slice(0,3)){
     GTRY.add(t[0]);
-    const parts=[t[1]]; const tail=t[1].split(',').pop().trim(); if(tail&&tail!==t[1])parts.push(tail);
-    for(const q of parts){
-      try{
-        const r=await S.mcp.callTool(AW,'widgets-search-claude',{queryParams:{query:q}},{cache:{staleTime:6048e5,gcTime:6048e5}});
-        const hit=r&&r.payload&&Array.isArray(r.payload.results)?r.payload.results[0]:null; if(!hit||!hit.locationKey)continue;
-        const c=await S.mcp.callTool(AW,'widgets-current-claude',{queryParams:{locationKey:String(hit.locationKey),unit:'metric',lang:'en'}},{cache:{staleTime:6048e5,gcTime:6048e5}});
-        const inf=c&&c.payload&&c.payload.location&&c.payload.location.info;
-        if(inf&&inf.countryId==='MY'&&inf.latitude>0.5&&inf.latitude<7.6&&inf.longitude>98.5&&inf.longitude<120){GEO[t[0]]=[inf.latitude,inf.longitude];changed=true;break;}
-      }catch(e){break;}
-    }
+    const g=await findPlace(t[1],6);
+    if(g){GEO[t[0]]=g;changed=true;}
   }
   if(changed){try{localStorage.setItem('kk-geo',JSON.stringify(GEO));}catch(e){} }
   geoBusy=false; if(changed)render();
+}
+async function savePostLoc(p,lat,lon){
+  await S.db.doc('posts/'+p.id).set({authorId:p.authorId,text:p.text,place:p.place,takenOn:p.takenOn,cat:p.cat,emoji:p.emoji,photos:p.photos,album:p.album,tags:p.tags,createdAt:p.createdAt,lat:lat,lon:lon});
+}
+async function applyLoc(key,lat,lon){
+  GEO[key]=[lat,lon]; try{localStorage.setItem('kk-geo',JSON.stringify(GEO));}catch(e){}
+  const all=S.posts.filter(p=>pk(p.place)===key), mine=all.filter(p=>p.authorId===S.myId);
+  let ok=0; for(const p of mine){try{await savePostLoc(p,lat,lon);ok++;}catch(e){}}
+  S.locSet=''; render();
+  toast(mine.length===all.length?'Lokasi disimpan untuk semua ahli keluarga.':'Lokasi disimpan. Kenangan orang lain hanya nampak pin ini pada phone awak.');
 }
 function mapData(){
   const pins=new Map(), off=new Map();
   P.forEach(p=>{
     if(!p.place)return;
-    const g=geo(p.place);
+    const g=(p.lat!=null&&p.lon!=null&&MYB(p.lat,p.lon))?[pk(p.place),p.lat,p.lon]:geo(p.place);
     if(!g){const k=pk(p.place);if(!off.has(k))off.set(k,{name:p.place,n:0});off.get(k).n++;return;}
     const key=g[1]+','+g[2]; let e=pins.get(key);
     if(!e){e={key:key,lat:g[1],lng:g[2],posts:[],names:new Set()};pins.set(key,e);}
@@ -1101,7 +1145,13 @@ function petaHtml(){
     (x.thumb?'<img class="pt"'+isrc(x.thumb)+' alt="" loading="lazy">':'<span class="pt">'+icon('pin')+'</span>')+
     '<span class="pi"><strong>'+esc(x.name)+'</strong><span>'+x.count+' kenangan'+(x.last?' · '+esc(fmtMonth(x.last)):'')+'</span></span></button>'+
     (DEMO?'':'<a class="map" href="'+esc(mapUrl(x.name))+'" target="_blank" rel="noopener">Peta</a>')+'</li>').join('')+'</ul>';
-  if(md.off.length)h+='<p class="note">Tidak dapat diletakkan pada peta: '+md.off.map(o=>esc(o.name)).join(', ')+'.</p>';
+  if(md.off.length&&!DEMO){
+    h+='<div class="note"><p style="margin:0 0 8px">Belum dapat diletakkan pada peta. Tekan untuk tetapkan lokasi:</p><div class="chips">'+md.off.map(o=>'<button type="button" class="chip" data-act="setloc" data-v="'+esc(pk(o.name))+'" aria-pressed="'+(S.locSet===pk(o.name))+'">'+icon('pin')+esc(o.name)+'</button>').join('')+'</div></div>';
+    if(S.locSet){
+      const o=md.off.find(x=>pk(x.name)===S.locSet);
+      if(o)h+='<div class="evform"><label class="lbl" for="loc-q">Cari kawasan berdekatan untuk “'+esc(o.name)+'”</label><input type="text" id="loc-q" maxlength="80" placeholder="cth. Petaling Jaya" autocomplete="off" value="'+esc(S.locQ)+'"><div class="row"><button type="button" class="btn sm ghost" data-act="loc-gps">📍 Guna GPS di sini</button><button type="button" class="btn sm" data-act="loc-search">Cari</button></div></div>';
+    }
+  }
   return h;
 }
 function loadingHtml(){return (S.slow?'<p class="note">Sambungan lambat. Kenangan akan muncul sebaik data sampai.</p>':'')+'<div class="skel" aria-hidden="true"></div><div class="skel" aria-hidden="true"></div>';}
@@ -1248,7 +1298,7 @@ async function doImport(file){
     for(const p of posts){
       if(!p||!/^[A-Za-z0-9]{8,40}$/.test(String(p.id)))continue;
       const x=normPost(String(p.id),p);
-      await S.db.doc('posts/'+x.id).set({authorId:S.myId,text:x.text,place:x.place,takenOn:x.takenOn,cat:x.cat,emoji:x.emoji,photos:x.photos,album:x.album,tags:x.tags,createdAt:x.createdAt||Date.now()}); step();
+      await S.db.doc('posts/'+x.id).set({authorId:S.myId,text:x.text,place:x.place,takenOn:x.takenOn,cat:x.cat,emoji:x.emoji,photos:x.photos,album:x.album,tags:x.tags,lat:x.lat,lon:x.lon,createdAt:x.createdAt||Date.now()}); step();
     }
     for(const c of cms){
       if(!c||!/^[A-Za-z0-9]{8,40}$/.test(String(c.id)))continue;
@@ -1364,7 +1414,8 @@ function closeLB(){
 }
 
 /* ---------- borang kenangan ---------- */
-const F={files:[],busy:false,prevFocus:null,emoji:'',edit:'',dateTouched:false,tags:[]};
+const F={files:[],busy:false,prevFocus:null,emoji:'',edit:'',dateTouched:false,tags:[],coord:null};
+function renderCoord(){const e=$('f-gps-s');if(!e)return;e.innerHTML=F.coord?'✓ Lokasi disimpan <button type="button" class="lnk" data-act="gps-clear">Buang</button>':'';}
 function renderTagPick(){
   const w=$('f-tags-w'); if(!w)return;
   w.hidden=!S.members.length;
@@ -1376,7 +1427,7 @@ function renderEmoji(){
 function openSheet(){
   if(!canAct())return;
   F.prevFocus=document.activeElement;
-  F.dateTouched=false;F.tags=[];renderTagPick();
+  F.dateTouched=false;F.tags=[];F.coord=null;renderCoord();renderTagPick();
   const d=$('f-date'); d.max=ymd(new Date()); if(!d.value)d.value=ymd(new Date());
   const note=$('asset-note'); $('pick').disabled=false;
   if(!S.assets){note.hidden=false;note.textContent='Gambar akan dikecilkan sedikit supaya muat disimpan dalam album.';}else note.hidden=true;
@@ -1389,7 +1440,7 @@ function openSheet(){
 }
 function resetForm(){
   F.files.forEach(f=>{if(f.file)try{URL.revokeObjectURL(f.url);}catch(e){}});
-  F.files=[];F.emoji='';F.edit='';F.dateTouched=false;F.tags=[];
+  F.files=[];F.emoji='';F.edit='';F.dateTouched=false;F.tags=[];F.coord=null;renderCoord();
   $('f-story').value='';$('f-place').value='';$('f-date').value='';
   $('sheet-t').textContent='Kenangan baharu';$('submit').textContent='Kongsi dengan keluarga';
   renderPreviews();renderEmoji();
@@ -1474,7 +1525,7 @@ function editPost(id){
   if(!p||p.authorId!==S.myId||!canAct())return;
   openSheet();
   F.files.forEach(f=>{if(f.file)try{URL.revokeObjectURL(f.url);}catch(e){}});
-  F.edit=id;F.dateTouched=true;F.tags=(p.tags||[]).slice();renderTagPick();
+  F.edit=id;F.dateTouched=true;F.tags=(p.tags||[]).slice();renderTagPick();F.coord=(p.lat!=null&&p.lon!=null)?{lat:p.lat,lon:p.lon}:null;renderCoord();
   F.files=p.photos.map(pid=>({file:null,url:imgUrl(pid),id:pid}));
   $('f-story').value=p.text;$('f-place').value=p.place;$('f-date').value=p.takenOn||'';
   $('f-cat').value=p.cat;$('f-album').value=albumById(p.album)?p.album:'';
@@ -1616,7 +1667,14 @@ async function submit(){
       ids.push(it.id);
     }
     setStatus('Menyimpan…');
-    const fields={text:text,place:place,takenOn:validDate(takenOn)?takenOn:'',cat:CAT[cat]?cat:'keluarga',emoji:F.emoji,photos:ids,album:albumById(alb)?alb:'',tags:F.tags.filter(u=>S.members.some(m=>m.id===u)).slice(0,10)};
+    let co=F.coord;
+    if(!co&&place&&!geo(place)){
+      setStatus('Mencari lokasi di peta…');
+      const f=await Promise.race([findPlace(place,4),new Promise(r=>setTimeout(()=>r(null),7000))]);
+      if(f)co={lat:f[0],lon:f[1]};
+    }
+    if(!place)co=null;
+    const fields={lat:co?co.lat:null,lon:co?co.lon:null,text:text,place:place,takenOn:validDate(takenOn)?takenOn:'',cat:CAT[cat]?cat:'keluarga',emoji:F.emoji,photos:ids,album:albumById(alb)?alb:'',tags:F.tags.filter(u=>S.members.some(m=>m.id===u)).slice(0,10)};
     if(F.edit){
       const old=S.posts.find(x=>x.id===F.edit);
       if(!old||old.authorId!==S.myId)throw {code:'permission-denied'};
@@ -1645,7 +1703,7 @@ async function backupAll(){
   if(!S.isOwner||!S.posts.length){toast('Tiada kenangan untuk disandarkan.');return;}
   const ids=Array.from(new Set(S.posts.flatMap(p=>p.photos.filter(x=>x.slice(0,2)==='d_'))));
   const out={kind:'kenangan-export',v:2,exportedAt:new Date().toISOString(),
-    posts:S.posts.map(p=>({id:p.id,authorId:p.authorId,authorName:nameOf(p.authorId),text:p.text,place:p.place,takenOn:p.takenOn,cat:p.cat,emoji:p.emoji,photos:p.photos,album:p.album,tags:p.tags,createdAt:p.createdAt})),
+    posts:S.posts.map(p=>({id:p.id,authorId:p.authorId,authorName:nameOf(p.authorId),text:p.text,place:p.place,takenOn:p.takenOn,cat:p.cat,emoji:p.emoji,photos:p.photos,album:p.album,tags:p.tags,lat:p.lat,lon:p.lon,createdAt:p.createdAt})),
     comments:S.comments.map(c=>({id:c.id,postId:c.postId,authorId:c.authorId,authorName:nameOf(c.authorId),text:c.text,createdAt:c.createdAt})),
     albums:S.albums.map(a=>({id:a.id,name:a.name,emoji:a.emoji,createdAt:a.createdAt})),imgs:{}};
   let n=0,miss=0;
@@ -1718,6 +1776,15 @@ document.addEventListener('click',e=>{
   else if(a==='emoji'){F.emoji=F.emoji===v?'':v;renderEmoji();}
   else if(a==='submit')submit();
   else if(a==='edit')editPost(id);
+  else if(a==='gps-place'){toast('Mengesan lokasi…');getPos().then(c=>{if(c){F.coord=c;renderCoord();toast('Lokasi disimpan untuk kenangan ini.');}});}
+  else if(a==='gps-clear'){F.coord=null;renderCoord();}
+  else if(a==='setloc'){const o=mapData().off.find(x=>pk(x.name)===v);S.locSet=S.locSet===v?'':v;S.locQ=o?o.name:'';render();}
+  else if(a==='loc-search'){
+    const q=($('loc-q')?$('loc-q').value:S.locQ).trim(); if(!q)return;
+    toast('Mencari…');
+    findPlace(q,3).then(g=>{if(!g){toast('Tak jumpa. Cuba nama kawasan atau bandar yang lebih besar.');return;}applyLoc(S.locSet,g[0],g[1]);});
+  }
+  else if(a==='loc-gps'){toast('Mengesan lokasi…');getPos().then(c=>{if(c)applyLoc(S.locSet,c.lat,c.lon);});}
   else if(a==='yjump'){const el=document.getElementById('y-'+v);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
   else if(a==='tag-pick'){const i=F.tags.indexOf(v);if(i>=0)F.tags.splice(i,1);else F.tags.push(v);renderTagPick();}
   else if(a==='cm-del-ask'){S.cmDel=id;render();}
@@ -1766,6 +1833,7 @@ document.addEventListener('change',e=>{
 });
 let qT=0;
 document.addEventListener('input',e=>{
+  if(e.target.id==='loc-q'){S.locQ=e.target.value;return;}
   if(e.target.id==='q'){
     const v=e.target.value.slice(0,60);
     clearTimeout(qT);qT=setTimeout(()=>{S.q=v.trim();if(S.q&&location.hash!=='#galeri'){S.cat='semua';S.place='';S.album='';go('galeri');}else render();},150);
