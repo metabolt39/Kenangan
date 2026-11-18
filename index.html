@@ -406,7 +406,7 @@ button{cursor:pointer}
 
 /* Navigasi */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--surface);border-top:1px solid var(--line);padding:6px max(16px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.tabs-in{max-width:640px;margin-inline:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.tabs-in{max-width:640px;margin-inline:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
 .tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;border:0;border-radius:14px;background:none;color:var(--ink-2);font-size:12px;font-weight:600}
 .tab[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
 .fab{position:fixed;z-index:36;bottom:calc(80px + env(safe-area-inset-bottom,0px));right:max(max(16px,env(safe-area-inset-right,0px)),calc(50vw - 320px));display:flex;align-items:center;gap:8px;min-height:52px;padding:0 22px 0 16px;border:0;border-radius:99px;background:var(--gold);color:#2B1A06;font-weight:700;font-size:16px;box-shadow:0 8px 20px rgba(60,40,0,.32)}
@@ -611,6 +611,19 @@ button{cursor:pointer}
 .plc-p{margin:0;font-size:16px;line-height:1.55}
 .plc-a{display:flex;flex-wrap:wrap;gap:8px;padding:14px 18px 0}
 .plc-a a.btn{display:inline-flex;align-items:center;text-decoration:none}
+
+.jt{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;padding:8px 14px 8px 8px;border:1px solid var(--line);border-radius:20px;background:var(--surface);text-align:left;box-shadow:var(--shadow)}
+.jt-i{flex:none;position:relative;width:64px;height:64px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,var(--teal),var(--gold))}
+.jt-i img{width:100%;height:100%;object-fit:cover;display:block}
+.jt-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.jt-t .pk{font:700 10.5px var(--font-body);letter-spacing:.07em;text-transform:uppercase;color:var(--gold-ink)}
+.jt-t b{font:700 17px/1.2 var(--font-display)}
+.jt-t span:last-child{font-size:13px;color:var(--ink-2)}
+.jt-a{font-size:26px;color:var(--ink-2)}
+.pcs.full{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;gap:12px}
+.pcs.full .pcd{width:auto}
+@media (min-width:600px){.pcs.full{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1000px){.pcs.full{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -621,6 +634,7 @@ button{cursor:pointer}
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6.5 8 6.5M6 10v9.5h4v-5h4v5h4V10"/></symbol>
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></symbol>
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 12v7h14v-7"/></symbol>
@@ -657,6 +671,7 @@ button{cursor:pointer}
   <div class="tabs-in">
     <button class="tab" type="button" data-act="tab" data-v="utama"><svg class="i" aria-hidden="true"><use href="#i-home"></use></svg>Utama</button>
     <button class="tab" type="button" data-act="tab" data-v="galeri"><svg class="i" aria-hidden="true"><use href="#i-grid"></use></svg>Galeri</button>
+    <button class="tab" type="button" data-act="tab" data-v="jelajah"><svg class="i" aria-hidden="true"><use href="#i-compass"></use></svg>Jelajah</button>
     <button class="tab" type="button" data-act="tab" data-v="peta"><svg class="i" aria-hidden="true"><use href="#i-map"></use></svg>Peta</button>
   </div>
 </nav>
@@ -825,7 +840,7 @@ function applySkin(k){
   S.skin=SKINS.some(x=>x[0]===k)?k:'kampung';
   if(typeof renderSet==='function')renderSet();
 }
-const VIEWS=['utama','galeri','peta'];
+const VIEWS=['utama','galeri','jelajah','peta'];
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1173,8 +1188,8 @@ function dayOfYear(){const n=new Date();return Math.floor((n-new Date(n.getFullY
 const PLC=[["Langkawi", "Langkawi", "Kedah", "pantai", "Gugusan 99 pulau dengan pantai berpasir putih, kereta kabel SkyCab dan jambatan gantung di Gunung Mat Cincang.", "Langkawi"], ["Perhentian Islands", "Pulau Perhentian", "Terengganu", "pantai", "Air jernih berwarna kaca, sesuai untuk snorkeling dan melihat penyu.", "Pulau Perhentian"], ["Redang Island", "Pulau Redang", "Terengganu", "pantai", "Taman laut yang kaya dengan terumbu karang dan ikan berwarna-warni.", "Pulau Redang"], ["Tioman Island", "Pulau Tioman", "Pahang", "pantai", "Pulau berbukit hijau dengan pantai tenang dan air terjun di tengahnya.", "Pulau Tioman"], ["Sipadan", "Pulau Sipadan", "Sabah", "pantai", "Antara tapak selam terbaik dunia, dengan dinding karang dan kawanan penyu.", "Pulau Sipadan"], ["Pangkor Island", "Pulau Pangkor", "Perak", "pantai", "Pulau santai dengan pantai Teluk Nipah dan ikan bilis yang terkenal.", "Pulau Pangkor"], ["Port Dickson", "Port Dickson", "Negeri Sembilan", "pantai", "Pantai pilihan keluarga hujung minggu, dekat dengan Lembah Klang.", "Port Dickson"], ["Cherating", "Cherating", "Pahang", "pantai", "Kampung pantai yang santai, terkenal dengan ombak dan penyu.", "Cherating"], ["Pulau Ketam", "Pulau Ketam", "Selangor", "pantai", "Kampung nelayan di atas air yang boleh dilawati sehari dari Klang.", "Pulau Ketam"], ["Cameron Highlands", "Cameron Highlands", "Pahang", "alam", "Dataran tinggi sejuk dengan ladang teh dan kebun strawberi.", "Cameron Highlands"], ["Mount Kinabalu", "Gunung Kinabalu", "Sabah", "alam", "Gunung tertinggi di Malaysia, 4,095 meter, tapak Warisan Dunia UNESCO.", "Gunung Kinabalu"], ["Taman Negara", "Taman Negara", "Pahang", "alam", "Hutan hujan purba yang lebih tua daripada Amazon, dengan titian kanopi.", "Taman Negara"], ["Gunung Mulu National Park", "Gunung Mulu", "Sarawak", "alam", "Gua terbesar di dunia dan tebing batu kapur yang tajam.", "Taman Negara Gunung Mulu"], ["Fraser's Hill", "Bukit Fraser", "Pahang", "alam", "Bukit sejuk yang tenang, syurga pemerhati burung.", "Bukit Fraser"], ["Niah Caves", "Gua Niah", "Sarawak", "alam", "Gua purba tempat manusia tinggal puluhan ribu tahun lalu.", "Gua Niah"], ["Bako National Park", "Taman Negara Bako", "Sarawak", "alam", "Monyet belanda, pantai tersembunyi dan denai hutan yang pendek.", "Taman Negara Bako"], ["Royal Belum State Park", "Royal Belum", "Perak", "alam", "Hutan hujan berumur 130 juta tahun, rumah bunga Rafflesia.", "Royal Belum"], ["Sungai Lembing", "Sungai Lembing", "Pahang", "alam", "Bekas bandar lombong bijih timah yang sejuk dan berkabus pagi.", "Sungai Lembing"], ["Kenyir Lake", "Tasik Kenyir", "Terengganu", "alam", "Tasik buatan terbesar di Asia Tenggara dengan air terjun dan pulau-pulau.", "Tasik Kenyir"], ["Kinabatangan River", "Sungai Kinabatangan", "Sabah", "alam", "Pelayaran sungai melihat orang utan, gajah kerdil dan bekantan.", "Sungai Kinabatangan"], ["Sepilok Orangutan Rehabilitation Centre", "Pusat Orang Utan Sepilok", "Sabah", "alam", "Tempat orang utan yatim dipulihkan sebelum dilepaskan ke hutan.", "Pusat Pemulihan Orang Utan Sepilok"], ["Penang Hill", "Bukit Bendera", "Pulau Pinang", "alam", "Naik keretapi bukit ke puncak sejuk dengan pemandangan George Town.", "Bukit Bendera Pulau Pinang"], ["Bukit Larut", "Bukit Larut", "Perak", "alam", "Bukit teh pertama di Malaysia, boleh dinaiki Land Rover.", "Bukit Larut Taiping"], ["Kuala Selangor Nature Park", "Taman Alam Kuala Selangor", "Selangor", "alam", "Hutan bakau, monyet, dan kelip-kelip di Kampung Kuantan.", "Taman Alam Kuala Selangor"], ["Batu Caves", "Gua Batu", "Selangor", "warisan", "Gua batu kapur dengan 272 anak tangga berwarna-warni.", "Gua Batu"], ["George Town, Penang", "George Town", "Pulau Pinang", "warisan", "Bandar warisan dunia: seni mural, kopitiam dan rumah kedai lama.", "George Town Pulau Pinang"], ["Malacca City", "Bandar Melaka", "Melaka", "warisan", "Bandar sejarah di tepi sungai, dengan Jonker Street dan Stadthuys.", "Bandar Melaka"], ["A Famosa", "A Famosa", "Melaka", "warisan", "Gerbang kubu Portugis dari 1511 yang masih berdiri.", "A Famosa Melaka"], ["Kellie's Castle", "Istana Kellie", "Perak", "warisan", "Istana separuh siap yang berhantu di tengah ladang kelapa sawit.", "Kellie's Castle Batu Gajah"], ["Lenggong Valley", "Lembah Lenggong", "Perak", "warisan", "Tapak arkeologi tertua di Asia Tenggara, Warisan Dunia UNESCO.", "Lembah Lenggong"], ["Kek Lok Si", "Kek Lok Si", "Pulau Pinang", "warisan", "Kuil Buddha terbesar di Malaysia, bersinar waktu Tahun Baru Cina.", "Kek Lok Si"], ["Crystal Mosque", "Masjid Kristal", "Terengganu", "warisan", "Masjid berkaca dan keluli yang bercahaya waktu malam di Pulau Wan Man.", "Masjid Kristal Kuala Terengganu"], ["Putra Mosque", "Masjid Putra", "Putrajaya", "warisan", "Masjid merah jambu di tepi tasik, rekaan gabungan Parsi dan Melayu.", "Masjid Putra Putrajaya"], ["Sultan Abdul Samad Building", "Bangunan Sultan Abdul Samad", "Kuala Lumpur", "warisan", "Bangunan Moor dengan menara jam yang menjadi lambang Dataran Merdeka.", "Bangunan Sultan Abdul Samad"], ["Petronas Towers", "Menara Berkembar Petronas", "Kuala Lumpur", "bandar", "Dua menara 452 meter dengan titian langit yang indah waktu malam.", "Menara Berkembar Petronas"], ["Kuala Lumpur Tower", "Menara Kuala Lumpur", "Kuala Lumpur", "bandar", "Menara telekomunikasi dengan pemandangan 360 darjah seluruh bandar.", "Menara Kuala Lumpur"], ["Putrajaya", "Putrajaya", "Putrajaya", "bandar", "Bandar terancang dengan tasik, jambatan dan basikal di tepi air.", "Putrajaya"], ["Ipoh", "Ipoh", "Perak", "bandar", "Bandar kopi putih, dim sum dan gua-gua kuil yang tersembunyi.", "Ipoh"], ["Kuching", "Kuching", "Sarawak", "bandar", "Bandar kucing di tepi Sungai Sarawak, dengan pasar dan muzium yang menarik.", "Kuching"], ["Kota Kinabalu", "Kota Kinabalu", "Sabah", "bandar", "Bandar tepi laut dengan matahari terbenam yang cantik dan makanan laut segar.", "Kota Kinabalu"], ["Taiping, Perak", "Taiping", "Perak", "bandar", "Bandar paling hujan di Semenanjung, dengan Taman Tasik yang redup.", "Taman Tasik Taiping"], ["Kota Bharu", "Kota Bharu", "Kelantan", "bandar", "Pusat budaya Melayu, dengan Pasar Siti Khadijah dan makanan tradisi.", "Kota Bharu"], ["Genting Highlands", "Genting Highlands", "Pahang", "bandar", "Dataran tinggi hiburan dengan kabus sejuk dan kereta kabel Awana.", "Genting Highlands"], ["Sekinchan", "Sekinchan", "Selangor", "bandar", "Sawah padi terbentang luas, indah waktu menguning.", "Sekinchan"]];
 const PCAT=[['pantai','Pantai & pulau','🏝️'],['alam','Alam','🌿'],['bandar','Bandar','🏙️'],['warisan','Warisan','🕌']];
 const WK={}; let WKBUSY=0; const WKQ=[];
-try{Object.assign(WK,JSON.parse(localStorage.getItem('kk-wk')||'{}'));}catch(e){}
-function wkSave(){try{localStorage.setItem('kk-wk',JSON.stringify(WK));}catch(e){}}
+try{Object.assign(WK,JSON.parse(localStorage.getItem('kk-wk2')||'{}'));}catch(e){}
+function wkSave(){try{localStorage.setItem('kk-wk2',JSON.stringify(WK));}catch(e){}}
 function wish(){try{return JSON.parse(localStorage.getItem('kk-wish')||'[]');}catch(e){return [];}}
 function wishToggle(t){const w=wish(),i=w.indexOf(t);if(i>=0)w.splice(i,1);else w.push(t);try{localStorage.setItem('kk-wish',JSON.stringify(w));}catch(e){}}
 function plcList(){
@@ -1183,11 +1198,15 @@ function plcList(){
 }
 function plcImg(t,cls){
   const c=WK[t];
-  return '<span class="'+cls+'" data-wk="'+esc(t)+'">'+(c&&c.img?'<img src="'+esc(c.img)+'" alt="" loading="lazy" decoding="async" onerror="this.remove()">':'')+'</span>';
+  return '<span class="'+cls+'" data-wk="'+esc(t)+'">'+(c&&c.img?wkImg(c,true):'')+'</span>';
 }
 function plcCard(x){
   const pc=PCAT.find(c=>c[0]===x.c);
   return '<button type="button" class="pcd" data-act="plc" data-v="'+x.i+'" aria-label="'+esc(x.n)+', '+esc(x.st)+'">'+plcImg(x.t,'pcd-i')+'<span class="pcd-t"><b>'+esc(x.n)+'</b><span>'+esc(x.st)+'</span></span><span class="pcd-c" aria-hidden="true">'+pc[2]+'</span></button>';
+}
+function teaserHtml(){
+  const fi=(dayOfYear()*7+S.discN)%PLC.length, f=PLC[fi];
+  return '<button type="button" class="jt" data-act="tab" data-v="jelajah">'+plcImg(f[0],'jt-i')+'<span class="jt-t"><span class="pk">Jom ke mana? · cadangan hari ini</span><b>'+esc(f[1])+'</b><span>'+esc(f[2])+' · lihat 41 tempat menarik</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
 }
 function cadanganHtml(){
   const doy=dayOfYear(), fi=(doy*7+S.discN)%PLC.length, f=PLC[fi];
@@ -1195,10 +1214,12 @@ function cadanganHtml(){
   let h=sec('Jom ke mana?','<button type="button" class="shuf-l" data-act="disc-shuf">🎲 Lain</button>');
   h+='<button type="button" class="pfeat" data-act="plc" data-v="'+fi+'" aria-label="Cadangan: '+esc(f[1])+'">'+plcImg(f[0],'pfeat-i')+'<span class="pfeat-t"><span class="pk">'+(S.discN?'Cadangan pilihan':'Cadangan hari ini')+' · '+esc(f[2])+'</span><b>'+esc(f[1])+'</b><span>'+esc(f[4])+'</span></span></button>';
   h+='<div class="chips" role="group" aria-label="Jenis tempat"><button type="button" class="chip" data-act="pcat" data-v="semua" aria-pressed="'+(S.pcat==='semua')+'">Semua</button>'+PCAT.map(c=>'<button type="button" class="chip" data-act="pcat" data-v="'+c[0]+'" aria-pressed="'+(S.pcat===c[0])+'"><span aria-hidden="true">'+c[2]+'</span>'+esc(c[1])+'</button>').join('')+'<button type="button" class="chip" data-act="pcat" data-v="impian" aria-pressed="'+(S.pcat==='impian')+'">♡ Impian'+(w.length?' · '+w.length:'')+'</button></div>';
-  h+=l.length?'<div class="pcs">'+l.map(plcCard).join('')+'</div>':'<p class="note">Belum ada tempat dalam senarai impian. Buka mana-mana tempat dan tekan ♡.</p>';
+  h+=l.length?'<div class="pcs full">'+l.map(plcCard).join('')+'</div>':'<p class="note">Belum ada tempat dalam senarai impian. Buka mana-mana tempat dan tekan ♡.</p>';
   return h+'<p class="hint" style="margin-top:6px">Gambar daripada Wikipedia / Wikimedia Commons.</p>';
 }
-function wkSet(el,t){const c=WK[t];if(c&&c.img&&!el.querySelector('img'))el.innerHTML='<img src="'+esc(c.img)+'" alt="" decoding="async" onerror="this.remove()">';}
+const WKERR="if(this.dataset.fb&&this.src!==this.dataset.fb){this.src=this.dataset.fb}else{this.remove()}";
+function wkImg(c,lazy){return '<img src="'+esc(c.img)+'" data-fb="'+esc(c.fb||'')+'" alt="" referrerpolicy="no-referrer" '+(lazy?'loading="lazy" ':'')+'decoding="async" onerror="'+WKERR+'">';}
+function wkSet(el,t){const c=WK[t];if(c&&c.img&&!el.querySelector('img'))el.innerHTML=wkImg(c,false);}
 function wkFill(){
   document.querySelectorAll('[data-wk]').forEach(el=>{
     const t=el.dataset.wk; if(el.querySelector('img'))return;
@@ -1212,10 +1233,10 @@ function wkFill(){
 function wkPump(){
   while(WKBUSY<4&&WKQ.length){
     const t=WKQ.shift(); WKBUSY++;
-    fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t.replace(/ /g,'_')),{headers:{accept:'application/json'}})
+    fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t.replace(/ /g,'_')))
       .then(r=>r.ok?r.json():Promise.reject()).then(j=>{
         const th=(j&&j.thumbnail&&j.thumbnail.source)||'';
-        WK[t]={img:th?th.replace(/\/\d+px-/,'/640px-'):'',at:Date.now()};
+        WK[t]={img:th?th.replace(/\/\d+px-/,'/500px-'):'',fb:th,at:Date.now()};
       }).catch(()=>{WK[t]={img:'',at:Date.now()};})
       .then(()=>{WKBUSY--;wkSave();document.querySelectorAll('[data-wk]').forEach(el=>{if(el.dataset.wk===t)wkSet(el,t);});wkPump();});
   }
@@ -1467,9 +1488,8 @@ function utamaHtml(m){
   if(!DEMO)h+=throwHtml();
   h+=memoryHtml();
   if(!DEMO&&S.albumsOk)h+=acaraHtml();
-  h+=cadanganHtml();
+  h+=teaserHtml();
   h+=sec('Album')+albumsHtml();
-  h+=sec('Peta memori','<button type="button" class="lnk" data-act="tab" data-v="peta">Buka peta</button>')+mapCard();
   const side=h; h='';
   let list=P.filter(p=>!S.place||pk(p.place)===S.place);
   if(S.onlyNew)list=list.filter(isNew);
@@ -1576,7 +1596,7 @@ async function render(){
   let h;
   if(S.noDb)h=noticeHtml();
   else if(!S.ready)h=loadingHtml();
-  else h=S.tab==='galeri'?galeriHtml():S.tab==='peta'?petaHtml():utamaHtml(m);
+  else h=S.tab==='galeri'?galeriHtml():S.tab==='peta'?petaHtml():S.tab==='jelajah'?cadanganHtml():utamaHtml(m);
   if(S.err&&!S.noDb)h='<p class="note">Sebahagian data tidak dapat dimuat ('+esc(S.err)+'). Muat semula halaman untuk cuba lagi.</p>'+h;
   view.innerHTML=h;
   S.popKey='';
