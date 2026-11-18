@@ -1402,7 +1402,7 @@ function petaHtml(){
   h+=sec('Semua tempat');
   if(!pl.length)h+='<div class="empty"><h2>Belum ada tempat disimpan</h2><p>Isi ruangan Tempat bila menambah kenangan.</p></div>';
   else h+='<ul class="places">'+pl.map(x=>'<li class="place"><button type="button" class="place-main" data-act="place" data-v="'+esc(x.key)+'">'+
-    (x.thumb?'<img class="bkt"'+isrc(x.thumb)+' alt="" loading="lazy">':'<span class="bkt">'+icon('pin')+'</span>')+
+    (x.thumb?'<img class="pt"'+isrc(x.thumb)+' alt="" loading="lazy">':'<span class="pt">'+icon('pin')+'</span>')+
     '<span class="pi"><strong>'+esc(x.name)+'</strong><span>'+x.count+' kenangan'+(x.last?' · '+esc(fmtMonth(x.last)):'')+'</span></span></button>'+
     (DEMO?'':'<a class="map" href="'+esc(mapUrl(x.name))+'" target="_blank" rel="noopener">Peta</a>')+'</li>').join('')+'</ul>';
   if(md.off.length&&!DEMO){
