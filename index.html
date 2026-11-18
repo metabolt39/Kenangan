@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#FAF5EA">
+<meta name="theme-color" content="#FAF5EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131A29" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kenangan Ahmad">
@@ -93,7 +94,7 @@ window.__setUse=r;})();
 @media (prefers-color-scheme: dark){:root[data-skin="senja"]:not([data-theme="light"]){--accent:#B79CE6;--teal:#B79CE6;--teal-soft:#33284A;--accent-soft:#33284A;--accent-ink:#1E1236;}}
 :root[data-skin="senja"][data-theme="dark"]{--accent:#B79CE6;--teal:#B79CE6;--teal-soft:#33284A;--accent-soft:#33284A;--accent-ink:#1E1236;}
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
 :root[data-big="1"] body{zoom:1.2}
 :root[data-big="2"] body{zoom:1.4}
 body{
@@ -493,6 +494,10 @@ button{cursor:pointer}
 @media (min-width:768px){.mem{aspect-ratio:16/9;max-height:440px}}
 @media (min-width:1100px){.uside .mem{aspect-ratio:4/5;max-height:520px}}
 @media (max-width:430px){.brand{font-size:16px;letter-spacing:0}.logo{width:30px;height:30px}.icon-btn.rnd,.me{width:38px;height:38px}.me .av{width:34px;height:34px}}
+
+/* bar: avatar tepat di tengah, cincin tanpa offset */
+.me .av{margin:0;width:34px;height:34px;box-shadow:none;outline:2px solid var(--ring,var(--gold));outline-offset:1px}
+.me{border-radius:50%}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2078,5 +2083,7 @@ init();
 </script>
 <script type="module" src="app.js"></script>
 <script>if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});</script>
+<script>(function(){try{var m=matchMedia('(prefers-color-scheme: dark)');function u(){var bg=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();if(!bg)return;document.querySelectorAll('meta[name=theme-color]').forEach(function(e){e.setAttribute('content',bg);e.removeAttribute('media')})}
+window.addEventListener('load',u);m.addEventListener&&m.addEventListener('change',u);new MutationObserver(u).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','data-skin']})}catch(e){}})()</script>
 </body>
 </html>
