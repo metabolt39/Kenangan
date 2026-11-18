@@ -316,6 +316,7 @@ button{cursor:pointer}
 .tag{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:3px 12px 3px 8px;border-radius:99px;background:var(--teal-soft);color:var(--accent)}
 .acts{display:flex;flex-wrap:wrap;gap:2px;padding:4px 8px 8px}
 .act{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:0;border-radius:12px;background:none;color:var(--ink-2);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+@media(max-width:440px){.acts{gap:0;padding:4px 4px 8px}.act{padding:0 9px;gap:5px}}
 .act:hover{background:var(--surface-2)}
 .act.liked{color:var(--heart)}
 .act.liked .i{fill:var(--heart);stroke:var(--heart)}
@@ -332,7 +333,7 @@ button{cursor:pointer}
 .cm-b p{margin:0;overflow-wrap:anywhere;white-space:pre-wrap;font:400 15px/1.55 var(--font-serif)}
 .cm-x{flex:none;width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:10px;background:none;color:var(--ink-2);opacity:.75}
 .cm-q{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--ink-2)}
-.rxs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.rxs{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:2px 16px 16px}
 .rx{display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:0 11px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
 .rx[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
 .rx.more{color:var(--ink-2)}
