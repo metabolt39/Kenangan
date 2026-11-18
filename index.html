@@ -547,6 +547,10 @@ button{cursor:pointer}
   #pbook .bkt{font-size:15px;line-height:1.6;white-space:pre-wrap}
   #pbook .bka{font:12px Arial,sans-serif;color:#888;margin-top:3mm}
 }
+.act .myr{font-size:20px;line-height:1;display:inline-block}
+.act.liked:has(.myr){color:var(--ink)}
+.who{list-style:none;margin:0;padding:0 16px 16px;display:flex;flex-wrap:wrap;gap:6px}
+.who li{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;background:var(--surface-2);font-size:14px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -773,7 +777,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,bd:[],nt:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,bd:[],nt:false,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -1281,12 +1285,15 @@ function rxHtml(p){
   const list=open?RX:RX.filter(e=>cnt[e]);
   if(!list.length&&ro)return '';
   return '<div class="rxs" role="group" aria-label="Reaksi">'+list.map(e=>'<button type="button" class="rx" data-act="rx" data-id="'+esc(p.id)+'" data-v="'+e+'" aria-pressed="'+(!!mine&&mine.r===e)+'"'+(ro?' disabled':'')+'><span aria-hidden="true">'+e+'</span>'+(cnt[e]?'<b>'+cnt[e]+'</b>':'')+'</button>').join('')+
-    (ro?'':'<button type="button" class="rx more" data-act="rx-more" data-id="'+esc(p.id)+'" aria-expanded="'+open+'" aria-label="Reaksi lain">'+(open?'Tutup':'☺ Reaksi')+'</button>')+'</div>';
+    (ls.length?'<button type="button" class="rx more" data-act="rx-who" data-id="'+esc(p.id)+'" aria-expanded="'+(S.whoOpen===p.id)+'">👥 Siapa</button>':'')+
+    (ro?'':'<button type="button" class="rx more" data-act="rx-more" data-id="'+esc(p.id)+'" aria-expanded="'+open+'" aria-label="Reaksi lain">'+(open?'Tutup':'☺ Reaksi')+'</button>')+'</div>'+
+    (S.whoOpen===p.id&&ls.length?'<ul class="who">'+ls.slice().sort((a,b)=>(a.uid===S.myId?-1:b.uid===S.myId?1:0)).map(l=>'<li><span aria-hidden="true">'+l.r+'</span>'+esc(l.uid===S.myId?'Anda':nameOf(l.uid))+'</li>').join('')+'</ul>':'');
 }
 function postHtml(p,m){
   const demo=!!p.demo;
   const likeSet=demo?new Set():(m.likeMap.get(p.id)||new Set());
   const liked=!demo&&!!S.myId&&likeSet.has(S.myId);
+  const myL=liked?S.likes.find(l=>l.id===p.id+'_'+S.myId):null, myR=myL?myL.r:'';
   const cms=demo?[]:(m.cmap.get(p.id)||[]);
   const open=!demo&&S.open.has(p.id);
   const canDel=!demo&&((!!S.myId&&p.authorId===S.myId)||S.canEdit);
@@ -1308,7 +1315,7 @@ function postHtml(p,m){
     photosHtml(p)+
     '<div class="body">'+(p.text?'<p class="story'+(p.text.length>420&&!S.more.has(p.id)?' clamp':'')+'">'+esc(p.text)+'</p>'+(p.text.length>420?'<button type="button" class="lnk" data-act="more" data-id="'+esc(p.id)+'" style="align-self:flex-start">'+(S.more.has(p.id)?'Tutup':'Baca lagi')+'</button>':''):'')+(tagNames(p).length?'<p class="with"><span aria-hidden="true">👥</span> Bersama: '+esc(tagNames(p).join(', '))+'</p>':'')+stamp+'<div class="tags"><span class="tag">'+(p.emoji?'<span aria-hidden="true">'+p.emoji+'</span>':'')+esc(CAT[p.cat][1])+'</span>'+(albumById(p.album)?'<button type="button" class="tag evt" data-act="album" data-v="'+esc(p.album)+'"><span aria-hidden="true">'+albumById(p.album).emoji+'</span>'+esc(albumById(p.album).name)+'</button>':'')+'</div></div>'+
     '<div class="acts">'+
-      '<button type="button" class="act'+(liked?' liked':'')+(S.popKey===p.id&&liked?' likepop':'')+'" '+(demo?dm:'data-act="like" data-id="'+esc(p.id)+'" aria-pressed="'+liked+'"')+'>'+icon('heart')+'<span>Suka'+(nL?' · '+nL:'')+'</span></button>'+
+      '<button type="button" class="act'+(liked?' liked':'')+(S.popKey===p.id&&liked?' likepop':'')+'" '+(demo?dm:'data-act="like" data-id="'+esc(p.id)+'" aria-pressed="'+liked+'"')+'>'+(liked&&myR&&myR!=='❤️'?'<span class="myr" aria-hidden="true">'+myR+'</span>':icon('heart'))+'<span>Suka'+(nL?' · '+nL:'')+'</span></button>'+
       '<button type="button" class="act" '+(demo?dm:'data-act="cm" data-id="'+esc(p.id)+'" aria-expanded="'+open+'"')+'>'+icon('chat')+'<span>Komen'+(cms.length?' · '+cms.length:'')+'</span></button>'+
       (demo?'':'<button type="button" class="act" data-act="share" data-id="'+esc(p.id)+'">'+icon('share')+'<span>Kongsi</span></button>')+
       (demo||S.myId?'<button type="button" class="act" '+(demo?dm:'data-act="note" data-id="'+esc(p.id)+'"')+'>'+icon('note')+'<span>Nota</span></button>':'')+
@@ -2081,6 +2088,7 @@ document.addEventListener('click',e=>{
   else if(a==='pin'){S.pin=(S.pin===v&&S.tab==='peta')?'':v;if(S.tab!=='peta')go('peta');else render();}
   else if(a==='like')toggleLike(id);
   else if(a==='rx')setReaction(id,v);
+  else if(a==='rx-who'){S.whoOpen=S.whoOpen===id?'':id;render();}
   else if(a==='rx-more'){S.rxOpen=S.rxOpen===id?'':id;render();}
   else if(a==='cm'){if(S.open.has(id))S.open.delete(id);else S.open.add(id);render();}
   else if(a==='note'){if(S.noteOpen.has(id)){S.noteOpen.delete(id);delete S.drafts['n'+id];}else S.noteOpen.add(id);render();}
