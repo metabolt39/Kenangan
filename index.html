@@ -586,6 +586,31 @@ button{cursor:pointer}
 :root[data-skin="senja"] .sec h2{font-style:italic;font-weight:600}
 :root[data-skin="senja"] .btn,:root[data-skin="senja"] .fab{background:linear-gradient(135deg,var(--coral),var(--accent));color:#fff;border-radius:99px}
 :root[data-skin="senja"] .tabs{border-radius:28px 28px 0 0;background:color-mix(in srgb,var(--surface) 78%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top-color:color-mix(in srgb,#fff 30%,var(--line))}
+
+/* cadangan tempat */
+.shuf-l{border:0;background:none;color:var(--accent);font-weight:700;font-size:14px;padding:4px 2px}
+.pfeat{position:relative;display:block;width:100%;aspect-ratio:16/10;padding:0;border:0;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,var(--teal),var(--gold));box-shadow:var(--shadow);text-align:left;color:#fff}
+.pfeat-i,.pcd-i{position:absolute;inset:0;display:block}
+.pfeat-i img,.pcd-i img,.plc-i img{width:100%;height:100%;object-fit:cover;display:block}
+.pfeat-t{position:absolute;left:0;right:0;bottom:0;padding:40px 16px 14px;display:flex;flex-direction:column;gap:3px;background:linear-gradient(transparent,rgba(0,0,0,.78))}
+.pfeat-t .pk{font:700 11px var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:#FFE3A0}
+.pfeat-t b{font:700 24px/1.15 var(--font-display)}
+.pfeat-t span:last-child{font-size:14px;line-height:1.4;opacity:.92}
+.pcs{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.pcd{flex:none;position:relative;width:138px;aspect-ratio:3/4;padding:0;border:0;border-radius:18px;overflow:hidden;background:linear-gradient(160deg,var(--teal-soft),var(--surface-2));scroll-snap-align:start;color:#fff;text-align:left;box-shadow:0 2px 10px rgb(0 0 0/.12)}
+.pcd-t{position:absolute;left:0;right:0;bottom:0;padding:26px 10px 9px;display:flex;flex-direction:column;background:linear-gradient(transparent,rgba(0,0,0,.75))}
+.pcd-t b{font:700 14px/1.2 var(--font-display)}
+.pcd-t span{font-size:12px;opacity:.9}
+.pcd-c{position:absolute;top:8px;left:8px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.88);font-size:15px}
+.plcs{position:relative;padding:0 0 calc(20px + env(safe-area-inset-bottom,0px));overflow-y:auto}
+.plc-i{position:relative;display:block;aspect-ratio:16/10;background:linear-gradient(135deg,var(--teal),var(--gold))}
+.plc-x{position:absolute;top:10px;right:10px;z-index:2;background:rgba(0,0,0,.45);color:#fff;border:0}
+.plc-t{padding:16px 18px 4px}
+.plc-t h2{margin:0;font:700 26px/1.15 var(--font-display)}
+.plc-m{margin:4px 0 10px;color:var(--ink-2);font-size:14px}
+.plc-p{margin:0;font-size:16px;line-height:1.55}
+.plc-a{display:flex;flex-wrap:wrap;gap:8px;padding:14px 18px 0}
+.plc-a a.btn{display:inline-flex;align-items:center;text-decoration:none}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -637,6 +662,12 @@ button{cursor:pointer}
 </nav>
 
 <div id="pbook" aria-hidden="true"></div>
+<div class="scrim" id="plc" hidden>
+  <section class="sheet plcs" role="dialog" aria-modal="true" aria-labelledby="plc-t">
+    <button type="button" class="icon-btn plc-x" data-act="plc-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button>
+    <div id="plc-b"></div>
+  </section>
+</div>
 <div class="scrim" id="set" hidden>
   <section class="sheet setp" role="dialog" aria-modal="true" aria-labelledby="set-t">
     <div class="sheet-h"><h2 id="set-t">Tetapan</h2><button type="button" class="icon-btn" data-act="set-close" aria-label="Tutup tetapan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
@@ -812,7 +843,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,bd:[],nt:false,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,bd:[],nt:false,pcat:'semua',discN:0,plc:-1,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -1139,6 +1170,66 @@ function popHtml(md){
 /* ---------- komponen ---------- */
 function dayOfYear(){const n=new Date();return Math.floor((n-new Date(n.getFullYear(),0,0))/864e5);}
 
+const PLC=[["Langkawi", "Langkawi", "Kedah", "pantai", "Gugusan 99 pulau dengan pantai berpasir putih, kereta kabel SkyCab dan jambatan gantung di Gunung Mat Cincang.", "Langkawi"], ["Perhentian Islands", "Pulau Perhentian", "Terengganu", "pantai", "Air jernih berwarna kaca, sesuai untuk snorkeling dan melihat penyu.", "Pulau Perhentian"], ["Redang Island", "Pulau Redang", "Terengganu", "pantai", "Taman laut yang kaya dengan terumbu karang dan ikan berwarna-warni.", "Pulau Redang"], ["Tioman Island", "Pulau Tioman", "Pahang", "pantai", "Pulau berbukit hijau dengan pantai tenang dan air terjun di tengahnya.", "Pulau Tioman"], ["Sipadan", "Pulau Sipadan", "Sabah", "pantai", "Antara tapak selam terbaik dunia, dengan dinding karang dan kawanan penyu.", "Pulau Sipadan"], ["Pangkor Island", "Pulau Pangkor", "Perak", "pantai", "Pulau santai dengan pantai Teluk Nipah dan ikan bilis yang terkenal.", "Pulau Pangkor"], ["Port Dickson", "Port Dickson", "Negeri Sembilan", "pantai", "Pantai pilihan keluarga hujung minggu, dekat dengan Lembah Klang.", "Port Dickson"], ["Cherating", "Cherating", "Pahang", "pantai", "Kampung pantai yang santai, terkenal dengan ombak dan penyu.", "Cherating"], ["Pulau Ketam", "Pulau Ketam", "Selangor", "pantai", "Kampung nelayan di atas air yang boleh dilawati sehari dari Klang.", "Pulau Ketam"], ["Cameron Highlands", "Cameron Highlands", "Pahang", "alam", "Dataran tinggi sejuk dengan ladang teh dan kebun strawberi.", "Cameron Highlands"], ["Mount Kinabalu", "Gunung Kinabalu", "Sabah", "alam", "Gunung tertinggi di Malaysia, 4,095 meter, tapak Warisan Dunia UNESCO.", "Gunung Kinabalu"], ["Taman Negara", "Taman Negara", "Pahang", "alam", "Hutan hujan purba yang lebih tua daripada Amazon, dengan titian kanopi.", "Taman Negara"], ["Gunung Mulu National Park", "Gunung Mulu", "Sarawak", "alam", "Gua terbesar di dunia dan tebing batu kapur yang tajam.", "Taman Negara Gunung Mulu"], ["Fraser's Hill", "Bukit Fraser", "Pahang", "alam", "Bukit sejuk yang tenang, syurga pemerhati burung.", "Bukit Fraser"], ["Niah Caves", "Gua Niah", "Sarawak", "alam", "Gua purba tempat manusia tinggal puluhan ribu tahun lalu.", "Gua Niah"], ["Bako National Park", "Taman Negara Bako", "Sarawak", "alam", "Monyet belanda, pantai tersembunyi dan denai hutan yang pendek.", "Taman Negara Bako"], ["Royal Belum State Park", "Royal Belum", "Perak", "alam", "Hutan hujan berumur 130 juta tahun, rumah bunga Rafflesia.", "Royal Belum"], ["Sungai Lembing", "Sungai Lembing", "Pahang", "alam", "Bekas bandar lombong bijih timah yang sejuk dan berkabus pagi.", "Sungai Lembing"], ["Kenyir Lake", "Tasik Kenyir", "Terengganu", "alam", "Tasik buatan terbesar di Asia Tenggara dengan air terjun dan pulau-pulau.", "Tasik Kenyir"], ["Kinabatangan River", "Sungai Kinabatangan", "Sabah", "alam", "Pelayaran sungai melihat orang utan, gajah kerdil dan bekantan.", "Sungai Kinabatangan"], ["Sepilok Orangutan Rehabilitation Centre", "Pusat Orang Utan Sepilok", "Sabah", "alam", "Tempat orang utan yatim dipulihkan sebelum dilepaskan ke hutan.", "Pusat Pemulihan Orang Utan Sepilok"], ["Penang Hill", "Bukit Bendera", "Pulau Pinang", "alam", "Naik keretapi bukit ke puncak sejuk dengan pemandangan George Town.", "Bukit Bendera Pulau Pinang"], ["Bukit Larut", "Bukit Larut", "Perak", "alam", "Bukit teh pertama di Malaysia, boleh dinaiki Land Rover.", "Bukit Larut Taiping"], ["Kuala Selangor Nature Park", "Taman Alam Kuala Selangor", "Selangor", "alam", "Hutan bakau, monyet, dan kelip-kelip di Kampung Kuantan.", "Taman Alam Kuala Selangor"], ["Batu Caves", "Gua Batu", "Selangor", "warisan", "Gua batu kapur dengan 272 anak tangga berwarna-warni.", "Gua Batu"], ["George Town, Penang", "George Town", "Pulau Pinang", "warisan", "Bandar warisan dunia: seni mural, kopitiam dan rumah kedai lama.", "George Town Pulau Pinang"], ["Malacca City", "Bandar Melaka", "Melaka", "warisan", "Bandar sejarah di tepi sungai, dengan Jonker Street dan Stadthuys.", "Bandar Melaka"], ["A Famosa", "A Famosa", "Melaka", "warisan", "Gerbang kubu Portugis dari 1511 yang masih berdiri.", "A Famosa Melaka"], ["Kellie's Castle", "Istana Kellie", "Perak", "warisan", "Istana separuh siap yang berhantu di tengah ladang kelapa sawit.", "Kellie's Castle Batu Gajah"], ["Lenggong Valley", "Lembah Lenggong", "Perak", "warisan", "Tapak arkeologi tertua di Asia Tenggara, Warisan Dunia UNESCO.", "Lembah Lenggong"], ["Kek Lok Si", "Kek Lok Si", "Pulau Pinang", "warisan", "Kuil Buddha terbesar di Malaysia, bersinar waktu Tahun Baru Cina.", "Kek Lok Si"], ["Crystal Mosque", "Masjid Kristal", "Terengganu", "warisan", "Masjid berkaca dan keluli yang bercahaya waktu malam di Pulau Wan Man.", "Masjid Kristal Kuala Terengganu"], ["Putra Mosque", "Masjid Putra", "Putrajaya", "warisan", "Masjid merah jambu di tepi tasik, rekaan gabungan Parsi dan Melayu.", "Masjid Putra Putrajaya"], ["Sultan Abdul Samad Building", "Bangunan Sultan Abdul Samad", "Kuala Lumpur", "warisan", "Bangunan Moor dengan menara jam yang menjadi lambang Dataran Merdeka.", "Bangunan Sultan Abdul Samad"], ["Petronas Towers", "Menara Berkembar Petronas", "Kuala Lumpur", "bandar", "Dua menara 452 meter dengan titian langit yang indah waktu malam.", "Menara Berkembar Petronas"], ["Kuala Lumpur Tower", "Menara Kuala Lumpur", "Kuala Lumpur", "bandar", "Menara telekomunikasi dengan pemandangan 360 darjah seluruh bandar.", "Menara Kuala Lumpur"], ["Putrajaya", "Putrajaya", "Putrajaya", "bandar", "Bandar terancang dengan tasik, jambatan dan basikal di tepi air.", "Putrajaya"], ["Ipoh", "Ipoh", "Perak", "bandar", "Bandar kopi putih, dim sum dan gua-gua kuil yang tersembunyi.", "Ipoh"], ["Kuching", "Kuching", "Sarawak", "bandar", "Bandar kucing di tepi Sungai Sarawak, dengan pasar dan muzium yang menarik.", "Kuching"], ["Kota Kinabalu", "Kota Kinabalu", "Sabah", "bandar", "Bandar tepi laut dengan matahari terbenam yang cantik dan makanan laut segar.", "Kota Kinabalu"], ["Taiping, Perak", "Taiping", "Perak", "bandar", "Bandar paling hujan di Semenanjung, dengan Taman Tasik yang redup.", "Taman Tasik Taiping"], ["Kota Bharu", "Kota Bharu", "Kelantan", "bandar", "Pusat budaya Melayu, dengan Pasar Siti Khadijah dan makanan tradisi.", "Kota Bharu"], ["Genting Highlands", "Genting Highlands", "Pahang", "bandar", "Dataran tinggi hiburan dengan kabus sejuk dan kereta kabel Awana.", "Genting Highlands"], ["Sekinchan", "Sekinchan", "Selangor", "bandar", "Sawah padi terbentang luas, indah waktu menguning.", "Sekinchan"]];
+const PCAT=[['pantai','Pantai & pulau','🏝️'],['alam','Alam','🌿'],['bandar','Bandar','🏙️'],['warisan','Warisan','🕌']];
+const WK={}; let WKBUSY=0; const WKQ=[];
+try{Object.assign(WK,JSON.parse(localStorage.getItem('kk-wk')||'{}'));}catch(e){}
+function wkSave(){try{localStorage.setItem('kk-wk',JSON.stringify(WK));}catch(e){}}
+function wish(){try{return JSON.parse(localStorage.getItem('kk-wish')||'[]');}catch(e){return [];}}
+function wishToggle(t){const w=wish(),i=w.indexOf(t);if(i>=0)w.splice(i,1);else w.push(t);try{localStorage.setItem('kk-wish',JSON.stringify(w));}catch(e){}}
+function plcList(){
+  const w=wish();
+  return PLC.map((x,i)=>({i:i,t:x[0],n:x[1],st:x[2],c:x[3],b:x[4],q:x[5]})).filter(x=>S.pcat==='semua'||(S.pcat==='impian'?w.indexOf(x.t)>=0:x.c===S.pcat));
+}
+function plcImg(t,cls){
+  const c=WK[t];
+  return '<span class="'+cls+'" data-wk="'+esc(t)+'">'+(c&&c.img?'<img src="'+esc(c.img)+'" alt="" loading="lazy" decoding="async" onerror="this.remove()">':'')+'</span>';
+}
+function plcCard(x){
+  const pc=PCAT.find(c=>c[0]===x.c);
+  return '<button type="button" class="pcd" data-act="plc" data-v="'+x.i+'" aria-label="'+esc(x.n)+', '+esc(x.st)+'">'+plcImg(x.t,'pcd-i')+'<span class="pcd-t"><b>'+esc(x.n)+'</b><span>'+esc(x.st)+'</span></span><span class="pcd-c" aria-hidden="true">'+pc[2]+'</span></button>';
+}
+function cadanganHtml(){
+  const doy=dayOfYear(), fi=(doy*7+S.discN)%PLC.length, f=PLC[fi];
+  const l=plcList(), w=wish();
+  let h=sec('Jom ke mana?','<button type="button" class="shuf-l" data-act="disc-shuf">🎲 Lain</button>');
+  h+='<button type="button" class="pfeat" data-act="plc" data-v="'+fi+'" aria-label="Cadangan: '+esc(f[1])+'">'+plcImg(f[0],'pfeat-i')+'<span class="pfeat-t"><span class="pk">'+(S.discN?'Cadangan pilihan':'Cadangan hari ini')+' · '+esc(f[2])+'</span><b>'+esc(f[1])+'</b><span>'+esc(f[4])+'</span></span></button>';
+  h+='<div class="chips" role="group" aria-label="Jenis tempat"><button type="button" class="chip" data-act="pcat" data-v="semua" aria-pressed="'+(S.pcat==='semua')+'">Semua</button>'+PCAT.map(c=>'<button type="button" class="chip" data-act="pcat" data-v="'+c[0]+'" aria-pressed="'+(S.pcat===c[0])+'"><span aria-hidden="true">'+c[2]+'</span>'+esc(c[1])+'</button>').join('')+'<button type="button" class="chip" data-act="pcat" data-v="impian" aria-pressed="'+(S.pcat==='impian')+'">♡ Impian'+(w.length?' · '+w.length:'')+'</button></div>';
+  h+=l.length?'<div class="pcs">'+l.map(plcCard).join('')+'</div>':'<p class="note">Belum ada tempat dalam senarai impian. Buka mana-mana tempat dan tekan ♡.</p>';
+  return h+'<p class="hint" style="margin-top:6px">Gambar daripada Wikipedia / Wikimedia Commons.</p>';
+}
+function wkSet(el,t){const c=WK[t];if(c&&c.img&&!el.querySelector('img'))el.innerHTML='<img src="'+esc(c.img)+'" alt="" decoding="async" onerror="this.remove()">';}
+function wkFill(){
+  document.querySelectorAll('[data-wk]').forEach(el=>{
+    const t=el.dataset.wk; if(el.querySelector('img'))return;
+    const c=WK[t];
+    if(c&&c.img){wkSet(el,t);return;}
+    if(c&&Date.now()-c.at<864e5)return;
+    if(WKQ.indexOf(t)<0)WKQ.push(t);
+  });
+  wkPump();
+}
+function wkPump(){
+  while(WKBUSY<4&&WKQ.length){
+    const t=WKQ.shift(); WKBUSY++;
+    fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t.replace(/ /g,'_')),{headers:{accept:'application/json'}})
+      .then(r=>r.ok?r.json():Promise.reject()).then(j=>{
+        const th=(j&&j.thumbnail&&j.thumbnail.source)||'';
+        WK[t]={img:th?th.replace(/\/\d+px-/,'/640px-'):'',at:Date.now()};
+      }).catch(()=>{WK[t]={img:'',at:Date.now()};})
+      .then(()=>{WKBUSY--;wkSave();document.querySelectorAll('[data-wk]').forEach(el=>{if(el.dataset.wk===t)wkSet(el,t);});wkPump();});
+  }
+}
+function openPlc(i){
+  const x=PLC[i]; if(!x)return; S.plc=i;
+  const w=wish().indexOf(x[0])>=0, pc=PCAT.find(c=>c[0]===x[3]);
+  $('plc-b').innerHTML=plcImg(x[0],'plc-i')+'<div class="plc-t"><h2 id="plc-t">'+esc(x[1])+'</h2><p class="plc-m">'+pc[2]+' '+esc(pc[1])+' · '+esc(x[2])+'</p><p class="plc-p">'+esc(x[4])+'</p></div>'+
+    '<div class="plc-a"><a class="btn sm" href="'+esc(mapUrl(x[5]+', Malaysia'))+'" target="_blank" rel="noopener">📍 Buka peta</a><a class="btn sm ghost" href="https://en.wikipedia.org/wiki/'+encodeURIComponent(x[0].replace(/ /g,'_'))+'" target="_blank" rel="noopener">Baca lanjut</a>'+
+    '<button type="button" class="btn sm ghost" data-act="plc-wish" aria-pressed="'+w+'">'+(w?'♥ Dalam impian':'♡ Impian')+'</button>'+
+    (S.canWrite===false?'':'<button type="button" class="btn sm" data-act="plc-been">✓ Saya pernah ke sini</button>')+'</div>';
+  $('plc').hidden=false; document.body.style.overflow='hidden'; wkFill();
+}
+function closePlc(){$('plc').hidden=true;if($('lb').hidden&&$('sheet').hidden&&$('set').hidden)document.body.style.overflow='';}
 /* ---------- hari lahir ---------- */
 function normBd(id,d){return {id:id,name:str(d.name).trim().slice(0,40),date:validDate(d.date)?d.date:'',by:str(d.by)};}
 function bdInfo(b){
@@ -1376,6 +1467,7 @@ function utamaHtml(m){
   if(!DEMO)h+=throwHtml();
   h+=memoryHtml();
   if(!DEMO&&S.albumsOk)h+=acaraHtml();
+  h+=cadanganHtml();
   h+=sec('Album')+albumsHtml();
   h+=sec('Peta memori','<button type="button" class="lnk" data-act="tab" data-v="peta">Buka peta</button>')+mapCard();
   const side=h; h='';
@@ -1489,6 +1581,7 @@ async function render(){
   view.innerHTML=h;
   S.popKey='';
   if(fid){const el=$(fid);if(el){el.focus({preventScroll:true});if(ss!=null){try{el.setSelectionRange(ss,se);}catch(e){}}}}
+  wkFill();
   geoLookup();
   $('dl-places').innerHTML=placesList().map(p=>'<option value="'+esc(p.name)+'"></option>').join('');
 }
@@ -2054,6 +2147,7 @@ window.addEventListener('scroll',()=>{$('bar').classList.toggle('sc',window.scro
 document.addEventListener('click',e=>{
   if(e.target===$('sheet')){closeSheet();return;}
   if(e.target===$('set')){closeSet();return;}
+  if(e.target===$('plc')){closePlc();return;}
   const t=e.target.closest('[data-act]'); if(!t)return;
   const a=t.dataset.act, id=t.dataset.id, v=t.dataset.v;
   if(a==='settings')openSet();
@@ -2064,6 +2158,12 @@ document.addEventListener('click',e=>{
   else if(a==='invite')inviteMember();
   else if(a==='backup')backupAll();
   else if(a==='nt')ntToggle();
+  else if(a==='plc')openPlc(+v);
+  else if(a==='plc-close')closePlc();
+  else if(a==='disc-shuf'){S.discN++;render();}
+  else if(a==='pcat'){S.pcat=v;render();}
+  else if(a==='plc-wish'){const x=PLC[S.plc];if(x){wishToggle(x[0]);openPlc(S.plc);render();}}
+  else if(a==='plc-been'){const x=PLC[S.plc];if(x){closePlc();openSheet();$('f-place').value=x[1];$('f-cat').value='jalan';}}
   else if(a==='bd-add')bdAdd();
   else if(a==='bd-del')bdDel(id);
   else if(a==='print-book')printBook();
@@ -2178,7 +2278,8 @@ document.addEventListener('submit',async e=>{
 document.addEventListener('keydown',e=>{
   if(!$('lb').hidden){
     if(e.key==='Escape')closeLB(); else if(e.key==='ArrowLeft')stepLB(-1); else if(e.key==='ArrowRight')stepLB(1);
-  }else if(!$('set').hidden&&e.key==='Escape')closeSet();
+  }else if(!$('plc').hidden&&e.key==='Escape')closePlc();
+  else if(!$('set').hidden&&e.key==='Escape')closeSet();
   else if(!$('sheet').hidden&&e.key==='Escape')closeSheet();
   else if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('pin')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}
 });
