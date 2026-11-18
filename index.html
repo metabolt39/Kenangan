@@ -332,6 +332,20 @@ button{cursor:pointer}
 .cm-b p{margin:0;overflow-wrap:anywhere;white-space:pre-wrap;font:400 15px/1.55 var(--font-serif)}
 .cm-x{flex:none;width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:10px;background:none;color:var(--ink-2);opacity:.75}
 .cm-q{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--ink-2)}
+.rxs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.rx{display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:0 11px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.rx[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.rx.more{color:var(--ink-2)}
+.rx b{font-weight:700;font-size:13px}
+.with{margin:8px 0 0;font-size:14px;color:var(--ink-2)}
+.tagpick{display:flex;flex-wrap:wrap;gap:8px}
+.tagpick button{min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
+.tagpick button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.tl-y{list-style:none;margin:6px 0 14px;position:sticky;top:0;z-index:2;background:var(--bg);padding:8px 0}
+.tl-y h2{margin:0;font-family:var(--font-display,inherit);font-size:24px;color:var(--ink)}
+.tl-y span{font-size:13px;color:var(--ink-2);margin-left:8px}
+.lb-stage{touch-action:none}
+.lb-stage img{transition:none;will-change:transform}
 .cm-b .t{font-size:12px;color:var(--ink-2);margin-left:6px}
 .cm-form{display:flex;gap:8px}
 .cm-form input{flex:1;min-width:0;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
@@ -508,6 +522,10 @@ button{cursor:pointer}
         <option value="lain">Lain-lain</option>
       </select>
     </div>
+    <div class="field" id="f-tags-w" hidden>
+      <span class="lbl">Siapa dalam gambar?</span>
+      <div class="tagpick" id="f-tags" role="group" aria-label="Pilih ahli keluarga"></div>
+    </div>
     <div class="field" id="f-album-w" hidden>
       <label class="lbl" for="f-album">Acara bersama</label>
       <select id="f-album"><option value="">Tiada</option></select>
@@ -569,7 +587,7 @@ function applySkin(k){
   const r=document.documentElement;
   if(k==='kampung'||!SKINS.some(x=>x[0]===k))r.removeAttribute('data-skin'); else r.setAttribute('data-skin',k);
   S.skin=SKINS.some(x=>x[0]===k)?k:'kampung';
-  $('skins').innerHTML=SKINS.map(x=>'<button type="button" class="skin" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+x[1]+'</button>').join('')+'<button type="button" class="skin" data-act="bigtext" aria-label="Saiz tulisan: '+BIGL[S.big]+'"><b aria-hidden="true">Aa</b> Tulisan: '+BIGL[S.big]+'</button>'+(S.isOwner?'<button type="button" class="skin" data-act="invite">Jemput ahli</button><button type="button" class="skin" data-act="import">Import kenangan lama</button>':'')+(window.__signOut?'<button type="button" class="skin" data-act="signout">Log keluar</button>':'');
+  $('skins').innerHTML=SKINS.map(x=>'<button type="button" class="skin" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+x[1]+'</button>').join('')+'<button type="button" class="skin" data-act="bigtext" aria-label="Saiz tulisan: '+BIGL[S.big]+'"><b aria-hidden="true">Aa</b> Tulisan: '+BIGL[S.big]+'</button>'+(S.isOwner?'<button type="button" class="skin" data-act="backup">Sandaran</button><button type="button" class="skin" data-act="invite">Jemput ahli</button><button type="button" class="skin" data-act="import">Import kenangan lama</button>':'')+(window.__signOut?'<button type="button" class="skin" data-act="signout">Log keluar</button>':'');
 }
 const VIEWS=['utama','galeri','peta'];
 
@@ -589,7 +607,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -737,14 +755,15 @@ function normPost(id,d){
   const cat=CAT[d.cat]?d.cat:(OLDTAG[d.tag]||'keluarga');
   return {id:id,authorId:str(d.authorId),text:str(d.text).slice(0,2000),place:str(d.place).trim().slice(0,120),
     takenOn:validDate(d.takenOn)?d.takenOn:'',cat:cat,emoji:EMOJIS.indexOf(d.emoji)>=0?d.emoji:'',
-    photos:Array.isArray(d.photos)?d.photos.filter(isId).slice(0,12):[],album:str(d.album).slice(0,40),createdAt:num(d.createdAt)};
+    photos:Array.isArray(d.photos)?d.photos.filter(isId).slice(0,12):[],album:str(d.album).slice(0,40),tags:Array.isArray(d.tags)?d.tags.filter(x=>typeof x==='string'&&x.length>0&&x.length<=64).slice(0,10):[],createdAt:num(d.createdAt)};
 }
 const ALEMO=['🎉','🕌','🎂','🌴','⛱️','🍜','🚗','⛺','🎓','💍','🏔️','⚽'];
 function normAlbum(id,d){return {id:id,name:str(d.name).trim().slice(0,40),emoji:ALEMO.indexOf(d.emoji)>=0?d.emoji:'🎉',createdBy:str(d.createdBy),createdAt:num(d.createdAt)};}
 function albumById(id){return id?S.albums.find(a=>a.id===id):null;}
 function isNew(p){return !p.demo&&S.seenBase>0&&!!p.authorId&&p.authorId!==S.myId&&p.createdAt>S.seenBase;}
 function normComment(id,d){return {id:id,postId:str(d.postId),authorId:str(d.authorId),text:str(d.text).slice(0,500),createdAt:num(d.createdAt)};}
-function normLike(id,d){return {id:id,postId:str(d.postId),uid:str(d.uid)};}
+const RX=['❤️','😂','😮','😢','🙏','👏'];
+function normLike(id,d){return {id:id,postId:str(d.postId),uid:str(d.uid),r:RX.indexOf(d.r)>=0?d.r:'❤️'};}
 
 const EX=[
   {who:'Mak',cat:'keluarga',emoji:'👨‍👩‍👦',text:'Kenduri kahwin sepupu di kampung. Semua balik, nenek masak rendang tok sampai licin periuk.',place:'Kampung Nenek, Kuala Kangsar',date:'2025-12-20',photos:['ex_sunset','ex_hills','ex_river']},
@@ -755,7 +774,8 @@ const EX=[
 ];
 function demoPosts(){return EX.map((e,i)=>({id:'ex'+i,demo:true,who:e.who,authorId:'',text:e.text,place:e.place,takenOn:e.date,cat:e.cat,emoji:e.emoji,photos:e.photos,createdAt:0}));}
 
-function nameOf(id){const p=PS[id];return (p&&p.name)||'Ahli keluarga';}
+function nameOf(id){const p=PS[id];if(p&&p.name)return p.name;const m=S.members.find(x=>x.id===id);return (m&&m.name)||'Ahli keluarga';}
+function tagNames(p){return (p.tags||[]).filter(u=>S.members.some(m=>m.id===u)||(PS[u]&&PS[u].name)).map(nameOf);}
 function av(id,cls){
   const p=PS[id]; const src=p&&p.avatarUrl; const ring=(p&&p.color)?' style="--ring:'+esc(p.color)+'"':'';
   if(src)return '<img class="av '+(cls||'')+'" src="'+esc(src)+'" alt="" referrerpolicy="no-referrer"'+ring+'>';
@@ -771,7 +791,7 @@ function byMemory(a,b){return dateOf(b).localeCompare(dateOf(a))||(b.createdAt-a
 function nrm(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
 function hay(p){
   const al=albumById(p.album);
-  return nrm([p.text,p.place,CAT[p.cat]?CAT[p.cat][1]:'',al?al.name:'',nameOf(p.authorId),fmtDate(p.takenOn),p.takenOn,S.comments.filter(c=>c.postId===p.id).map(c=>c.text).join(' ')].join(' '));
+  return nrm([p.text,tagNames(p).join(' '),p.place,CAT[p.cat]?CAT[p.cat][1]:'',al?al.name:'',nameOf(p.authorId),fmtDate(p.takenOn),p.takenOn,S.comments.filter(c=>c.postId===p.id).map(c=>c.text).join(' ')].join(' '));
 }
 function matchQ(p,terms){const h=hay(p);return terms.every(t=>h.indexOf(t)>=0);}
 function filt(arr){
@@ -952,6 +972,15 @@ function noteHtml(p){
   if(note)return '<div class="nota">'+head+'<p>'+esc(note)+'</p><button type="button" class="lnk" data-act="note" data-id="'+esc(p.id)+'">Ubah nota</button></div>';
   return '';
 }
+function rxHtml(p){
+  const ls=S.likes.filter(l=>l.postId===p.id), mine=ls.find(l=>l.uid===S.myId);
+  const cnt={}; ls.forEach(l=>{cnt[l.r]=(cnt[l.r]||0)+1;});
+  const open=S.rxOpen===p.id, ro=S.canWrite===false;
+  const list=open?RX:RX.filter(e=>cnt[e]);
+  if(!list.length&&ro)return '';
+  return '<div class="rxs" role="group" aria-label="Reaksi">'+list.map(e=>'<button type="button" class="rx" data-act="rx" data-id="'+esc(p.id)+'" data-v="'+e+'" aria-pressed="'+(!!mine&&mine.r===e)+'"'+(ro?' disabled':'')+'><span aria-hidden="true">'+e+'</span>'+(cnt[e]?'<b>'+cnt[e]+'</b>':'')+'</button>').join('')+
+    (ro?'':'<button type="button" class="rx more" data-act="rx-more" data-id="'+esc(p.id)+'" aria-expanded="'+open+'" aria-label="Reaksi lain">'+(open?'Tutup':'☺ Reaksi')+'</button>')+'</div>';
+}
 function postHtml(p,m){
   const demo=!!p.demo;
   const likeSet=demo?new Set():(m.likeMap.get(p.id)||new Set());
@@ -975,13 +1004,14 @@ function postHtml(p,m){
     (canDel?'<button type="button" class="icon-btn" data-act="del-ask" data-id="'+esc(p.id)+'" aria-label="Padam kenangan">'+icon('trash')+'</button>':'')+'</header>'+
     (S.confirmDel===p.id?'<div class="confirm" role="alert"><span>Padam kenangan ini untuk semua orang?</span><button type="button" class="btn sm ghost" data-act="del-no">Batal</button><button type="button" class="btn sm" data-act="del-yes" data-id="'+esc(p.id)+'">Ya, padam</button></div>':'')+
     photosHtml(p)+
-    '<div class="body">'+(p.text?'<p class="story">'+esc(p.text)+'</p>':'')+stamp+'<div class="tags"><span class="tag">'+(p.emoji?'<span aria-hidden="true">'+p.emoji+'</span>':'')+esc(CAT[p.cat][1])+'</span>'+(albumById(p.album)?'<button type="button" class="tag evt" data-act="album" data-v="'+esc(p.album)+'"><span aria-hidden="true">'+albumById(p.album).emoji+'</span>'+esc(albumById(p.album).name)+'</button>':'')+'</div></div>'+
+    '<div class="body">'+(p.text?'<p class="story">'+esc(p.text)+'</p>':'')+(tagNames(p).length?'<p class="with"><span aria-hidden="true">👥</span> Bersama: '+esc(tagNames(p).join(', '))+'</p>':'')+stamp+'<div class="tags"><span class="tag">'+(p.emoji?'<span aria-hidden="true">'+p.emoji+'</span>':'')+esc(CAT[p.cat][1])+'</span>'+(albumById(p.album)?'<button type="button" class="tag evt" data-act="album" data-v="'+esc(p.album)+'"><span aria-hidden="true">'+albumById(p.album).emoji+'</span>'+esc(albumById(p.album).name)+'</button>':'')+'</div></div>'+
     '<div class="acts">'+
       '<button type="button" class="act'+(liked?' liked':'')+(S.popKey===p.id&&liked?' likepop':'')+'" '+(demo?dm:'data-act="like" data-id="'+esc(p.id)+'" aria-pressed="'+liked+'"')+'>'+icon('heart')+'<span>Suka'+(nL?' · '+nL:'')+'</span></button>'+
       '<button type="button" class="act" '+(demo?dm:'data-act="cm" data-id="'+esc(p.id)+'" aria-expanded="'+open+'"')+'>'+icon('chat')+'<span>Komen'+(cms.length?' · '+cms.length:'')+'</span></button>'+
       (demo?'':'<button type="button" class="act" data-act="share" data-id="'+esc(p.id)+'">'+icon('share')+'<span>Kongsi</span></button>')+
       (demo||S.myId?'<button type="button" class="act" '+(demo?dm:'data-act="note" data-id="'+esc(p.id)+'"')+'>'+icon('note')+'<span>Nota</span></button>':'')+
     '</div>'+
+    (demo?'':rxHtml(p))+
     (demo?'':noteHtml(p))+
     (open?'<div class="cms">'+cms.map(c=>{
         const mayDel=!ro&&!!S.myId&&(c.authorId===S.myId||p.authorId===S.myId||S.canEdit);
@@ -1040,8 +1070,16 @@ function galeriHtml(){
   }
   const tl=f.slice().sort((a,b)=>S.asc?dateOf(a).localeCompare(dateOf(b)):dateOf(b).localeCompare(dateOf(a)));
   h+='<div class="chips"><button type="button" class="chip" data-act="asc" aria-pressed="'+S.asc+'">'+(S.asc?'Terlama dahulu':'Terbaru dahulu')+'</button></div>';
-  return h+'<ol class="tl">'+tl.map(p=>'<li class="tl-i"><span class="tl-m" aria-hidden="true">'+(p.emoji||CAT[p.cat][2])+'</span><div class="tl-c"><div class="tl-d">'+esc(fmtDate(dateOf(p)))+'</div><h3 class="tl-p">'+esc(p.place||CAT[p.cat][1])+'</h3>'+(p.text?'<p class="tl-x">'+esc(p.text)+'</p>':'')+
+  const yrs=Array.from(new Set(tl.map(p=>dateOf(p).slice(0,4)).filter(Boolean)));
+  if(yrs.length>1)h=h.replace(/<\/div>$/,yrs.map(y=>'<button type="button" class="chip" data-act="yjump" data-v="'+esc(y)+'">'+esc(y)+'</button>').join('')+'</div>');
+  return h+'<ol class="tl">'+tl.map((p,ix)=>yearHdr(tl,ix)+'<li class="tl-i"><span class="tl-m" aria-hidden="true">'+(p.emoji||CAT[p.cat][2])+'</span><div class="tl-c"><div class="tl-d">'+esc(fmtDate(dateOf(p)))+'</div><h3 class="tl-p">'+esc(p.place||CAT[p.cat][1])+'</h3>'+(p.text?'<p class="tl-x">'+esc(p.text)+'</p>':'')+
     (p.photos.length?'<div class="tl-ph">'+p.photos.map((id,i)=>'<button type="button" data-act="photo" data-id="'+esc(p.id)+'" data-idx="'+i+'" aria-label="Buka gambar"><img'+isrc(id)+' alt="" loading="lazy" decoding="async"></button>').join('')+'</div>':'')+'</div></li>').join('')+'</ol>';
+}
+function yearHdr(tl,ix){
+  const y=dateOf(tl[ix]).slice(0,4); if(!y)return '';
+  if(ix>0&&dateOf(tl[ix-1]).slice(0,4)===y)return '';
+  const n=tl.filter(p=>dateOf(p).slice(0,4)===y).length;
+  return '<li class="tl-y" id="y-'+esc(y)+'"><h2>'+esc(y)+'<span>'+n+' kenangan</span></h2></li>';
 }
 function petaHtml(){
   const md=mapData();
@@ -1201,10 +1239,15 @@ async function doImport(file){
       const u=d.imgs[id]; if(!isId(id)||id.slice(0,2)!=='d_'||typeof u!=='string'||u.indexOf('data:image/')!==0)continue;
       await S.db.doc('imgs/'+id).set({data:u,by:S.myId,createdAt:Date.now()}); step();
     }
+    for(const a of (Array.isArray(d.albums)?d.albums:[])){
+      if(!a||!/^[A-Za-z0-9]{8,40}$/.test(String(a.id)))continue;
+      const x=normAlbum(String(a.id),a); if(!x.name)continue;
+      await S.db.doc('albums/'+x.id).set({name:x.name,emoji:x.emoji,createdBy:S.myId,createdAt:x.createdAt||Date.now()});
+    }
     for(const p of posts){
       if(!p||!/^[A-Za-z0-9]{8,40}$/.test(String(p.id)))continue;
       const x=normPost(String(p.id),p);
-      await S.db.doc('posts/'+x.id).set({authorId:S.myId,text:x.text,place:x.place,takenOn:x.takenOn,cat:x.cat,emoji:x.emoji,photos:x.photos,createdAt:x.createdAt||Date.now()}); step();
+      await S.db.doc('posts/'+x.id).set({authorId:S.myId,text:x.text,place:x.place,takenOn:x.takenOn,cat:x.cat,emoji:x.emoji,photos:x.photos,album:x.album,tags:x.tags,createdAt:x.createdAt||Date.now()}); step();
     }
     for(const c of cms){
       if(!c||!/^[A-Za-z0-9]{8,40}$/.test(String(c.id)))continue;
@@ -1239,6 +1282,18 @@ async function toggleLike(postId){
     const ref=S.db.doc('likes/'+key);
     if(liked)await ref.delete(); else {S.popKey=postId;await ref.set({postId:postId,uid:S.myId,createdAt:Date.now()});}
   }catch(e){toast('Tidak dapat menyimpan. Cuba lagi.');}
+  finally{S.busy.delete(key);}
+}
+async function setReaction(postId,e){
+  if(!canAct()||!S.myId||RX.indexOf(e)<0)return;
+  const key=postId+'_'+S.myId;
+  if(S.busy.has(key))return; S.busy.add(key);
+  const cur=S.likes.find(l=>l.id===key);
+  try{
+    const ref=S.db.doc('likes/'+key);
+    if(cur&&cur.r===e)await ref.delete();
+    else{if(cur)await ref.delete();S.popKey=postId;await ref.set({postId:postId,uid:S.myId,r:e,createdAt:Date.now()});}
+  }catch(x){toast('Tidak dapat menyimpan. Cuba lagi.');}
   finally{S.busy.delete(key);}
 }
 async function sendComment(postId){
@@ -1283,6 +1338,7 @@ function openLB(items,i){
 }
 function showLB(){
   const it=LB.items[LB.i]; if(!it)return;
+  zReset();
   const li=$('lb-img'), sid=it.id;
   delete li.dataset.iid;
   if(sid.slice(0,2)==='d_'){
@@ -1300,20 +1356,26 @@ function showLB(){
 }
 function stepLB(d){const n=LB.items.length;if(n<2)return;LB.i=(LB.i+d+n)%n;showLB();}
 function closeLB(){
+  zReset();
   $('lb').hidden=true;$('lb-img').removeAttribute('src');
   if($('sheet').hidden)document.body.style.overflow='';
   if(LB.prev&&LB.prev.focus)try{LB.prev.focus({preventScroll:true});}catch(e){}
 }
 
 /* ---------- borang kenangan ---------- */
-const F={files:[],busy:false,prevFocus:null,emoji:'',edit:'',dateTouched:false};
+const F={files:[],busy:false,prevFocus:null,emoji:'',edit:'',dateTouched:false,tags:[]};
+function renderTagPick(){
+  const w=$('f-tags-w'); if(!w)return;
+  w.hidden=!S.members.length;
+  $('f-tags').innerHTML=S.members.map(m=>'<button type="button" data-act="tag-pick" data-v="'+esc(m.id)+'" aria-pressed="'+(F.tags.indexOf(m.id)>=0)+'">'+esc((m.name||'Ahli').split(/\s+/)[0])+'</button>').join('');
+}
 function renderEmoji(){
   $('emo').innerHTML=EMOJIS.map(e=>'<button type="button" data-act="emoji" data-v="'+e+'" aria-pressed="'+(F.emoji===e)+'" aria-label="Tag '+e+'">'+e+'</button>').join('');
 }
 function openSheet(){
   if(!canAct())return;
   F.prevFocus=document.activeElement;
-  F.dateTouched=false;
+  F.dateTouched=false;F.tags=[];renderTagPick();
   const d=$('f-date'); d.max=ymd(new Date()); if(!d.value)d.value=ymd(new Date());
   const note=$('asset-note'); $('pick').disabled=false;
   if(!S.assets){note.hidden=false;note.textContent='Gambar akan dikecilkan sedikit supaya muat disimpan dalam album.';}else note.hidden=true;
@@ -1326,7 +1388,7 @@ function openSheet(){
 }
 function resetForm(){
   F.files.forEach(f=>{if(f.file)try{URL.revokeObjectURL(f.url);}catch(e){}});
-  F.files=[];F.emoji='';F.edit='';F.dateTouched=false;
+  F.files=[];F.emoji='';F.edit='';F.dateTouched=false;F.tags=[];
   $('f-story').value='';$('f-place').value='';$('f-date').value='';
   $('sheet-t').textContent='Kenangan baharu';$('submit').textContent='Kongsi dengan keluarga';
   renderPreviews();renderEmoji();
@@ -1411,7 +1473,7 @@ function editPost(id){
   if(!p||p.authorId!==S.myId||!canAct())return;
   openSheet();
   F.files.forEach(f=>{if(f.file)try{URL.revokeObjectURL(f.url);}catch(e){}});
-  F.edit=id;F.dateTouched=true;
+  F.edit=id;F.dateTouched=true;F.tags=(p.tags||[]).slice();renderTagPick();
   F.files=p.photos.map(pid=>({file:null,url:imgUrl(pid),id:pid}));
   $('f-story').value=p.text;$('f-place').value=p.place;$('f-date').value=p.takenOn||'';
   $('f-cat').value=p.cat;$('f-album').value=albumById(p.album)?p.album:'';
@@ -1553,7 +1615,7 @@ async function submit(){
       ids.push(it.id);
     }
     setStatus('Menyimpan…');
-    const fields={text:text,place:place,takenOn:validDate(takenOn)?takenOn:'',cat:CAT[cat]?cat:'keluarga',emoji:F.emoji,photos:ids,album:albumById(alb)?alb:''};
+    const fields={text:text,place:place,takenOn:validDate(takenOn)?takenOn:'',cat:CAT[cat]?cat:'keluarga',emoji:F.emoji,photos:ids,album:albumById(alb)?alb:'',tags:F.tags.filter(u=>S.members.some(m=>m.id===u)).slice(0,10)};
     if(F.edit){
       const old=S.posts.find(x=>x.id===F.edit);
       if(!old||old.authorId!==S.myId)throw {code:'permission-denied'};
@@ -1578,6 +1640,26 @@ async function submit(){
   }
 }
 
+async function backupAll(){
+  if(!S.isOwner||!S.posts.length){toast('Tiada kenangan untuk disandarkan.');return;}
+  const ids=Array.from(new Set(S.posts.flatMap(p=>p.photos.filter(x=>x.slice(0,2)==='d_'))));
+  const out={kind:'kenangan-export',v:2,exportedAt:new Date().toISOString(),
+    posts:S.posts.map(p=>({id:p.id,authorId:p.authorId,authorName:nameOf(p.authorId),text:p.text,place:p.place,takenOn:p.takenOn,cat:p.cat,emoji:p.emoji,photos:p.photos,album:p.album,tags:p.tags,createdAt:p.createdAt})),
+    comments:S.comments.map(c=>({id:c.id,postId:c.postId,authorId:c.authorId,authorName:nameOf(c.authorId),text:c.text,createdAt:c.createdAt})),
+    albums:S.albums.map(a=>({id:a.id,name:a.name,emoji:a.emoji,createdAt:a.createdAt})),imgs:{}};
+  let n=0,miss=0;
+  for(const id of ids){
+    toast('Menyandarkan gambar '+(++n)+' / '+ids.length+'…');
+    const u=await fullData(id); if(u&&u.indexOf('data:image/')===0)out.imgs[id]=u; else miss++;
+  }
+  const blob=new Blob([JSON.stringify(out)],{type:'application/json'});
+  const name='kenangan-sandaran-'+ymd(new Date())+'.json';
+  const file=new File([blob],name,{type:'application/json'});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});toast('Sandaran siap.'+(miss?' '+miss+' gambar tak dapat dimuat.':''));return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),8000);
+  toast('Sandaran disimpan ('+Math.round(blob.size/1048576*10)/10+' MB).'+(miss?' '+miss+' gambar tak dapat dimuat.':''));
+}
 async function inviteMember(){
   const code=(window.prompt('Masukkan kod keluarga untuk dimasukkan dalam pautan jemputan:')||'').trim().slice(0,60);
   if(!code)return;
@@ -1613,6 +1695,7 @@ document.addEventListener('click',e=>{
   else if(a==='import'){$('f-import').click();}
   else if(a==='bigtext'){applyBig((S.big+1)%3);applySkin(S.skin);}
   else if(a==='invite')inviteMember();
+  else if(a==='backup')backupAll();
   else if(a==='signout'){if(window.__signOut)window.__signOut();}
   else if(a==='shuf'){S.memN++;render();}
   else if(a==='city'){const f=$('cityf');f.hidden=!f.hidden;if(!f.hidden){$('cityi').value=S.city;$('cityi').focus();}}
@@ -1634,6 +1717,8 @@ document.addEventListener('click',e=>{
   else if(a==='emoji'){F.emoji=F.emoji===v?'':v;renderEmoji();}
   else if(a==='submit')submit();
   else if(a==='edit')editPost(id);
+  else if(a==='yjump'){const el=document.getElementById('y-'+v);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+  else if(a==='tag-pick'){const i=F.tags.indexOf(v);if(i>=0)F.tags.splice(i,1);else F.tags.push(v);renderTagPick();}
   else if(a==='cm-del-ask'){S.cmDel=id;render();}
   else if(a==='cm-del-no'){S.cmDel='';render();}
   else if(a==='cm-del-yes'){S.cmDel='';S.db.doc('comments/'+id).delete().then(()=>toast('Komen dipadam.')).catch(()=>{toast('Komen tidak dapat dipadam.');render();});render();}
@@ -1656,6 +1741,8 @@ document.addEventListener('click',e=>{
   else if(a==='album-del-yes')deleteAlbum();
   else if(a==='pin'){S.pin=(S.pin===v&&S.tab==='peta')?'':v;if(S.tab!=='peta')go('peta');else render();}
   else if(a==='like')toggleLike(id);
+  else if(a==='rx')setReaction(id,v);
+  else if(a==='rx-more'){S.rxOpen=S.rxOpen===id?'':id;render();}
   else if(a==='cm'){if(S.open.has(id))S.open.delete(id);else S.open.add(id);render();}
   else if(a==='note'){if(S.noteOpen.has(id)){S.noteOpen.delete(id);delete S.drafts['n'+id];}else S.noteOpen.add(id);render();}
   else if(a==='note-save')saveNote(id);
@@ -1710,8 +1797,40 @@ document.addEventListener('keydown',e=>{
   }else if(!$('sheet').hidden&&e.key==='Escape')closeSheet();
   else if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('pin')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}
 });
-$('lb-stage').addEventListener('touchstart',e=>{LB.x=e.changedTouches[0].clientX;},{passive:true});
-$('lb-stage').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-LB.x;if(Math.abs(dx)>50)stepLB(dx>0?-1:1);},{passive:true});
+const Z={s:1,x:0,y:0,d:0,s0:1,px:0,py:0,sx:0,sy:0,t:0,pinch:false,moved:false};
+function zApply(){const li=$('lb-img');li.style.transform=Z.s===1?'':'translate('+Z.x+'px,'+Z.y+'px) scale('+Z.s+')';}
+function zReset(){Z.s=1;Z.x=0;Z.y=0;Z.pinch=false;zApply();}
+function zClamp(){const li=$('lb-img');const mx=(Z.s-1)*li.offsetWidth/2+30,my=(Z.s-1)*li.offsetHeight/2+30;Z.x=Math.max(-mx,Math.min(mx,Z.x));Z.y=Math.max(-my,Math.min(my,Z.y));}
+function zDist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);}
+function zToggle(cx,cy){
+  if(Z.s>1){zReset();return;}
+  const r=$('lb-img').getBoundingClientRect(), ox=r.left+r.width/2, oy=r.top+r.height/2;
+  Z.s=2.5;Z.x=(ox-cx)*1.5;Z.y=(oy-cy)*1.5;zClamp();zApply();
+}
+$('lb-stage').addEventListener('touchstart',e=>{
+  const t=e.touches;
+  if(t.length===2){Z.pinch=true;Z.d=zDist(t);Z.s0=Z.s;return;}
+  Z.moved=false;Z.sx=t[0].clientX;Z.sy=t[0].clientY;Z.px=Z.x;Z.py=Z.y;LB.x=t[0].clientX;
+},{passive:true});
+$('lb-stage').addEventListener('touchmove',e=>{
+  const t=e.touches;
+  if(t.length===2&&Z.pinch){e.preventDefault();Z.s=Math.max(1,Math.min(5,Z.s0*zDist(t)/Z.d));if(Z.s===1){Z.x=0;Z.y=0;}else zClamp();zApply();return;}
+  if(t.length===1&&Z.s>1&&!Z.pinch){e.preventDefault();Z.moved=true;Z.x=Z.px+(t[0].clientX-Z.sx);Z.y=Z.py+(t[0].clientY-Z.sy);zClamp();zApply();}
+},{passive:false});
+$('lb-stage').addEventListener('touchend',e=>{
+  if(e.touches.length>0)return;
+  if(Z.pinch){Z.pinch=false;if(Z.s<1.05)zReset();return;}
+  if(e.target.closest&&e.target.closest('.nav'))return;
+  const c=e.changedTouches[0], dx=c.clientX-LB.x, dy=c.clientY-Z.sy;
+  if(Z.s>1){
+    if(!Z.moved&&Math.abs(dx)<10&&Math.abs(dy)<10){const n=Date.now();if(n-Z.t<320){zToggle(c.clientX,c.clientY);Z.t=0;}else Z.t=n;}
+    return;
+  }
+  if(Math.abs(dx)<10&&Math.abs(dy)<10){const n=Date.now();if(n-Z.t<320){zToggle(c.clientX,c.clientY);Z.t=0;}else Z.t=n;return;}
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))stepLB(dx>0?-1:1);
+},{passive:true});
+$('lb-stage').addEventListener('dblclick',e=>zToggle(e.clientX,e.clientY));
+$('lb-stage').addEventListener('wheel',e=>{e.preventDefault();Z.s=Math.max(1,Math.min(5,Z.s*(e.deltaY<0?1.15:0.87)));if(Z.s===1){Z.x=0;Z.y=0;}else zClamp();zApply();},{passive:false});
 document.addEventListener('error',e=>{
   const el=e.target;
   if(el&&el.tagName==='IMG'){const b=el.closest('.pic,.mi');if(b)b.classList.add('gone');}
@@ -1753,6 +1872,10 @@ async function init(){
   },fail);
   S.db.collection('likes').onSnapshot(snap=>{S.likes=snap.docs.map(d=>normLike(d.id,d.data()||{}));render();},fail);
   S.db.collection('comments').onSnapshot(snap=>{S.comments=snap.docs.map(d=>normComment(d.id,d.data()||{}));render();},fail);
+  S.db.collection('members').onSnapshot(snap=>{
+    S.members=snap.docs.map(d=>({id:d.id,name:str((d.data()||{}).name)})).filter(m=>m.name);
+    render();
+  },()=>{});
   S.db.collection('albums').onSnapshot(snap=>{
     S.albums=snap.docs.map(d=>normAlbum(d.id,d.data()||{})).filter(a=>a.name);
     S.albumsOk=true;
