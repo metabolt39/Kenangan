@@ -434,7 +434,7 @@ button{cursor:pointer}
 .lb-stage .nav{position:absolute;top:50%;transform:translateY(-50%)}
 .lb-stage .nav.l{left:0}
 .lb-stage .nav.r{right:0}
-.lb-cap{max-height:24%;overflow-y:auto;font-size:15px;line-height:1.45;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.1);backdrop-filter:blur(8px)}
+.lb-cap{flex:none;max-height:26vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;font-size:15px;line-height:1.45;padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.1);backdrop-filter:blur(8px)}
 .lb-cap:empty{display:none}
 .lb-cap .cp{font:italic 500 19px var(--font-display)}
 .lb-cap p{margin:4px 0 0;overflow-wrap:anywhere}
@@ -2202,10 +2202,10 @@ function showLB(){
   {const u=srcOf(sid); $('lb').style.setProperty('--lbbg',u?'url("'+u+'")':'none');}
   $('lb-count').textContent=(LB.i+1)+' / '+LB.items.length;
   const multi=LB.items.length>1; $('lb-prev').hidden=!multi; $('lb-next').hidden=!multi;
-  const p=it.post, cap=$('lb-cap'); cap.textContent='';
+  const p=it.post, cap=$('lb-cap'); cap.textContent='';cap.scrollTop=0;
   const bits=[]; if(p.emoji)bits.push(p.emoji); if(p.place)bits.push(p.place); if(p.takenOn)bits.push(fmtDate(p.takenOn));
   if(bits.length){const d=document.createElement('div');d.className='cp';d.textContent=bits.join(' · ');cap.appendChild(d);}
-  if(p.text){const t=document.createElement('p');t.textContent=p.text.length>200?p.text.slice(0,200)+'…':p.text;cap.appendChild(t);}
+  if(p.text){const t=document.createElement('p');t.textContent=p.text;cap.appendChild(t);}
 }
 function stepLB(d){const n=LB.items.length;if(n<2)return;LB.i=(LB.i+d+n)%n;showLB();}
 function closeLB(){
