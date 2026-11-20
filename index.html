@@ -406,7 +406,7 @@ button{cursor:pointer}
 
 /* Navigasi */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:35;background:var(--surface);border-top:1px solid var(--line);padding:6px max(16px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.tabs-in{max-width:640px;margin-inline:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+.tabs-in{max-width:640px;margin-inline:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
 .tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;border:0;border-radius:14px;background:none;color:var(--ink-2);font-size:12px;font-weight:600}
 .tab[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
 .fab{transition:padding .2s,gap .2s;position:fixed;z-index:36;bottom:calc(80px + env(safe-area-inset-bottom,0px));right:max(max(16px,env(safe-area-inset-right,0px)),calc(50vw - 320px));display:flex;align-items:center;gap:8px;min-height:52px;padding:0 22px 0 16px;border:0;border-radius:99px;background:var(--gold);color:#2B1A06;font-weight:700;font-size:16px;box-shadow:0 8px 20px rgba(60,40,0,.32)}
@@ -681,6 +681,10 @@ button{cursor:pointer}
 .lcard .lh{display:flex;align-items:center;gap:6px}.lcard .lh .i{width:18px;height:18px;stroke:var(--accent)}
 .lcard .lfrom{display:flex;align-items:center;gap:6px}.lcard .lfrom .i{width:15px;height:15px}
 .lhist-h{display:flex;align-items:center;gap:8px;margin:22px 2px 8px;font:600 17px var(--font-display)}.lhist-h .i{width:18px;height:18px}
+.tdy{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.tchip{display:inline-flex;align-items:center;gap:8px;max-width:100%;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:600;text-align:left;cursor:pointer}
+.tchip .i{width:18px;height:18px;flex:none;stroke:var(--accent)}.tchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jts{display:grid;gap:10px;margin-bottom:6px}
 .cap-l{display:block;margin:6px 2px 2px;font-size:13.5px;color:var(--ink-2)}
 .cap-r{display:grid;gap:8px;padding:12px 14px;margin:8px 0;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
 .cap-r.open{border-color:var(--gold)}
@@ -780,6 +784,7 @@ button{cursor:pointer}
     <button class="tab" type="button" data-act="tab" data-v="galeri"><svg class="i" aria-hidden="true"><use href="#i-grid"></use></svg>Galeri</button>
     <button class="tab" type="button" data-act="tab" data-v="jelajah"><svg class="i" aria-hidden="true"><use href="#i-compass"></use></svg>Jelajah</button>
     <button class="tab" type="button" data-act="tab" data-v="peta"><svg class="i" aria-hidden="true"><use href="#i-map"></use></svg>Peta</button>
+    <button class="tab" type="button" data-act="tab" data-v="keluarga"><svg class="i" aria-hidden="true"><use href="#i-users"></use></svg>Keluarga</button>
   </div>
 </nav>
 
@@ -997,7 +1002,7 @@ function applySkin(k){
   S.skin=SKINS.some(x=>x[0]===k)?k:'kampung';
   if(typeof renderSet==='function')renderSet();
 }
-const VIEWS=['utama','galeri','jelajah','peta'];
+const VIEWS=['utama','galeri','jelajah','peta','keluarga'];
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1758,7 +1763,7 @@ function locDoc(o,patch){
 async function locSave(patch){await S.db.doc('locs/'+S.myId).set(locDoc(ownLoc(),patch));}
 async function locWrite(opts){
   if(!S.myId||LS.busy)return false;
-  LS.busy=true; if(S.tab==='peta')render();
+  LS.busy=true; if(S.tab==='keluarga')render();
   try{
     const p=await getFix();
     S.myPos={lat:p.coords.latitude,lon:p.coords.longitude};
@@ -1771,7 +1776,7 @@ async function locWrite(opts){
   }catch(e){
     toast(e&&e.code===1?'Lokasi tidak dibenarkan. Hidupkan Location untuk pelayar ini dalam Tetapan phone, kemudian cuba lagi.':e&&e.code===2?'Phone belum dapat kesan lokasi. Hidupkan Location dan Precise Location, atau cuba di tempat terbuka.':e&&e.code===3?'Mengesan lokasi mengambil masa terlalu lama. Cuba lagi di tempat terbuka.':e&&e.code===0?'Pelayar ini tidak menyokong lokasi.':'Tidak dapat menyimpan lokasi. Semak rules Firestore sudah di-Publish.');
     return false;
-  }finally{LS.busy=false;if(S.tab==='peta')render();}
+  }finally{LS.busy=false;if(S.tab==='keluarga')render();}
 }
 async function locStart(h){
   if(!canAct())return;
@@ -1823,7 +1828,7 @@ function locSnap(snap){
     const prev=LS.prev; LS.prev=new Map(S.locs.map(l=>[l.id,l.msg]));
     if(prev)S.locs.forEach(l=>{if(l.id!==S.myId&&l.msg&&prev.get(l.id)!==l.msg&&Date.now()-l.at<3e5&&l.until>Date.now())notify(nameOf(l.id)+': '+l.msg,'','loc'+l.id);});
   }
-  if(S.tab==='peta')render();
+  if(S.tab==='keluarga')render();
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)locTick(false);});
 /* ---------- hari lahir ---------- */
@@ -2057,20 +2062,36 @@ function postHtml(p,m){
 }
 
 /* ---------- halaman ---------- */
+function todayStrip(){
+  const it=[];
+  S.bd.filter(b=>b.date).forEach(b=>{const i=bdInfo(b);if(i.days<=7)it.push({d:i.days,ic:'cake',t:(i.days===0?'Hari ini':i.days===1?'Esok':'Dalam '+i.days+' hari')+': hari lahir '+b.name,a:'tab',v:'keluarga'});});
+  S.cal.filter(c=>c.date).forEach(c=>{const n=calDays(c);if(n>=0&&n<=7)it.push({d:n,ic:'cal',t:calWhen(n)+': '+c.title,a:'cal-open'});});
+  const co=S.caps.filter(c=>capOpen(c)&&Date.now()-new Date(c.openOn+'T00:00:00').getTime()<7*864e5).length;
+  if(co)it.push({d:-1,ic:'lock',t:co+' kapsul masa sudah boleh dibuka',a:'cap-open'});
+  const me=locMine();if(me)it.push({d:-1,ic:'pin',t:'Anda sedang berkongsi lokasi',a:'tab',v:'keluarga'});
+  const o=S.locs.filter(l=>l.id!==S.myId&&l.until>Date.now()).length;if(o)it.push({d:-1,ic:'users',t:o+' ahli sedang berkongsi lokasi',a:'tab',v:'keluarga'});
+  if(backupBanner())it.push({d:9,ic:'download',t:'Masa untuk sandaran',a:'tab',v:'keluarga'});
+  if(!it.length)return '';
+  it.sort((a,b)=>a.d-b.d);
+  return '<div class="tdy" role="group" aria-label="Hari ini">'+it.slice(0,5).map(x=>'<button type="button" class="tchip" data-act="'+x.a+'"'+(x.v?' data-v="'+x.v+'"':'')+'>'+icon(x.ic)+'<span>'+esc(x.t)+'</span></button>').join('')+'</div>';
+}
+function keluargaHtml(){
+  if(DEMO)return demoBanner();
+  let h=lokasiHtml();
+  h+=sec('Kalendar dan hari lahir')+calHtml()+bdHtml();
+  h+=sec('Lagi untuk keluarga')+'<div class="jts">'+capTile()+statTile()+'</div>';
+  h+=sec('Sandaran')+backupBanner();
+  h+='<div class="jts"><button type="button" class="jt" data-act="settings"><span class="jt-i emo" aria-hidden="true">'+icon('download')+'</span><span class="jt-t"><b>Tetapan dan sandaran</b><span>Sandarkan kenangan, tema, hari lahir dan akaun</span></span><span class="jt-a" aria-hidden="true">›</span></button></div>';
+  return h;
+}
 function utamaHtml(m){
   let h='';
   if(DEMO)h+=demoBanner();
   if(!DEMO)h+=newBannerHtml();
-  if(!DEMO)h+=bdHtml();
-  if(!DEMO)h+=calHtml();
-  if(!DEMO)h+=throwHtml();
-  if(!DEMO)h+=capTile();
-  h+=statTile();
-  h+=backupBanner();
+  if(!DEMO)h+=todayStrip();
   h+=memoryHtml();
-  if(!DEMO&&S.albumsOk)h+=acaraHtml();
+  if(!DEMO)h+=throwHtml();
   h+=teaserHtml();
-  h+=sec('Album')+albumsHtml();
   const side=h; h='';
   let list=P.filter(p=>!S.place||pk(p.place)===S.place);
   if(S.onlyNew)list=list.filter(isNew);
@@ -2123,8 +2144,7 @@ function galeriHtml(){
       const np=f.filter(p=>!pk(p.place)&&p.photos.length).length;
       if(np)h+='<p class="hint" style="margin:8px 2px">'+np+' kenangan tiada nama tempat. Lihat di “Ikut cerita”.</p>';
     }
-    const evs=S.albums.slice().sort((a,b)=>b.createdAt-a.createdAt).map(a=>({a:a,l:f.filter(p=>p.album===a.id)})).filter(x=>x.l.length);
-    if(evs.length)h+=sec('Acara bersama')+'<div class="cards">'+evs.map(x=>tile('album',x.a.id,esc(x.a.emoji)+' '+esc(x.a.name),x.l)).join('')+'</div>';
+    if(S.albumsOk)h+=acaraHtml();
     h+='<p class="hint" style="margin:12px 2px">Tekan album untuk lihat gambar di dalamnya.</p>';
     return h;
   }
@@ -2148,7 +2168,7 @@ function yearHdr(tl,ix){
 }
 function petaHtml(){
   const md=mapData();
-  let h=(DEMO?demoBanner():lokasiHtml())+sec('Peta memori')+'<div class="mapc"><div class="mapw">'+mapSvg(md)+popHtml(md)+'</div><p class="hint">'+(DEMO?'Contoh pin. ':'')+(md.pins.length?'Tekan pin untuk lihat gambar di tempat itu. Garis putus-putus ialah perjalanan mengikut tarikh.':'Pin akan muncul bila awak simpan nama tempat.')+'</p></div>';
+  let h=(DEMO?demoBanner():'')+sec('Peta memori')+'<div class="mapc"><div class="mapw">'+mapSvg(md)+popHtml(md)+'</div><p class="hint">'+(DEMO?'Contoh pin. ':'')+(md.pins.length?'Tekan pin untuk lihat gambar di tempat itu. Garis putus-putus ialah perjalanan mengikut tarikh.':'Pin akan muncul bila awak simpan nama tempat.')+'</p></div>';
   const pn=md.pins.find(x=>x.key===S.pin);
   PL=[];
   if(pn){
@@ -2202,7 +2222,7 @@ async function render(){
   let h;
   if(S.noDb)h=noticeHtml();
   else if(!S.ready)h=loadingHtml();
-  else h=S.tab==='galeri'?galeriHtml():S.tab==='peta'?petaHtml():S.tab==='jelajah'?cadanganHtml():utamaHtml(m);
+  else h=S.tab==='galeri'?galeriHtml():S.tab==='peta'?petaHtml():S.tab==='keluarga'?keluargaHtml():S.tab==='jelajah'?cadanganHtml():utamaHtml(m);
   if(S.err&&!S.noDb)h='<p class="note">Sebahagian data tidak dapat dimuat ('+esc(S.err)+'). Muat semula halaman untuk cuba lagi.</p>'+h;
   view.innerHTML=h;
   S.popKey='';
@@ -2346,7 +2366,7 @@ function runShortcut(){
   if(!SC||!S.ready||!S.myId)return;
   const a=SC;SC='';
   if(a==='baru'){openSheet();return;}
-  go('peta');
+  go('keluarga');
   setTimeout(()=>{if(a==='loc1')locStart(1);else if(a==='loc8')locStart(8);else if(a==='sampai')locOk();},300);
 }
 function canAct(){
