@@ -681,6 +681,21 @@ button{cursor:pointer}
 .lcard .lh{display:flex;align-items:center;gap:6px}.lcard .lh .i{width:18px;height:18px;stroke:var(--accent)}
 .lcard .lfrom{display:flex;align-items:center;gap:6px}.lcard .lfrom .i{width:15px;height:15px}
 .lhist-h{display:flex;align-items:center;gap:8px;margin:22px 2px 8px;font:600 17px var(--font-display)}.lhist-h .i{width:18px;height:18px}
+.cap-l{display:block;margin:6px 2px 2px;font-size:13.5px;color:var(--ink-2)}
+.cap-r{display:grid;gap:8px;padding:12px 14px;margin:8px 0;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.cap-r.open{border-color:var(--gold)}
+.cap-h{display:flex;gap:10px;align-items:center}.cap-h .i{width:20px;height:20px;flex:none}
+.cap-t{display:flex;flex-direction:column;min-width:0}.cap-t span{font-size:13px;color:var(--ink-2)}
+.cap-x{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:400 16px/1.6 var(--font-serif)}
+.cap-d{font-size:13px;color:var(--ink-2)}
+#cap-tx{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);font:inherit;resize:vertical}
+.st-g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.st-b{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--surface);text-align:center}
+.st-b strong{font:700 28px/1.1 var(--font-display)}.st-b span{font-size:12.5px;color:var(--ink-2)}
+.st-r{display:flex;gap:10px;align-items:center;padding:10px 4px}.st-r .i{width:20px;height:20px;flex:none}.st-r span{display:flex;flex-direction:column}.st-r b{font-size:13px;color:var(--ink-2);font-weight:600}
+.bk-b{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 14px;padding:12px 14px;border:1px solid var(--gold);border-radius:14px;background:var(--surface-2)}
+.bk-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 200px}.bk-t span{font-size:13.5px;color:var(--ink-2)}
+.bk-a{display:flex;gap:8px}.bk-a .i{width:16px;height:16px;margin-right:6px;vertical-align:-3px}
 .lhs{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 2px 10px;font-size:13.5px;color:var(--ink-2)}
 .lhm{display:flex;align-items:center;gap:10px;margin:12px 2px 6px}
 .lhist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -716,6 +731,9 @@ button{cursor:pointer}
   <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9l1.500-5h13L20 9M4 9v11h16V9M4 9c0 1.700 1.300 3 3 3s3-1.300 3-3c0 1.700 1.300 3 3 3s3-1.300 3-3M10 20v-5h4v5"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.500-3.500M4 4v4h4M4 13a8 8 0 0 0 14.500 3.500M20 20v-4h-4"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.500"/><path d="M12 7.500V12l3 2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.500" width="14" height="10" rx="2.500"/><path d="M8 10.500V8a4 4 0 0 1 8 0v2.500"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20.500h16M7 17v-5M12 17V6M17 17v-8"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.500 11l4.500 4.500 4.500-4.500M5 20h14"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-7.8-4.7-9.5-9.6C1.3 7.4 3.5 4 7 4c2 0 3.6 1 5 2.9C13.4 5 15 4 17 4c3.5 0 5.7 3.4 4.5 6.9-1.7 4.9-9.5 9.6-9.5 9.6z"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 11.5a8 8 0 0 1-11.7 7.1L3.5 20l1.4-4.8A8 8 0 1 1 20.5 11.5z"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s7-6 7-11.5a7 7 0 1 0-14 0c0 5.5 7 11.5 7 11.5z"/><circle cx="12" cy="10" r="2.5"/></symbol>
@@ -775,6 +793,27 @@ button{cursor:pointer}
   <div class="ss-cap" id="ss-cap"></div>
   <div class="ss-bot"><button type="button" class="ss-b" data-act="ss-prev" aria-label="Sebelum">⏮</button><button type="button" class="ss-b big" data-act="ss-play" id="ss-play" aria-label="Jeda">⏸</button><button type="button" class="ss-b" data-act="ss-next" aria-label="Seterusnya">⏭</button></div>
   <div class="ss-pg"><i id="ss-pg"></i></div>
+</div>
+<div class="scrim" id="cap" hidden>
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cap-t">
+    <div class="sheet-h"><h2 id="cap-t">Kapsul masa</h2><button type="button" class="icon-btn" data-act="cap-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <p class="note" style="margin:0 0 10px">Tulis pesanan hari ini. Ia terkunci dan hanya boleh dibaca pada tarikh yang awak pilih.</p>
+    <div class="cal-f">
+      <input id="cap-to" class="w" type="text" maxlength="40" placeholder="Untuk siapa? (cth. Faqeeh)" aria-label="Untuk siapa" autocomplete="off">
+      <input id="cap-ti" class="w" type="text" maxlength="60" placeholder="Tajuk (cth. Pesanan untuk umur 18 tahun)" aria-label="Tajuk" autocomplete="off">
+      <textarea id="cap-tx" class="w" rows="5" maxlength="2000" placeholder="Tulis pesanan anda…" aria-label="Pesanan"></textarea>
+      <label class="cap-l" for="cap-d">Buka pada</label>
+      <input id="cap-d" type="date" aria-label="Tarikh dibuka">
+      <button type="button" class="btn w" data-act="cap-add">Kunci kapsul</button>
+    </div>
+    <div id="cap-l"></div>
+  </section>
+</div>
+<div class="scrim" id="stat" hidden>
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="stat-t">
+    <div class="sheet-h"><h2 id="stat-t">Rumusan tahunan</h2><button type="button" class="icon-btn" data-act="stat-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <div id="stat-b"></div>
+  </section>
 </div>
 <div class="scrim" id="cal" hidden>
   <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cal-t">
@@ -976,7 +1015,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',gby:'tempat',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,bd:[],nt:false,locs:[],myPos:null,cal:[],calDel:'',pcat:'semua',discN:0,plc:-1,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,bd:[],nt:false,locs:[],myPos:null,cal:[],calDel:'',caps:[],capDel:'',statY:0,pcat:'semua',discN:0,plc:-1,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -1518,6 +1557,93 @@ function openCal(){
   $('cal').hidden=false;document.body.style.overflow='hidden';renderCal();
 }
 function closeCal(){$('cal').hidden=true;S.calDel='';if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden)document.body.style.overflow='';}
+function normCap(id,d){return {id:id,by:str(d.by),to:str(d.to).trim().slice(0,40),title:str(d.title).trim().slice(0,60),text:str(d.text).slice(0,2000),openOn:validDate(d.openOn)?d.openOn:'',at:Number(d.at)||0};}
+function capOpen(c){return c.openOn<=ymd(new Date());}
+function capDays(c){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),q=c.openOn.split('-').map(Number);return Math.round((new Date(q[0],q[1]-1,q[2])-t0)/864e5);}
+function capWait(n){if(n<=0)return 'Sudah boleh dibuka';if(n<31)return n+' hari lagi';if(n<365)return Math.round(n/30)+' bulan lagi';const y=Math.floor(n/365),m=Math.round((n%365)/30);return y+' tahun'+(m?' '+m+' bulan':'')+' lagi';}
+function capTile(){
+  const open=S.caps.filter(c=>capOpen(c)&&Date.now()-new Date(c.openOn+'T00:00:00').getTime()<14*864e5).length;
+  const wait=S.caps.filter(c=>!capOpen(c)).length;
+  const sub=open?open+' kapsul sudah boleh dibuka!':wait?wait+' kapsul sedang menunggu':'Tulis pesanan untuk dibuka pada tarikh akan datang';
+  return '<button type="button" class="jt" data-act="cap-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-lock"></use></svg>'+'</span><span class="jt-t"><b>Kapsul masa</b><span>'+esc(sub)+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+}
+function openCap(){
+  const d=$('cap-d'); if(d&&!d.value){const t=new Date();t.setFullYear(t.getFullYear()+1);d.value=ymd(t);}
+  const m=new Date();m.setDate(m.getDate()+1);d.min=ymd(m);
+  $('cap').hidden=false;document.body.style.overflow='hidden';renderCap();
+}
+function closeCap(){$('cap').hidden=true;S.capDel='';if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden)document.body.style.overflow='';}
+function renderCap(){
+  const el=$('cap-l');if(!el)return;
+  const row=c=>{
+    const op=capOpen(c),may=!!S.myId&&(c.by===S.myId||S.canEdit);
+    return '<div class="cap-r'+(op?' open':'')+'"><div class="cap-h">'+icon(op?'heart':'lock')+'<span class="cap-t"><strong>'+esc(c.title||'Kapsul masa')+'</strong><span>'+(c.to?'Untuk '+esc(c.to)+' · ':'')+'dari '+esc(nameOf(c.by))+'</span></span></div>'+
+      (op?'<p class="cap-x">'+esc(c.text)+'</p><span class="cap-d">Ditulis '+esc(ago(c.at))+', dibuka '+esc(fmtDate(c.openOn))+'</span>':'<span class="cap-d">Terkunci sehingga '+esc(fmtDate(c.openOn))+' · '+esc(capWait(capDays(c)))+'</span>')+
+      (may?(S.capDel===c.id?'<div class="cm-q" role="alert">Padam kapsul ini?<button type="button" class="btn sm ghost" data-act="cap-del-no">Batal</button><button type="button" class="btn sm" data-act="cap-del-yes" data-id="'+esc(c.id)+'">Ya, padam</button></div>':'<button type="button" class="chip" data-act="cap-del-ask" data-id="'+esc(c.id)+'">'+icon('trash')+'Padam</button>'):'')+'</div>';
+  };
+  const o=S.caps.filter(capOpen).sort((a,b)=>b.openOn.localeCompare(a.openOn)),w=S.caps.filter(c=>!capOpen(c)).sort((a,b)=>a.openOn.localeCompare(b.openOn));
+  el.innerHTML=(o.length?'<h3 class="cal-h">Sudah dibuka</h3>'+o.map(row).join(''):'')+(w.length?'<h3 class="cal-h">Menunggu</h3>'+w.map(row).join(''):'')+((!o.length&&!w.length)?'<p class="note">Belum ada kapsul masa.</p>':'')+'<p class="hint" style="margin:10px 2px">Kunci ini di dalam app sahaja. Pesanan masih tersimpan dalam pangkalan data keluarga.</p>';
+}
+async function capAdd(){
+  if(!canAct())return;
+  const to=($('cap-to').value||'').trim().slice(0,40),ti=($('cap-ti').value||'').trim().slice(0,60),tx=($('cap-tx').value||'').trim().slice(0,2000),d=$('cap-d').value||'';
+  if(!tx||!validDate(d)){toast('Isi pesanan dan tarikh dibuka.');return;}
+  if(d<=ymd(new Date())){toast('Pilih tarikh pada masa depan.');return;}
+  const id='k_'+Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>(b%36).toString(36)).join('');
+  try{await S.db.doc('capsules/'+id).set({by:S.myId,to:to,title:ti,text:tx,openOn:d,at:Date.now()});$('cap-to').value='';$('cap-ti').value='';$('cap-tx').value='';toast('Kapsul dikunci sehingga '+fmtDate(d)+'.');}
+  catch(e){toast('Tak dapat simpan. Pastikan rules terbaharu sudah di-Publish.');}
+}
+/* ---------- rumusan tahunan ---------- */
+function statData(y){
+  const ps=P.filter(p=>String(dateOf(p)).slice(0,4)===String(y));
+  const ids=new Set(ps.map(p=>p.id));
+  const ph=ps.reduce((a,p)=>a+p.photos.length,0);
+  const cnt=(arr,f)=>{const m=new Map();arr.forEach(x=>{const k=f(x);if(!k)return;m.set(k,(m.get(k)||0)+1);});return Array.from(m.entries()).sort((a,b)=>b[1]-a[1]);};
+  const places=cnt(ps,p=>pk(p.place)?p.place.trim():''), months=cnt(ps,p=>String(dateOf(p)).slice(5,7)), who=cnt(ps,p=>p.authorId);
+  return {y:y,n:ps.length,ph:ph,pl:places.length,topPl:places[0],topMo:months[0]?{m:BULAN[+months[0][0]-1],n:months[0][1]}:null,topWho:who[0]?{id:who[0][0],n:who[0][1]}:null,
+    rx:S.likes.filter(l=>ids.has(l.postId)).length,cm:S.comments.filter(c=>ids.has(c.postId)).length};
+}
+function statYears(){const a=Array.from(new Set(P.map(p=>+String(dateOf(p)).slice(0,4)).filter(Boolean))).sort((a,b)=>b-a);return a.length?a:[new Date().getFullYear()];}
+function statTile(){if(DEMO||!P.length)return '';const y=statYears()[0];return '<button type="button" class="jt" data-act="stat-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-chart"></use></svg>'+'</span><span class="jt-t"><b>Rumusan '+y+'</b><span>Kenangan, gambar dan tempat tahun ini</span></span><span class="jt-a" aria-hidden="true">›</span></button>';}
+function openStat(){if(!S.statY)S.statY=statYears()[0];$('stat').hidden=false;document.body.style.overflow='hidden';renderStat();}
+function closeStat(){$('stat').hidden=true;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden)document.body.style.overflow='';}
+function renderStat(){
+  const d=statData(S.statY),ys=statYears();
+  const box=(n,l)=>'<div class="st-b"><strong>'+n+'</strong><span>'+l+'</span></div>';
+  $('stat-b').innerHTML='<div class="chips" role="group" aria-label="Pilih tahun">'+ys.map(y=>'<button type="button" class="chip" data-act="stat-y" data-v="'+y+'" aria-pressed="'+(y===S.statY)+'">'+y+'</button>').join('')+'</div>'+
+    '<div class="st-g">'+box(d.n,'kenangan')+box(d.ph,'gambar')+box(d.pl,'tempat')+box(d.rx,'reaksi')+box(d.cm,'komen')+(d.topMo?box(esc(d.topMo.m),'bulan paling aktif ('+d.topMo.n+')'):'')+'</div>'+
+    (d.topPl?'<div class="st-r">'+icon('pin')+'<span><b>Tempat paling kerap</b>'+esc(d.topPl[0])+' · '+d.topPl[1]+' kali</span></div>':'')+
+    (d.topWho?'<div class="st-r">'+icon('users')+'<span><b>Paling rajin berkongsi</b>'+esc(nameOf(d.topWho.id))+' · '+d.topWho.n+' kenangan</span></div>':'')+
+    '<button type="button" class="btn w" data-act="stat-share" style="margin-top:14px">'+icon('share')+'Kongsi sebagai gambar</button>';
+}
+async function statShare(){
+  const d=statData(S.statY),W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#1F4D3F');g.addColorStop(1,'#B8742A');x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.fillStyle='#FFF8E8';x.textAlign='center';
+  x.font='600 44px Georgia,serif';x.fillText('Kenangan Keluarga Ahmad',W/2,140);
+  x.font='700 190px Georgia,serif';x.fillText(String(d.y),W/2,360);
+  const rows=[[d.n,'kenangan'],[d.ph,'gambar'],[d.pl,'tempat']];
+  rows.forEach((r,i)=>{const cx=W/2+(i-1)*330;x.font='700 130px Georgia,serif';x.fillText(String(r[0]),cx,620);x.font='400 40px sans-serif';x.fillText(r[1],cx,680);});
+  x.font='400 46px sans-serif';let y=840;
+  if(d.topPl){x.fillText('Tempat paling kerap: '+d.topPl[0].slice(0,34),W/2,y);y+=84;}
+  if(d.topMo){x.fillText('Bulan paling aktif: '+d.topMo.m,W/2,y);y+=84;}
+  if(d.topWho){x.fillText('Paling rajin: '+nameOf(d.topWho.id),W/2,y);y+=84;}
+  x.fillText(d.rx+' reaksi · '+d.cm+' komen',W/2,y+20);
+  x.font='italic 40px Georgia,serif';x.globalAlpha=.8;x.fillText('Disimpan bersama keluarga',W/2,H-90);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png'));if(!blob){toast('Tak dapat buat gambar.');return;}
+  const name='rumusan-'+d.y+'.png',file=new File([blob],name,{type:'image/png'});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Rumusan '+d.y});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),8000);toast('Gambar disimpan.');
+}
+/* ---------- peringatan sandaran ---------- */
+function bkGet(k){try{return +localStorage.getItem(k)||0;}catch(e){return 0;}}
+function bkSet(k,v){try{localStorage.setItem(k,String(v));}catch(e){}}
+function backupBanner(){
+  if(DEMO||!S.isOwner||!P.length)return '';
+  const last=bkGet('kk-lastbackup'),snooze=bkGet('kk-bksnooze'),now=Date.now();
+  if(now<snooze||(last&&now-last<30*864e5))return '';
+  return '<div class="bk-b" role="status"><span class="bk-t"><b>Masa untuk sandaran</b><span>'+(last?'Kali terakhir '+esc(ago(last))+'.':'Belum pernah disandarkan.')+' Simpan salinan kenangan di phone awak.</span></span><span class="bk-a"><button type="button" class="btn sm" data-act="backup">'+icon('download')+'Sandar</button><button type="button" class="btn sm ghost" data-act="bk-snooze">Nanti</button></span></div>';
+}
 async function calAdd(){
   if(!canAct())return;
   const t=($('cal-t2').value||'').trim().slice(0,60), d=$('cal-d').value||'', h=$('cal-h').value||'', pl=($('cal-p').value||'').trim().slice(0,80);
@@ -1938,6 +2064,9 @@ function utamaHtml(m){
   if(!DEMO)h+=bdHtml();
   if(!DEMO)h+=calHtml();
   if(!DEMO)h+=throwHtml();
+  if(!DEMO)h+=capTile();
+  h+=statTile();
+  h+=backupBanner();
   h+=memoryHtml();
   if(!DEMO&&S.albumsOk)h+=acaraHtml();
   h+=teaserHtml();
@@ -2617,7 +2746,7 @@ async function backupAll(){
   const out={kind:'kenangan-export',v:2,exportedAt:new Date().toISOString(),
     posts:S.posts.map(p=>({id:p.id,authorId:p.authorId,authorName:nameOf(p.authorId),text:p.text,place:p.place,takenOn:p.takenOn,cat:p.cat,emoji:p.emoji,photos:p.photos,album:p.album,tags:p.tags,lat:p.lat,lon:p.lon,createdAt:p.createdAt})),
     comments:S.comments.map(c=>({id:c.id,postId:c.postId,authorId:c.authorId,authorName:nameOf(c.authorId),text:c.text,createdAt:c.createdAt})),
-    albums:S.albums.map(a=>({id:a.id,name:a.name,emoji:a.emoji,createdAt:a.createdAt})),imgs:{}};
+    albums:S.albums.map(a=>({id:a.id,name:a.name,emoji:a.emoji,createdAt:a.createdAt})),capsules:S.caps.map(c=>({id:c.id,by:c.by,to:c.to,title:c.title,text:c.text,openOn:c.openOn,at:c.at})),imgs:{}};
   let n=0,miss=0;
   for(const id of ids){
     toast('Menyandarkan gambar '+(++n)+' / '+ids.length+'…');
@@ -2626,9 +2755,10 @@ async function backupAll(){
   const blob=new Blob([JSON.stringify(out)],{type:'application/json'});
   const name='kenangan-sandaran-'+ymd(new Date())+'.json';
   const file=new File([blob],name,{type:'application/json'});
-  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});toast('Sandaran siap.'+(miss?' '+miss+' gambar tak dapat dimuat.':''));return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});bkSet('kk-lastbackup',Date.now());toast('Sandaran siap.'+(miss?' '+miss+' gambar tak dapat dimuat.':''));return;}}catch(e){if(e&&e.name==='AbortError')return;}
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),8000);
+  bkSet('kk-lastbackup',Date.now());
   toast('Sandaran disimpan ('+Math.round(blob.size/1048576*10)/10+' MB).'+(miss?' '+miss+' gambar tak dapat dimuat.':''));
 }
 async function inviteMember(){
@@ -2669,6 +2799,8 @@ document.addEventListener('click',e=>{
   if(e.target===$('set')){closeSet();return;}
   if(e.target===$('plc')){closePlc();return;}
   if(e.target===$('cal')){closeCal();return;}
+  if(e.target===$('cap')){closeCap();return;}
+  if(e.target===$('stat')){closeStat();return;}
   const t=e.target.closest('[data-act]'); if(!t)return;
   const a=t.dataset.act, id=t.dataset.id, v=t.dataset.v;
   if(a==='settings')openSet();
@@ -2694,6 +2826,17 @@ document.addEventListener('click',e=>{
   else if(a==='ss-play')ssToggle();
   else if(a==='ss-shuf'){SS.shuf=!SS.shuf;const cur=SS.items[SS.i];SS.items=ssBuild();const k=SS.items.findIndex(x=>cur&&x.id===cur.id);ssUi();if(!SS.shuf&&k>=0)SS.i=k;ssHideLater();}
   else if(a==='cal-open')openCal();
+  else if(a==='cap-open')openCap();
+  else if(a==='cap-close')closeCap();
+  else if(a==='cap-add')capAdd();
+  else if(a==='cap-del-ask'){S.capDel=id;renderCap();}
+  else if(a==='cap-del-no'){S.capDel='';renderCap();}
+  else if(a==='cap-del-yes'){S.capDel='';S.db.doc('capsules/'+id).delete().then(()=>toast('Kapsul dipadam.')).catch(()=>toast('Tak dapat dipadam.'));renderCap();}
+  else if(a==='stat-open')openStat();
+  else if(a==='stat-close')closeStat();
+  else if(a==='stat-y'){S.statY=+v;renderStat();}
+  else if(a==='stat-share')statShare();
+  else if(a==='bk-snooze'){bkSet('kk-bksnooze',Date.now()+7*864e5);render();}
   else if(a==='cal-close')closeCal();
   else if(a==='cal-add')calAdd();
   else if(a==='cal-ics')calIcs(id);
@@ -2825,6 +2968,8 @@ document.addEventListener('keydown',e=>{
   if(!$('lb').hidden){
     if(e.key==='Escape')closeLB(); else if(e.key==='ArrowLeft')stepLB(-1); else if(e.key==='ArrowRight')stepLB(1);
   }else if(!$('ss').hidden){if(e.key==='Escape')ssClose();else if(e.key==='ArrowRight')ssShow(SS.i+1);else if(e.key==='ArrowLeft')ssShow(SS.i-1);else if(e.key===' '){e.preventDefault();ssToggle();}}
+  else if(!$('cap').hidden&&e.key==='Escape')closeCap();
+  else if(!$('stat').hidden&&e.key==='Escape')closeStat();
   else if(!$('cal').hidden&&e.key==='Escape')closeCal();
   else if(!$('plc').hidden&&e.key==='Escape')closePlc();
   else if(!$('set').hidden&&e.key==='Escape')closeSet();
@@ -2912,6 +3057,7 @@ async function init(){
     render();
   },()=>{});
   S.db.collection('bdays').onSnapshot(snap=>{S.bd=snap.docs.map(d=>normBd(d.id,d.data()||{})).filter(b=>b.name&&b.date);render();if(!$('set').hidden)renderSet();},()=>{});
+  S.db.collection('capsules').onSnapshot(snap=>{S.caps=snap.docs.map(d=>normCap(d.id,d.data()||{})).filter(c=>c.openOn);render();if(!$('cap').hidden)renderCap();},()=>{});
   S.db.collection('cal').onSnapshot(snap=>{S.cal=snap.docs.map(d=>normCal(d.id,d.data()||{})).filter(c=>c.title&&c.date);render();if(!$('cal').hidden)renderCal();if(!snap.metadata.fromCache&&!NT.calOk){NT.calOk=true;calRemind();}},()=>{});
   S.db.collection('locs').onSnapshot(locSnap,()=>{});
   S.db.collection('albums').onSnapshot(snap=>{
