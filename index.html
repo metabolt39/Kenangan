@@ -966,7 +966,7 @@ const pad=n=>String(n).padStart(2,'0');
 const S={
   posts:[],likes:[],comments:[],notes:{},
   ready:false,slow:false,err:'',noDb:false,
-  tab:'utama',cat:'semua',place:'',gmode:'grid',asc:false,sort:'tambah',pin:'',
+  tab:'utama',cat:'semua',place:'',gmode:'grid',gby:'tempat',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
   albums:[],albumsOk:false,bd:[],nt:false,locs:[],myPos:null,cal:[],calDel:'',pcat:'semua',discN:0,plc:-1,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
@@ -1961,8 +1961,19 @@ function galeriHtml(){
     const cov=l=>{const a=[];l.forEach(p=>p.photos.forEach(x=>{if(a.length<3)a.push(x);}));return a;};
     const stack=cv=>'<span class="stack">'+[0,1,2].map(i=>'<i>'+(cv[i]?'<img'+isrc(cv[i])+' alt="" loading="lazy" decoding="async">':'<b></b>')+'</i>').join('')+'</span>';
     const tile=(act,v,title,l)=>{const cv=cov(l),n=l.reduce((a,p)=>a+p.photos.length,0);return '<button type="button" class="acard" data-act="'+act+'" data-v="'+esc(v)+'"'+tintAttr(cv[0])+'>'+stack(cv)+'<span class="ac-t"><strong>'+title+'</strong><span>'+l.length+' kenangan · '+n+' gambar</span></span></button>';};
-    const cats=CATS.map(c=>({c:c,l:f.filter(p=>p.cat===c[0])})).filter(x=>x.l.length);
-    h+=sec('Album')+'<div class="cards">'+cats.map(x=>tile('cat',x.c[0],icon(CIC[x.c[0]]||'pin')+esc(x.c[1]),x.l)).join('')+'</div>';
+    h+='<div class="seg" role="group" aria-label="Susun album ikut" style="margin:14px 0 4px"><button type="button" data-act="gby" data-v="tempat" aria-pressed="'+(S.gby==='tempat')+'">Ikut tempat</button><button type="button" data-act="gby" data-v="cerita" aria-pressed="'+(S.gby==='cerita')+'">Ikut cerita</button></div>';
+    if(S.gby==='cerita'){
+      const st=f.filter(p=>p.photos.length).sort(byMemory);
+      h+=sec('Cerita')+'<div class="cards">'+st.map(p=>{const cv=p.photos.slice(0,3);const ttl=p.place||(p.text?p.text.slice(0,28)+(p.text.length>28?'…':''):CAT[p.cat][1]);
+        return '<button type="button" class="acard" data-act="photo" data-id="'+esc(p.id)+'" data-idx="0"'+tintAttr(cv[0])+'>'+stack(cv)+'<span class="ac-t"><strong>'+esc(ttl)+'</strong><span>'+esc(fmtDate(dateOf(p)))+' · '+p.photos.length+' gambar</span></span></button>';}).join('')+'</div>';
+    }else{
+      const pm=new Map();
+      f.forEach(p=>{const k=pk(p.place);if(!k||!p.photos.length)return;let e=pm.get(k);if(!e){e={k:k,n:p.place,l:[]};pm.set(k,e);}e.l.push(p);});
+      const pl=Array.from(pm.values());
+      h+=sec('Tempat')+'<div class="cards">'+pl.map(e=>tile('place',e.k,icon('pin')+esc(e.n),e.l)).join('')+'</div>';
+      const np=f.filter(p=>!pk(p.place)&&p.photos.length).length;
+      if(np)h+='<p class="hint" style="margin:8px 2px">'+np+' kenangan tiada nama tempat. Lihat di “Ikut cerita”.</p>';
+    }
     const evs=S.albums.slice().sort((a,b)=>b.createdAt-a.createdAt).map(a=>({a:a,l:f.filter(p=>p.album===a.id)})).filter(x=>x.l.length);
     if(evs.length)h+=sec('Acara bersama')+'<div class="cards">'+evs.map(x=>tile('album',x.a.id,esc(x.a.emoji)+' '+esc(x.a.name),x.l)).join('')+'</div>';
     h+='<p class="hint" style="margin:12px 2px">Tekan album untuk lihat gambar di dalamnya.</p>';
@@ -2711,6 +2722,7 @@ document.addEventListener('click',e=>{
   else if(a==='cat'){S.cat=v;S.place='';S.album='';go('galeri');}
   else if(a==='catf'){S.cat=v;render();}
   else if(a==='gmode'){S.gmode=v;render();}
+  else if(a==='gby'){S.gby=v;render();}
   else if(a==='asc'){S.asc=!S.asc;render();}
   else if(a==='clear-place'){S.place='';render();}
   else if(a==='reset-filter'){S.cat='semua';S.place='';S.album='';S.q='';if($('q'))$('q').value='';render();}
