@@ -116,6 +116,19 @@ button{cursor:pointer}
 .top[data-sky=malam]{--sk1:#1b2147;--sk2:#3a3d7a;--glow:rgba(190,200,255,.35);background:radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent 60%),radial-gradient(1px 1px at 30% 60%,#fff,transparent 60%),radial-gradient(1.5px 1.5px at 55% 18%,#fff,transparent 60%),radial-gradient(1px 1px at 72% 48%,#fff,transparent 60%),radial-gradient(1.5px 1.5px at 88% 28%,#fff,transparent 60%),linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.28)),linear-gradient(135deg,var(--sk1),var(--sk2))}
 .top[data-sky=hujan]{--sk1:#44596b;--sk2:#26343f;--glow:rgba(170,200,220,.3)}
 .top[data-sky=mendung]{--sk1:#5f7384;--sk2:#3d4a56;--glow:rgba(220,230,240,.3)}
+.top>*{position:relative;z-index:1}
+.top>.fx{position:absolute;z-index:0;inset:0;overflow:hidden;pointer-events:none;border-radius:inherit}
+.fx .rd{position:absolute;top:-22px;width:2px;height:16px;border-radius:2px;background:linear-gradient(transparent,rgba(210,230,255,.9));animation:fallc linear infinite}
+@keyframes fallc{from{transform:translateY(0)}to{transform:translateY(260px)}}
+.fx .cl{position:absolute;left:-170px;width:calc(120px*var(--s,1));height:calc(34px*var(--s,1));border-radius:40px;background:rgba(255,255,255,.34);filter:blur(1.2px);animation:drift linear infinite}
+.fx .cl::before,.fx .cl::after{content:"";position:absolute;border-radius:50%;background:inherit}
+.fx .cl::before{width:46%;height:150%;left:14%;top:-70%}.fx .cl::after{width:36%;height:120%;left:48%;top:-45%}
+.fx .cl.dk{background:rgba(30,40,52,.55)}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(1100px)}}
+.fx .sun{position:absolute;right:26px;top:20px;width:58px;height:58px;border-radius:50%;background:radial-gradient(circle,#FFF2B8 0 46%,rgba(255,214,102,.75) 62%,transparent 72%);box-shadow:0 0 40px 12px rgba(255,214,110,.45);animation:sunp 5s ease-in-out infinite}
+.fx .sun::before{content:"";position:absolute;inset:-34px;border-radius:50%;background:repeating-conic-gradient(rgba(255,232,150,.5) 0 5deg,transparent 5deg 22deg);-webkit-mask:radial-gradient(circle,transparent 40%,#000 46%,transparent 72%);mask:radial-gradient(circle,transparent 40%,#000 46%,transparent 72%);animation:spin 50s linear infinite}
+@keyframes sunp{50%{transform:scale(1.07);box-shadow:0 0 52px 18px rgba(255,214,110,.55)}}
+@media (prefers-reduced-motion:reduce){.fx .rd,.fx .cl,.fx .sun,.fx .sun::before{animation:none!important}}
 .top .hi{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.25)}
 .top .mood,.top .sub{color:rgba(255,255,255,.88)}
 .top .wx{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35);color:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
@@ -768,6 +781,7 @@ button{cursor:pointer}
     <button type="button" class="me" data-act="settings" aria-label="Tetapan dan akaun" aria-haspopup="dialog"><span id="me-av"></span></button>
   </div>
   <header class="top" id="top" data-sky="siang">
+    <div class="fx" id="fx" aria-hidden="true"></div>
     <p class="hi"><span id="hi-ic"></span><span id="hi-t">Selamat datang</span></p>
     <p class="mood" id="mood"></p>
     <div class="wxrow"><button type="button" class="wx" id="wx" data-act="wx"></button><span class="sub" id="sub"></span></div>
@@ -2244,7 +2258,7 @@ function skyIcon(h,wx,nt){
   else g='<g class="spin">'+SUNR+'</g><circle cx="16" cy="16" r="6" fill="var(--gold)"/>';
   return '<svg class="sky" viewBox="0 0 32 32" aria-hidden="true">'+g+'</svg>';
 }
-let skyKey='';
+let skyKey='',fxKey='';
 function paintSky(){
   const h=new Date().getHours(), L=S.live, wxk=L?L.wx:S.wx, nt=L?!L.isDay:null, k=h+'|'+wxk+'|'+nt;
   if(k!==skyKey){skyKey=k;$('hi-ic').innerHTML=skyIcon(h,wxk,nt);}
@@ -2261,11 +2275,17 @@ function paintSky(){
   }
   const night=nt==null?(h<6||h>=19):nt;
   $('mood').textContent=wxk==='hujan'?'Hujan di luar. Masa sesuai membelek kenangan lama bersama.':wxk==='mendung'?'Langit mendung, tapi kenangan tetap cerah.':night?'Malam yang tenang. Jom ulang tengok gambar-gambar lama.':h<12?'Pagi yang cerah. Simpan satu kenangan baharu hari ini?':'Hari yang indah untuk dikongsi bersama keluarga.';
-  const r=$('rain');
-  if(wxk==='hujan'){
-    if(!r.firstChild){let t='';for(let i=0;i<44;i++)t+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;animation-duration:'+(0.7+Math.random()*0.7).toFixed(2)+'s;animation-delay:-'+(Math.random()*1.5).toFixed(2)+'s;opacity:'+(0.25+Math.random()*0.4).toFixed(2)+'"></i>';r.innerHTML=t;}
-    r.hidden=false;
-  }else r.hidden=true;
+  $('rain').hidden=true;
+  const sun=!night&&wxk==='cerah', fk=wxk+'|'+(sun?h<9?'p':h>=17?'s':'d':'n');
+  if(fk!==fxKey){
+    fxKey=fk;
+    let t='';
+    const cl=(n,dark)=>{let o='';for(let i=0;i<n;i++)o+='<span class="cl'+(dark?' dk':'')+'" style="top:'+(8+Math.random()*(dark?40:70)).toFixed(0)+'%;--s:'+(0.7+Math.random()*0.8).toFixed(2)+';animation-duration:'+(38+Math.random()*40).toFixed(0)+'s;animation-delay:-'+(Math.random()*60).toFixed(0)+'s"></span>';return o;};
+    if(wxk==='hujan'){t+=cl(4,true);for(let i=0;i<46;i++)t+='<i class="rd" style="left:'+(Math.random()*100).toFixed(1)+'%;animation-duration:'+(0.6+Math.random()*0.6).toFixed(2)+'s;animation-delay:-'+(Math.random()*1.4).toFixed(2)+'s;opacity:'+(0.35+Math.random()*0.45).toFixed(2)+'"></i>';}
+    else if(wxk==='mendung')t+=cl(5,false);
+    else if(sun)t+='<span class="sun"></span>'+cl(1,false);
+    $('fx').innerHTML=t;
+  }
 }
 function wxFrom(code,phrase){
   const c=+code, p=String(phrase||'');
