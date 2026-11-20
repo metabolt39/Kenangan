@@ -2212,6 +2212,14 @@ function route(){
 function go(tab){if(location.hash==='#'+tab)render();else location.hash='#'+tab;window.scrollTo(0,0);}
 
 /* ---------- suka, komen, nota, padam ---------- */
+let SC=(()=>{try{const a=new URLSearchParams(location.search).get('a')||'';if(a)history.replaceState(null,'',location.pathname+location.hash);return a;}catch(e){return '';}})();
+function runShortcut(){
+  if(!SC||!S.ready||!S.myId)return;
+  const a=SC;SC='';
+  if(a==='baru'){openSheet();return;}
+  go('peta');
+  setTimeout(()=>{if(a==='loc1')locStart(1);else if(a==='loc8')locStart(8);else if(a==='sampai')locOk();},300);
+}
 function canAct(){
   if(S.noDb||!S.db){toast('Kenangan belum disambungkan.');return false;}
   if(S.canWrite===false){toast('Awak hanya boleh melihat kenangan ini.');return false;}
@@ -2895,7 +2903,7 @@ async function init(){
   S.db.collection('posts').onSnapshot(snap=>{
     S.posts=snap.docs.map(d=>normPost(d.id,d.data()||{}));ntScan('posts',snap);
     if(!snap.metadata.fromCache||snap.size>0)S.ready=true;
-    live(snap);render();
+    live(snap);render();runShortcut();
   },fail);
   S.db.collection('likes').onSnapshot(snap=>{S.likes=snap.docs.map(d=>normLike(d.id,d.data()||{}));ntScan('likes',snap);render();},fail);
   S.db.collection('comments').onSnapshot(snap=>{S.comments=snap.docs.map(d=>normComment(d.id,d.data()||{}));ntScan('comments',snap);render();},fail);
