@@ -1595,10 +1595,14 @@ function lokasiHtml(){
 }
 function tripDay(ms){const d=new Date(ms),t=new Date(),y=new Date(Date.now()-864e5);const same=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();return same(d,t)?'Hari ini':same(d,y)?'Semalam':d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();}
 function tripDur(ms){const m=Math.max(1,Math.round(ms/6e4));return m<60?m+' min':Math.floor(m/60)+' j'+(m%60?' '+(m%60)+' min':'');}
-function getPos(){
-  return new Promise((res,rej)=>{
+function getFix(){
+  const once=o=>new Promise((res,rej)=>{
     if(!navigator.geolocation)return rej({code:0});
-    navigator.geolocation.getCurrentPosition(p=>res(p),e=>rej(e),{enableHighAccuracy:false,timeout:12000,maximumAge:60000});
+    navigator.geolocation.getCurrentPosition(res,rej,o);
+  });
+  return once({enableHighAccuracy:false,timeout:8000,maximumAge:600000}).catch(e=>{
+    if(e&&e.code===1)throw e;
+    return once({enableHighAccuracy:true,timeout:20000,maximumAge:0});
   });
 }
 async function revName(lat,lon){
@@ -1620,7 +1624,7 @@ async function locWrite(opts){
   if(!S.myId||LS.busy)return false;
   LS.busy=true; if(S.tab==='peta')render();
   try{
-    const p=await getPos();
+    const p=await getFix();
     S.myPos={lat:p.coords.latitude,lon:p.coords.longitude};
     const me=locMine(), now=Date.now();
     const until=opts.until||(me?me.until:now+36e5), msg=opts.msg!==undefined?opts.msg:(me?me.msg:'');
@@ -1629,7 +1633,7 @@ async function locWrite(opts){
     await locSave(patch);
     return true;
   }catch(e){
-    toast(e&&e.code===1?'Kebenaran lokasi ditolak. Benarkan dalam tetapan pelayar.':e&&e.code?'Lokasi tidak dapat dikesan sekarang. Cuba lagi.':'Tidak dapat berkongsi lokasi. Pastikan rules terbaharu sudah di-Publish.');
+    toast(e&&e.code===1?'Lokasi tidak dibenarkan. Hidupkan Location untuk pelayar ini dalam Tetapan phone, kemudian cuba lagi.':e&&e.code===2?'Phone belum dapat kesan lokasi. Hidupkan Location dan Precise Location, atau cuba di tempat terbuka.':e&&e.code===3?'Mengesan lokasi mengambil masa terlalu lama. Cuba lagi di tempat terbuka.':e&&e.code===0?'Pelayar ini tidak menyokong lokasi.':'Tidak dapat menyimpan lokasi. Semak rules Firestore sudah di-Publish.');
     return false;
   }finally{LS.busy=false;if(S.tab==='peta')render();}
 }
