@@ -2065,7 +2065,6 @@ function postHtml(p,m){
 function todayStrip(){
   const it=[];
   S.bd.filter(b=>b.date).forEach(b=>{const i=bdInfo(b);if(i.days<=7)it.push({d:i.days,ic:'cake',t:(i.days===0?'Hari ini':i.days===1?'Esok':'Dalam '+i.days+' hari')+': hari lahir '+b.name,a:'tab',v:'keluarga'});});
-  S.cal.filter(c=>c.date).forEach(c=>{const n=calDays(c);if(n>=0&&n<=7)it.push({d:n,ic:'cal',t:calWhen(n)+': '+c.title,a:'cal-open'});});
   const co=S.caps.filter(c=>capOpen(c)&&Date.now()-new Date(c.openOn+'T00:00:00').getTime()<7*864e5).length;
   if(co)it.push({d:-1,ic:'lock',t:co+' kapsul masa sudah boleh dibuka',a:'cap-open'});
   const me=locMine();if(me)it.push({d:-1,ic:'pin',t:'Anda sedang berkongsi lokasi',a:'tab',v:'keluarga'});
@@ -2089,6 +2088,7 @@ function utamaHtml(m){
   if(DEMO)h+=demoBanner();
   if(!DEMO)h+=newBannerHtml();
   if(!DEMO)h+=todayStrip();
+  if(!DEMO&&S.cal.some(c=>c.date&&calDays(c)>=0))h+=calHtml();
   h+=memoryHtml();
   if(!DEMO)h+=throwHtml();
   h+=teaserHtml();
