@@ -681,6 +681,8 @@ button{cursor:pointer}
 .lcard .lh{display:flex;align-items:center;gap:6px}.lcard .lh .i{width:18px;height:18px;stroke:var(--accent)}
 .lcard .lfrom{display:flex;align-items:center;gap:6px}.lcard .lfrom .i{width:15px;height:15px}
 .lhist-h{display:flex;align-items:center;gap:8px;margin:22px 2px 8px;font:600 17px var(--font-display)}.lhist-h .i{width:18px;height:18px}
+.lhs{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 2px 10px;font-size:13.5px;color:var(--ink-2)}
+.lhm{display:flex;align-items:center;gap:10px;margin:12px 2px 6px}
 .lhist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .lhist li{position:relative;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);display:grid;gap:4px}
 .lhist .lw{font-weight:700;font-size:14px}.lhist .lw small{font-weight:500;color:var(--ink-2)}
@@ -1561,7 +1563,7 @@ function calRemind(){
 
 /* ---------- lokasi keluarga ---------- */
 const LS={tm:null,busy:false,prev:null};
-function normLoc(id,d){const n=v=>typeof v==='number'&&isFinite(v)?v:0;return {id:id,lat:n(d.lat),lon:n(d.lon),acc:n(d.acc),at:n(d.at),until:n(d.until),msg:str(d.msg).slice(0,60),sAt:n(d.sAt),sP:str(d.sP).slice(0,80),aAt:n(d.aAt),aP:str(d.aP).slice(0,80),trips:Array.isArray(d.trips)?d.trips.slice(0,15).map(t=>({s:n(t&&t.s),e:n(t&&t.e),sp:str(t&&t.sp).slice(0,80),ep:str(t&&t.ep).slice(0,80),la:n(t&&t.la),lo:n(t&&t.lo)})):[]};}
+function normLoc(id,d){const n=v=>typeof v==='number'&&isFinite(v)?v:0;return {id:id,lat:n(d.lat),lon:n(d.lon),acc:n(d.acc),at:n(d.at),until:n(d.until),msg:str(d.msg).slice(0,60),sAt:n(d.sAt),sP:str(d.sP).slice(0,80),aAt:n(d.aAt),aP:str(d.aP).slice(0,80),hp:d.hp===true,trips:Array.isArray(d.trips)?d.trips.slice(0,15).map(t=>({s:n(t&&t.s),e:n(t&&t.e),sp:str(t&&t.sp).slice(0,80),ep:str(t&&t.ep).slice(0,80),la:n(t&&t.la),lo:n(t&&t.lo)})):[]};}
 function locMine(){return S.locs.find(l=>l.id===S.myId&&l.until>Date.now());}
 function kmBetween(a,b){const R=6371,r=x=>x*Math.PI/180,dl=r(b.lat-a.lat),dn=r(b.lon-a.lon),h=Math.sin(dl/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
 function fmtTime(ms){const d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinutes());}
@@ -1587,12 +1589,20 @@ function lokasiHtml(){
     }).join('')+'</ul>';
   }else h+='<p class="note" style="margin-top:8px">Belum ada ahli lain yang berkongsi lokasi sekarang.</p>';
   h+='<p class="hint" style="margin:6px 2px 4px">Lokasi dikemas kini sementara app terbuka. Apabila app ditutup, lokasi terakhir kekal dipaparkan sehingga tamat masa.</p>';
-  const tr=(ownLoc()||{trips:[]}).trips;
-  if(tr.length){
-    h+='<h3 class="lhist-h">'+icon('clock')+'Sejarah perkongsian saya</h3><ul class="lhist">'+tr.slice(0,10).map(t=>'<li><div class="lw">'+esc(tripDay(t.s))+' · '+esc(fmtTime(t.s))+' – '+esc(fmtTime(t.e))+' <small>('+esc(tripDur(t.e-t.s))+')</small></div><div class="lp"><span><b>Mula</b> '+esc(t.sp||'Tempat tidak diketahui')+'</span><span><b>Tamat</b> '+esc(t.ep||'Tempat tidak diketahui')+'</span></div>'+((t.la||t.lo)?'<a class="map" href="https://www.google.com/maps?q='+t.la+','+t.lo+'" target="_blank" rel="noopener">Peta</a>':'')+'</li>').join('')+'</ul><p class="hint" style="margin:4px 2px 8px">Hanya anda boleh melihat sejarah ini.</p>';
+  const mine=ownLoc(), tr=mine?mine.trips:[];
+  if(!ro&&S.myId){
+    h+='<h3 class="lhist-h">'+icon('clock')+'Sejarah perkongsian saya</h3>'+
+      '<div class="lhs"><span>'+(mine&&mine.hp?'Keluarga boleh melihat sejarah anda.':'Hanya anda boleh melihat sejarah ini.')+'</span><button type="button" class="btn sm ghost" data-act="hist-share" aria-pressed="'+!!(mine&&mine.hp)+'">'+(mine&&mine.hp?'Berhenti kongsi sejarah':'Kongsi sejarah')+'</button></div>';
+    if(tr.length)h+='<ul class="lhist">'+tr.slice(0,10).map(tripLi).join('')+'</ul>';
+    else h+='<p class="hint" style="margin:4px 2px 8px">Belum ada sejarah. Ia muncul selepas awak tamatkan satu perkongsian.</p>';
+  }
+  const oth=S.locs.filter(l=>l.id!==S.myId&&l.hp&&l.trips.length);
+  if(oth.length){
+    h+='<h3 class="lhist-h">'+icon('users')+'Sejarah ahli keluarga</h3>'+oth.map(l=>'<div class="lhm">'+av(l.id,'sm')+'<strong>'+esc(nameOf(l.id))+'</strong></div><ul class="lhist">'+l.trips.slice(0,5).map(tripLi).join('')+'</ul>').join('');
   }
   return h;
 }
+function tripLi(t){return '<li><div class="lw">'+esc(tripDay(t.s))+' · '+esc(fmtTime(t.s))+' – '+esc(fmtTime(t.e))+' <small>('+esc(tripDur(t.e-t.s))+')</small></div><div class="lp"><span><b>Mula</b> '+esc(t.sp||'Tempat tidak diketahui')+'</span><span><b>Tamat</b> '+esc(t.ep||'Tempat tidak diketahui')+'</span></div>'+((t.la||t.lo)?'<a class="map" href="https://www.google.com/maps?q='+t.la+','+t.lo+'" target="_blank" rel="noopener">Peta</a>':'')+'</li>';}
 function tripDay(ms){const d=new Date(ms),t=new Date(),y=new Date(Date.now()-864e5);const same=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();return same(d,t)?'Hari ini':same(d,y)?'Semalam':d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();}
 function tripDur(ms){const m=Math.max(1,Math.round(ms/6e4));return m<60?m+' min':Math.floor(m/60)+' j'+(m%60?' '+(m%60)+' min':'');}
 function getFix(){
@@ -1616,7 +1626,7 @@ async function revName(lat,lon){
 }
 function ownLoc(){return S.locs.find(l=>l.id===S.myId)||null;}
 function locDoc(o,patch){
-  const x=Object.assign({lat:0,lon:0,acc:0,at:0,until:0,msg:'',sAt:0,sP:'',aAt:0,aP:'',trips:[]},o||{},patch||{});
+  const x=Object.assign({lat:0,lon:0,acc:0,at:0,until:0,msg:'',sAt:0,sP:'',aAt:0,aP:'',hp:false,trips:[]},o||{},patch||{});
   delete x.id; return x;
 }
 async function locSave(patch){await S.db.doc('locs/'+S.myId).set(locDoc(ownLoc(),patch));}
@@ -2733,6 +2743,7 @@ document.addEventListener('click',e=>{
   else if(a==='catf'){S.cat=v;render();}
   else if(a==='gmode'){S.gmode=v;render();}
   else if(a==='gby'){S.gby=v;render();}
+  else if(a==='hist-share'){const o=ownLoc();locSave({hp:!(o&&o.hp)}).then(()=>toast(o&&o.hp?'Sejarah anda kini peribadi.':'Keluarga kini boleh lihat sejarah anda.')).catch(()=>toast('Tidak dapat disimpan. Semak rules Firestore.'));}
   else if(a==='asc'){S.asc=!S.asc;render();}
   else if(a==='clear-place'){S.place='';render();}
   else if(a==='reset-filter'){S.cat='semua';S.place='';S.album='';S.q='';if($('q'))$('q').value='';render();}
