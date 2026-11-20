@@ -426,6 +426,7 @@ button{cursor:pointer}
 /* Paparan gambar */
 .lb{position:fixed;inset:0;z-index:60;background:var(--lb-bg);color:var(--lb-ink);display:flex;flex-direction:column;padding:calc(10px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));gap:10px}
 .lb-top{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-variant-numeric:tabular-nums}
+.lb-r{display:flex;gap:10px}
 .lb-btn{width:48px;height:48px;display:grid;place-items:center;border:0;border-radius:50%;background:rgba(255,255,255,.12);color:var(--lb-ink)}
 .lb-stage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
 .lb::before{content:"";position:absolute;inset:-40px;background:var(--lbbg,none) center/cover;filter:blur(36px) brightness(.45) saturate(1.3);z-index:0}
@@ -884,7 +885,8 @@ button{cursor:pointer}
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Paparan gambar">
   <div class="lb-top">
     <span id="lb-count"></span>
-    <button class="lb-btn" id="lb-close" type="button" data-act="lb-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button>
+    <span class="lb-r"><button class="lb-btn" id="lb-share" type="button" data-act="lb-share" aria-label="Kongsi sebagai gambar"><svg class="i" aria-hidden="true"><use href="#i-share"></use></svg></button>
+    <button class="lb-btn" id="lb-close" type="button" data-act="lb-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></span>
   </div>
   <div class="lb-stage" id="lb-stage">
     <button class="lb-btn nav l" id="lb-prev" type="button" data-act="lb-prev" aria-label="Gambar sebelum"><svg class="i" aria-hidden="true"><use href="#i-left"></use></svg></button>
@@ -2277,8 +2279,9 @@ function wrapText(c,text,maxW,maxLines){
   if(out.length>maxLines){out.length=maxLines;let l=out[maxLines-1];while(l.length&&c.measureText(l+'…').width>maxW)l=l.slice(0,-1);out[maxLines-1]=l+'…';}
   return out;
 }
-async function sharePost(id){
-  const p=S.posts.find(x=>x.id===id); if(!p)return;
+async function sharePost(id,only){
+  const p0=S.posts.find(x=>x.id===id); if(!p0)return;
+  const p=only?Object.assign({},p0,{photos:[only]}):p0;
   toast('Menyediakan gambar…');
   const W=1080, M=48, IW=W-2*M, G=16;
   const cs=getComputedStyle(document.documentElement), cv=(n,d)=>(cs.getPropertyValue(n)||'').trim()||d;
@@ -2677,6 +2680,7 @@ document.addEventListener('click',e=>{
   else if(a==='gphoto')openLB(GL,+t.dataset.i);
   else if(a==='pphoto')openLB(PL,+t.dataset.i);
   else if(a==='demo')toast('Ini hanya contoh. Tambah kenangan pertama awak.');
+  else if(a==='lb-share'){const it=LB.items[LB.i];if(it&&it.post)sharePost(it.post.id,it.id);}
   else if(a==='lb-close')closeLB();
   else if(a==='lb-prev')stepLB(-1);
   else if(a==='lb-next')stepLB(1);
