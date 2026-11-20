@@ -248,7 +248,7 @@ button{cursor:pointer}
 .chips{display:flex;gap:8px;overflow-x:auto;padding-block:14px 4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:14px}
-.chip .i{width:16px;height:16px}
+.chip .i{width:16px;height:16px;margin-right:0}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .seg{display:inline-grid;grid-auto-flow:column;gap:4px;padding:4px;border-radius:99px;background:var(--surface-2);margin-top:16px}
 .seg button{min-height:38px;padding:0 18px;border:0;border-radius:99px;background:none;font-weight:600;font-size:14px;color:var(--ink-2)}
@@ -403,7 +403,7 @@ button{cursor:pointer}
 .tabs-in{max-width:640px;margin-inline:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
 .tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;border:0;border-radius:14px;background:none;color:var(--ink-2);font-size:12px;font-weight:600}
 .tab[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
-.fab{position:fixed;z-index:36;bottom:calc(80px + env(safe-area-inset-bottom,0px));right:max(max(16px,env(safe-area-inset-right,0px)),calc(50vw - 320px));display:flex;align-items:center;gap:8px;min-height:52px;padding:0 22px 0 16px;border:0;border-radius:99px;background:var(--gold);color:#2B1A06;font-weight:700;font-size:16px;box-shadow:0 8px 20px rgba(60,40,0,.32)}
+.fab{transition:padding .2s,gap .2s;position:fixed;z-index:36;bottom:calc(80px + env(safe-area-inset-bottom,0px));right:max(max(16px,env(safe-area-inset-right,0px)),calc(50vw - 320px));display:flex;align-items:center;gap:8px;min-height:52px;padding:0 22px 0 16px;border:0;border-radius:99px;background:var(--gold);color:#2B1A06;font-weight:700;font-size:16px;box-shadow:0 8px 20px rgba(60,40,0,.32)}
 
 /* Borang */
 .scrim{position:fixed;inset:0;z-index:70;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
@@ -624,6 +624,7 @@ button{cursor:pointer}
 .vplay.on{background:var(--accent);color:var(--accent-ink);border-color:transparent}
 .gtb{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}.gtb:empty{display:none}
 .gtb .seg{margin-top:0}.gtb .btn.sm{min-height:44px;padding:0 16px;border-radius:99px;white-space:nowrap;display:inline-flex;align-items:center}
+.fab.mini{padding:0 16px;gap:0}.fab.mini .fl{display:none}
 .chips{padding-bottom:14px}.chip{white-space:nowrap}.chip>span[aria-hidden]{font-size:16px;line-height:1}
 .ss{position:fixed;inset:0;z-index:120;background:#000;color:#fff;overflow:hidden;touch-action:pan-y}
 .ssl{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease}
@@ -689,6 +690,12 @@ button{cursor:pointer}
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.500V11a6 6 0 0 1 12 0v5.500l1.500 2h-15zM10 21h4"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.500a2 2 0 0 1 2-2h2l1.500-2h5L16 6.500h2a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.500"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.500v15l12-7.500z"/></symbol>
+  <symbol id="i-utensils" viewBox="0 0 24 24"><path d="M7 3v7a2 2 0 0 0 2 2v9M11 3v7a2 2 0 0 1-2 2M7 3v5M15 21V3c2.500 1.200 4 3.800 4 7v3h-4"/></symbol>
+  <symbol id="i-waves" viewBox="0 0 24 24"><path d="M3 8c2.200-2 4.300-2 6 0s3.800 2 6 0 4-2 6 0M3 13c2.200-2 4.300-2 6 0s3.800 2 6 0 4-2 6 0M3 18c2.200-2 4.300-2 6 0s3.800 2 6 0 4-2 6 0"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-14 15-14 0 9-5 14-13 14M5 19c2-4 5-7 9-9"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M5 21V8l6-4v17M11 21V11l8 3v7M3.500 21h17M8 11h.01M8 15h.01M15 16.500h.01M15 19h.01"/></symbol>
+  <symbol id="i-landmark" viewBox="0 0 24 24"><path d="M4 20h16M6 20v-8M10 20v-8M14 20v-8M18 20v-8M3.500 12h17L12 5z"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9l1.500-5h13L20 9M4 9v11h16V9M4 9c0 1.700 1.300 3 3 3s3-1.300 3-3c0 1.700 1.300 3 3 3s3-1.300 3-3M10 20v-5h4v5"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-7.8-4.7-9.5-9.6C1.3 7.4 3.5 4 7 4c2 0 3.6 1 5 2.9C13.4 5 15 4 17 4c3.5 0 5.7 3.4 4.5 6.9-1.7 4.9-9.5 9.6-9.5 9.6z"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 11.5a8 8 0 0 1-11.7 7.1L3.5 20l1.4-4.8A8 8 0 1 1 20.5 11.5z"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s7-6 7-11.5a7 7 0 1 0-14 0c0 5.5 7 11.5 7 11.5z"/><circle cx="12" cy="10" r="2.5"/></symbol>
@@ -727,7 +734,7 @@ button{cursor:pointer}
   <main id="view" aria-live="polite"></main>
 </div>
 
-<button class="fab" id="fab" data-act="new" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"></use></svg>Tambah</button>
+<button class="fab" id="fab" data-act="new" type="button" aria-label="Tambah kenangan"><svg class="i" aria-hidden="true"><use href="#i-plus"></use></svg><span class="fl">Tambah</span></button>
 
 <nav class="tabs" aria-label="Paparan">
   <div class="tabs-in">
@@ -881,6 +888,7 @@ button{cursor:pointer}
 
 const BULAN=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
 const CATS=[['keluarga','Keluarga','👨‍👩‍👦'],['jalan','Jalan-jalan','🌴'],['makan','Makan-makan','🍜'],['lain','Lain-lain','📷']];
+const CIC={keluarga:'users',jalan:'compass',makan:'utensils',lain:'camera',pantai:'waves',alam:'leaf',bandar:'building',warisan:'landmark',kedai:'store'};
 const CAT={}; CATS.forEach(c=>{CAT[c[0]]=c;});
 const OLDTAG={raya:'keluarga',kenduri:'keluarga',harijadi:'keluarga',konvo:'keluarga',harian:'keluarga',cuti:'jalan'};
 const EMOJIS=['🌴','⛱️','🏔️','🚗','🏍️','🍜','👨‍👩‍👦','🎉','🎂','🕌','📷'];
@@ -1304,7 +1312,7 @@ function cadanganHtml(){
   const l=plcList(), w=wish();
   let h=sec('Jom ke mana?','<button type="button" class="shuf-l" data-act="disc-shuf"><svg class="i" aria-hidden="true"><use href="#i-dice"></use></svg>Lain</button>');
   h+='<button type="button" class="pfeat" data-act="plc" data-v="'+fi+'" aria-label="Cadangan: '+esc(f[1])+'">'+plcImg(f[0],'pfeat-i')+'<span class="pfeat-t"><span class="pk">'+(S.discN?'Cadangan pilihan':'Cadangan hari ini')+' · '+esc(f[2])+'</span><b>'+esc(f[1])+'</b><span>'+esc(f[4])+'</span></span></button>';
-  h+='<div class="chips" role="group" aria-label="Jenis tempat"><button type="button" class="chip" data-act="pcat" data-v="semua" aria-pressed="'+(S.pcat==='semua')+'">Semua</button>'+PCAT.map(c=>'<button type="button" class="chip" data-act="pcat" data-v="'+c[0]+'" aria-pressed="'+(S.pcat===c[0])+'"><span aria-hidden="true">'+c[2]+'</span>'+esc(c[1])+'</button>').join('')+'<button type="button" class="chip" data-act="pcat" data-v="impian" aria-pressed="'+(S.pcat==='impian')+'">♡ Impian'+(w.length?' · '+w.length:'')+'</button></div>';
+  h+='<div class="chips" role="group" aria-label="Jenis tempat"><button type="button" class="chip" data-act="pcat" data-v="semua" aria-pressed="'+(S.pcat==='semua')+'">Semua</button>'+PCAT.map(c=>'<button type="button" class="chip" data-act="pcat" data-v="'+c[0]+'" aria-pressed="'+(S.pcat===c[0])+'">'+icon(CIC[c[0]]||'pin')+esc(c[1])+'</button>').join('')+'<button type="button" class="chip" data-act="pcat" data-v="impian" aria-pressed="'+(S.pcat==='impian')+'">♡ Impian'+(w.length?' · '+w.length:'')+'</button></div>';
   h+=l.length?'<div class="pcs full">'+l.map(plcCard).join('')+'</div>':'<p class="note">Belum ada tempat dalam senarai impian. Buka mana-mana tempat dan tekan ♡.</p>';
   return h+'<p class="hint" style="margin-top:6px">Gambar daripada Wikipedia / Wikimedia Commons.'+(isMk(S.pcat)?' Cadangan makan ialah makanan halal; semak logo halal di kedai.':'')+'</p>';
 }
@@ -1866,7 +1874,7 @@ function galeriHtml(){
   const hasPh=f.some(p=>p.photos.length);
   let h='<div class="gtb">'+seg+(hasPh?'<button type="button" class="btn sm" data-act="slide"><svg class="i" aria-hidden="true"><use href="#i-play"></use></svg>Tayangan slaid</button>':'')+'</div>';
   h+='<div class="chips" role="group" aria-label="Tapis album"><button type="button" class="chip" data-act="catf" data-v="semua" aria-pressed="'+(S.cat==='semua')+'">Semua</button>'+
-    CATS.filter(c=>P.some(p=>p.cat===c[0])||S.cat===c[0]).map(c=>'<button type="button" class="chip" data-act="catf" data-v="'+c[0]+'" aria-pressed="'+(S.cat===c[0])+'"><span aria-hidden="true">'+c[2]+'</span>'+esc(c[1])+'</button>').join('')+
+    CATS.filter(c=>P.some(p=>p.cat===c[0])||S.cat===c[0]).map(c=>'<button type="button" class="chip" data-act="catf" data-v="'+c[0]+'" aria-pressed="'+(S.cat===c[0])+'">'+icon(CIC[c[0]]||'pin')+esc(c[1])+'</button>').join('')+
     (S.place?'<button type="button" class="chip" data-act="clear-place" aria-pressed="true">'+icon('pin')+esc(placeName(S.place))+icon('x')+'</button>':'')+'</div>';
   const nPh=f.reduce((a,p)=>a+p.photos.length,0);
   if(S.q){
@@ -2540,7 +2548,7 @@ async function deleteAlbum(){
   ss.addEventListener('touchend',e=>{if(x0==null)return;const dx=(e.changedTouches[0]||{}).clientX-x0;x0=null;if(Math.abs(dx)>60){ssShow(SS.i+(dx<0?1:-1));ssHideLater();}},{passive:true});
   document.addEventListener('visibilitychange',()=>{if(ss.hidden)return;if(document.hidden)clearTimeout(SS.tm);else if(SS.playing)SS.tm=setTimeout(()=>ssShow(SS.i+1),1200);});
 })();
-window.addEventListener('scroll',()=>{$('bar').classList.toggle('sc',window.scrollY>24);},{passive:true});
+let _sy=0;window.addEventListener('scroll',()=>{const y=window.scrollY;$('bar').classList.toggle('sc',y>24);const f=$('fab');if(f){if(y>_sy+6&&y>160)f.classList.add('mini');else if(y<_sy-6||y<=160)f.classList.remove('mini');}_sy=y;},{passive:true});
 document.addEventListener('click',e=>{
   if(e.target===$('sheet')){closeSheet();return;}
   if(e.target===$('set')){closeSet();return;}
