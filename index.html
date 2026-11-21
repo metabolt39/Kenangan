@@ -800,6 +800,19 @@ body{padding-block:0 150px}
 .ahead .grow{flex:1 1 60%}
 .ahead .grow ~ *{flex:none}
 .ahead .grow ~ .btn:first-of-type{margin-left:0}
+
+.bell{position:relative}
+.bdg{position:absolute;top:2px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--coral);color:#fff;font:700 11px/18px var(--font-body);text-align:center;box-shadow:0 0 0 2px var(--surface)}
+#nt-b{display:grid;gap:8px;margin-top:12px}
+.ntl{display:flex;gap:12px;align-items:flex-start;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);text-align:left;font:inherit}
+button.ntl{cursor:pointer}
+.ntl.un{background:var(--accent-soft);border-color:transparent}
+.nti{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);font-size:19px}
+.ntx{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:14.5px;line-height:1.4}
+.nts{color:var(--ink-2);overflow-wrap:anywhere}
+.ntt{font-size:12px;color:var(--ink-2)}
+.ntn{color:var(--coral)}
+.nt-e{margin:18px 4px;color:var(--ink-2);text-align:center}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -825,6 +838,7 @@ body{padding-block:0 150px}
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.500" width="14" height="10" rx="2.500"/><path d="M8 10.500V8a4 4 0 0 1 8 0v2.500"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20.500h16M7 17v-5M12 17V6M17 17v-8"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.500 11l4.500 4.500 4.500-4.500M5 20h14"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.300 20a1.900 1.900 0 0 0 3.400 0"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 0 1 9.500 4 8.500 8.500 0 1 0 20 14.500z"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.600 5.600L7 7M17 17l1.400 1.400M18.400 5.600L17 7M7 17l-1.400 1.400"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-7.8-4.7-9.5-9.6C1.3 7.4 3.5 4 7 4c2 0 3.6 1 5 2.9C13.4 5 15 4 17 4c3.5 0 5.7 3.4 4.5 6.9-1.7 4.9-9.5 9.6-9.5 9.6z"/></symbol>
@@ -853,6 +867,7 @@ body{padding-block:0 150px}
   <div class="bar" id="bar">
     <img class="logo" src="icon-192.png" alt="" width="32" height="32" onerror="this.remove()">
     <h1 class="brand">Kenangan Keluarga Ahmad</h1>
+    <button type="button" class="icon-btn rnd bell" data-act="nt-open" id="bell-b" aria-label="Notifikasi"><svg class="i" aria-hidden="true"><use href="#i-bell"></use></svg><span class="bdg" id="bell-n" hidden>0</span></button>
     <button type="button" class="icon-btn rnd" data-act="mode" id="mode-b" aria-label="Tukar mod terang atau gelap"><svg class="i ic-moon" aria-hidden="true"><use href="#i-moon"></use></svg><svg class="i ic-sun" aria-hidden="true"><use href="#i-sun"></use></svg></button>
     <button type="button" class="icon-btn rnd" data-act="search" aria-label="Cari kenangan" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-search"></use></svg></button>
     <button type="button" class="me" data-act="settings" aria-label="Tetapan dan akaun" aria-haspopup="dialog"><span id="me-av"></span></button>
@@ -903,6 +918,12 @@ body{padding-block:0 150px}
       <button type="button" class="btn w" data-act="cap-add">Kunci kapsul</button>
     </div>
     <div id="cap-l"></div>
+  </section>
+</div>
+<div class="scrim" id="nt" hidden>
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="nt-t">
+    <div class="sheet-h"><h2 id="nt-t">Notifikasi</h2><button type="button" class="icon-btn" data-act="nt-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <div id="nt-b"></div>
   </section>
 </div>
 <div class="scrim" id="stat" hidden>
@@ -2008,7 +2029,55 @@ function ntScan(k,snap){
     else if(k==='likes'){const l=S.likes.find(x=>x.id===id),p=l&&S.posts.find(x=>x.id===l.postId);if(l&&p&&l.uid!==S.myId&&p.authorId===S.myId)notify(l.r+' '+nameOf(l.uid)+' bereaksi pada kenangan anda','','l'+id);}
   });
 }
+/* ---------- peti notifikasi (dalam app) ---------- */
+function ntKey(){return 'kk-ntseen-'+(S.myId||'x');}
+function ntSeen(){try{const o=JSON.parse(localStorage.getItem(ntKey())||'null');if(o&&typeof o.t==='number')return o;}catch(e){}return null;}
+function ntItems(){
+  const me=S.myId; if(!me)return [];
+  const mine=new Set(S.posts.filter(p=>p.authorId===me).map(p=>p.id)), out=[];
+  S.posts.forEach(p=>{if(p.demo||!p.authorId||p.authorId===me||!p.createdAt)return;
+    out.push({k:'p'+p.id,t:p.createdAt,ic:'📸',h:'<b>'+esc(nameOf(p.authorId))+'</b> tambah kenangan baharu',s:p.place||p.text||'',pid:p.id});});
+  S.comments.forEach(c=>{if(c.authorId===me||!c.createdAt||!mine.has(c.postId))return;
+    out.push({k:'c'+c.id,t:c.createdAt,ic:'💬',h:'<b>'+esc(nameOf(c.authorId))+'</b> mengulas kenangan anda',s:c.text,pid:c.postId});});
+  S.likes.forEach(l=>{if(l.uid===me||!mine.has(l.postId))return;
+    out.push({k:'l'+l.id,t:0,ic:l.r,h:'<b>'+esc(nameOf(l.uid))+'</b> bereaksi pada kenangan anda',s:'',pid:l.postId,like:1});});
+  return out;
+}
+function ntUnread(items){
+  const sn=ntSeen(); if(!sn)return [];
+  const likes=new Set(sn.l||[]);
+  return items.filter(i=>i.like?!likes.has(i.k):i.t>sn.t);
+}
+function ntBadge(){
+  const b=$('bell-n'); if(!b)return;
+  const items=ntItems();
+  if(!ntSeen()&&S.myId&&S.posts.length){ntMark(items);return;}
+  const n=ntUnread(items).length;
+  b.hidden=!n; b.textContent=n>9?'9+':String(n);
+}
+function ntMark(items){
+  try{localStorage.setItem(ntKey(),JSON.stringify({t:Date.now(),l:items.filter(i=>i.like).map(i=>i.k)}));}catch(e){}
+  const b=$('bell-n'); if(b)b.hidden=true;
+}
+function ntAgo(t){const m=Math.floor((Date.now()-t)/60000);if(m<1)return 'baru sahaja';if(m<60)return m+' minit lalu';const h=Math.floor(m/60);if(h<24)return h+' jam lalu';const d=Math.floor(h/24);if(d<7)return d+' hari lalu';return fmtDate(new Date(t).toISOString().slice(0,10));}
+function openNt(){
+  const items=ntItems(), un=new Set(ntUnread(items).map(i=>i.k));
+  const dated=items.filter(i=>!i.like).sort((a,b)=>b.t-a.t).slice(0,40);
+  const lk=items.filter(i=>i.like);
+  let h='';
+  if(lk.length){
+    const un2=lk.filter(i=>un.has(i.k)).length;
+    h+='<div class="ntl"><span class="nti">❤️</span><div class="ntx"><span>'+lk.length+' reaksi pada kenangan anda'+(un2?' · <b class="ntn">'+un2+' baharu</b>':'')+'</span></div></div>';
+  }
+  h+=dated.map(i=>'<button type="button" class="ntl'+(un.has(i.k)?' un':'')+'" data-act="nt-go" data-id="'+esc(i.pid)+'"><span class="nti">'+esc(i.ic)+'</span><span class="ntx"><span>'+i.h+'</span>'+(i.s?'<span class="nts">'+esc(String(i.s).slice(0,90))+'</span>':'')+'<span class="ntt">'+ntAgo(i.t)+'</span></span></button>').join('');
+  if(!h)h='<p class="nt-e">Belum ada aktiviti baharu daripada keluarga.</p>';
+  $('nt-b').innerHTML=h;
+  $('nt').hidden=false;document.body.style.overflow='hidden';
+  ntMark(items);
+}
+function closeNt(){$('nt').hidden=true;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden&&$('stat').hidden)document.body.style.overflow='';}
 function updBadge(){
+  ntBadge();
   try{const n=S.posts.filter(isNew).length;if(n&&navigator.setAppBadge)navigator.setAppBadge(n).catch(()=>{});else if(!n&&navigator.clearAppBadge)navigator.clearAppBadge().catch(()=>{});}catch(e){}
 }
 /* ---------- cetak buku ---------- */
@@ -2973,6 +3042,9 @@ document.addEventListener('click',e=>{
   else if(a==='cap-del-ask'){S.capDel=id;renderCap();}
   else if(a==='cap-del-no'){S.capDel='';renderCap();}
   else if(a==='cap-del-yes'){S.capDel='';S.db.doc('capsules/'+id).delete().then(()=>toast('Kapsul dipadam.')).catch(()=>toast('Tak dapat dipadam.'));renderCap();}
+  else if(a==='nt-open')openNt();
+  else if(a==='nt-close')closeNt();
+  else if(a==='nt-go'){closeNt();const p=findPost(id);if(p&&p.photos&&p.photos.length)openLB(p.photos.map(pid=>({id:pid,post:p})),0);else go('utama');}
   else if(a==='stat-open')openStat();
   else if(a==='stat-close')closeStat();
   else if(a==='stat-y'){S.statY=+v;renderStat();}
@@ -3111,6 +3183,7 @@ document.addEventListener('keydown',e=>{
   }else if(!$('ss').hidden){if(e.key==='Escape')ssClose();else if(e.key==='ArrowRight')ssShow(SS.i+1);else if(e.key==='ArrowLeft')ssShow(SS.i-1);else if(e.key===' '){e.preventDefault();ssToggle();}}
   else if(!$('cap').hidden&&e.key==='Escape')closeCap();
   else if(!$('stat').hidden&&e.key==='Escape')closeStat();
+  else if(!$('nt').hidden&&e.key==='Escape')closeNt();
   else if(!$('cal').hidden&&e.key==='Escape')closeCal();
   else if(!$('plc').hidden&&e.key==='Escape')closePlc();
   else if(!$('set').hidden&&e.key==='Escape')closeSet();
