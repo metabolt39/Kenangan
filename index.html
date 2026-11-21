@@ -1899,11 +1899,20 @@ function getFix(){
     return once({enableHighAccuracy:true,timeout:20000,maximumAge:0});
   });
 }
+async function revAddr(lat,lon,zoom){
+  try{
+    const r=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom='+(zoom||17)+'&accept-language=ms&lat='+lat+'&lon='+lon);
+    if(r.ok){const a=(await r.json()).address;if(a&&Object.keys(a).length)return a;}
+  }catch(e){}
+  try{
+    const r=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage=ms&latitude='+lat+'&longitude='+lon);
+    if(r.ok){const j=await r.json();return {suburb:j.locality||'',city:j.city||'',county:j.principalSubdivision||''};}
+  }catch(e){}
+  return {};
+}
 async function revName(lat,lon){
   try{
-    const r=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=17&accept-language=ms&lat='+lat+'&lon='+lon);
-    if(!r.ok)return '';
-    const a=(await r.json()).address||{};
+    const a=await revAddr(lat,lon,17);
     const road=a.road||a.neighbourhood||'', area=a.suburb||a.village||a.town||a.city_district||a.city||a.county||'';
     return [road,area].filter((x,i,arr)=>x&&arr.indexOf(x)===i).join(', ').slice(0,80);
   }catch(e){return '';}
@@ -2497,12 +2506,9 @@ async function tryGps(manual){
     return false;
   }
   const key=pos.coords.latitude.toFixed(3)+','+pos.coords.longitude.toFixed(3);
-  if(key!==S.lk||!S.cityName){
+  if(key!==S.lk||!S.cityName||S.cityName==='Lokasi anda'){
     let name='';
-    try{
-      const r=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&accept-language=ms&lat='+pos.coords.latitude+'&lon='+pos.coords.longitude);
-      if(r.ok){const a=(await r.json()).address||{};name=a.suburb||a.neighbourhood||a.city_district||a.village||a.town||a.city||a.county||'';}
-    }catch(e){}
+    try{const a=await revAddr(pos.coords.latitude,pos.coords.longitude,14);name=a.suburb||a.neighbourhood||a.city_district||a.village||a.town||a.city||a.county||'';}catch(e){}
     S.cityName=String(name||'Lokasi anda').slice(0,40);
   }
   S.lk=key; S.gpsAt=Date.now();
@@ -3113,7 +3119,11 @@ document.addEventListener('click',e=>{
   else if(a==='submit')submit();
   else if(a==='edit')editPost(id);
   else if(a==='more'){if(S.more.has(id))S.more.delete(id);else S.more.add(id);render();}
-  else if(a==='gps-place'){toast('Mengesan lokasi…');getPos().then(c=>{if(c){F.coord=c;renderCoord();toast('Lokasi disimpan untuk kenangan ini.');}});}
+  else if(a==='gps-place'){toast('Mengesan lokasi…');getPos().then(async c=>{if(!c)return;F.coord=c;renderCoord();
+    const inp=$('f-place'),nm=await revName(c.lat,c.lon);
+    if(nm&&inp&&!inp.value.trim()){inp.value=nm;inp.dispatchEvent(new Event('input',{bubbles:true}));toast('Lokasi: '+nm);}
+    else if(!nm)toast('Lokasi disimpan, tapi nama tempat tak dapat dikesan. Taip sendiri.');
+    else toast('Lokasi disimpan untuk kenangan ini.');});}
   else if(a==='gps-clear'){F.coord=null;renderCoord();}
   else if(a==='setloc'){const o=mapData().off.find(x=>pk(x.name)===v);S.locSet=S.locSet===v?'':v;S.locQ=o?o.name:'';render();}
   else if(a==='loc-search'){
