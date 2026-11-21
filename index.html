@@ -1015,7 +1015,8 @@ button.ntl{cursor:pointer}
     <form class="cityf" id="cityf" hidden><input id="cityi" type="text" maxlength="60" placeholder="cth. Ipoh, Kuching, Johor Bahru" aria-label="Nama bandar" autocomplete="off"><button class="btn" type="submit">Cari</button><button class="btn ghost" type="button" data-act="gps"><svg class="i" aria-hidden="true"><use href="#i-pin"></use></svg> Guna lokasi</button></form>
     <h3 class="set-h">Notifikasi</h3>
     <p class="set-p" id="set-nt"></p>
-    <div class="set-row"><button type="button" class="btn sm" data-act="nt" id="nt-b">Hidupkan notifikasi</button></div>
+    <div class="set-row"><button type="button" class="btn sm" data-act="nt" id="nt-b">Hidupkan notifikasi</button> <button type="button" class="btn sm ghost" data-act="nt-test" id="nt-test" hidden>Hantar ujian</button></div>
+    <p class="set-p" id="nt-st"></p>
     <h3 class="set-h">Hari lahir keluarga</h3>
     <div class="bd-l" id="set-bdl"></div>
     <div class="bd-f"><input id="bd-n" type="text" maxlength="40" placeholder="Nama (cth. Atok)" aria-label="Nama" autocomplete="off"><input id="bd-d" type="date" aria-label="Tarikh lahir" max="2100-12-31"><button type="button" class="btn sm" data-act="bd-add">Tambah hari lahir</button></div>
@@ -1145,6 +1146,7 @@ function renderSet(){
   $('set-loc').textContent=S.gpsOn?'Mengikut lokasi anda'+(city?': '+city:'')+'.':'Bandar dipilih'+(city?': '+city:'')+'.';
   $('set-admin').hidden=!S.isOwner;
   const nt=ntOn(); $('nt-b').textContent=nt?'Matikan notifikasi':'Hidupkan notifikasi';
+  {const tb=$('nt-test'),st=$('nt-st');if(tb)tb.hidden=!(PUSH_URL&&nt);if(st)st.textContent=!PUSH_URL||!nt?'':S.pushOn?'✓ Peranti ini sudah didaftar untuk notifikasi.':(S.pushErr?'✗ Belum didaftar: '+S.pushErr:'Mendaftar peranti…');}
   $('set-nt').textContent=(PUSH_URL&&nt)?'Hidup. Anda akan dapat pemberitahuan di skrin walaupun app ditutup, bila ada kenangan, komen atau reaksi baharu.':PUSH_URL?'Dapatkan pemberitahuan di skrin bila ada kenangan, komen atau reaksi baharu, walaupun app ditutup. Setiap ahli perlu hidupkan sekali di peranti masing-masing.':nt?'Hidup. Anda dapat pemberitahuan bila ada kenangan, komen atau reaksi baharu, selagi app terbuka di latar belakang.':'Dapatkan pemberitahuan bila ada kenangan, komen atau reaksi baharu. Berfungsi bila app terbuka di latar belakang; app yang ditutup sepenuhnya tidak boleh menghantar pemberitahuan.';
   $('set-bdl').innerHTML=S.bd.length?S.bd.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(b=>'<div><span><svg class="i" aria-hidden="true"><use href="#i-cake"></use></svg> '+esc(b.name)+' <small>'+esc(fmtDate(b.date))+'</small> <small class="bage">· '+esc(ageNow(b.date))+'</small></span>'+((b.by===S.myId||S.canEdit)?'<button type="button" class="icon-btn" data-act="bd-del" data-id="'+esc(b.id)+'" aria-label="Padam '+esc(b.name)+'">'+icon('trash')+'</button>':'')+'</div>').join(''):'<p class="set-p">Belum ada. Tambah hari lahir ahli keluarga supaya app ingatkan.</p>';
 }
@@ -2097,7 +2099,7 @@ const PUSH_KEY='BL3ExPc-iN6pKcx_WZIDRHH-ngGWF4gib_EutsxwSpl53DQ6HeZV6HLSrrbLm-rB
 let PUSHSUBS=[];
 const urlB64=b=>{b=b.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';const r=atob(b),o=new Uint8Array(r.length);for(let i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o;};
 async function pushSubscribe(){
-  if(!PUSH_URL||!S.myId||!navigator.serviceWorker||!('PushManager' in window))return false;
+  if(!PUSH_URL||!S.myId||!navigator.serviceWorker||!('PushManager' in window)){S.pushErr='Peranti/pelayar ini tidak menyokong notifikasi tolak (iPhone: pasang app ke skrin utama, iOS 16.4+)';return false;}
   try{
     const reg=await navigator.serviceWorker.ready;
     let sub=await reg.pushManager.getSubscription();
@@ -2105,18 +2107,18 @@ async function pushSubscribe(){
       catch(e){const old=await reg.pushManager.getSubscription();if(old)await old.unsubscribe();sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64(PUSH_KEY)});}}
     const j=sub.toJSON();
     await S.db.doc('push/'+S.myId).set({endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,at:Date.now()});
-    S.pushOn=true;return true;
-  }catch(e){S.pushOn=false;return false;}
+    S.pushOn=true;S.pushErr='';return true;
+  }catch(e){S.pushOn=false;S.pushErr=String(e&&e.message||e).slice(0,80);return false;}
 }
 async function pushUnsubscribe(){
   S.pushOn=false;
   try{const reg=await navigator.serviceWorker.ready;const sub=await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe();}catch(e){}
   try{if(S.myId)await S.db.doc('push/'+S.myId).delete();}catch(e){}
 }
-async function pushSend(uids,title,body,tag){
+async function pushSend(uids,title,body,tag,self){
   try{
     if(!PUSH_URL||!S.myId||!window.__idToken)return;
-    const set=new Set(uids);set.delete(S.myId);
+    const set=new Set(uids);if(!self)set.delete(S.myId);
     const subs=PUSHSUBS.filter(x=>set.has(x.uid)&&x.endpoint&&x.p256dh&&x.auth).map(x=>({uid:x.uid,endpoint:x.endpoint,p256dh:x.p256dh,auth:x.auth}));
     if(!subs.length)return;
     const token=await window.__idToken(); if(!token)return;
@@ -2866,7 +2868,7 @@ async function toggleLike(postId){
   const liked=S.likes.some(l=>l.id===key);
   try{
     const ref=S.db.doc('likes/'+key);
-    if(liked)await ref.delete(); else {S.popKey=postId;await ref.set({postId:postId,uid:S.myId,createdAt:Date.now()});{const pp=S.posts.find(x=>x.id===postId);if(pp&&pp.authorId)pushSend([pp.authorId],'❤️ '+nameOf(S.myId)+' suka kenangan anda','','kk-lk-'+postId);}}
+    if(liked)await ref.delete(); else {S.popKey=postId;await ref.set({postId:postId,uid:S.myId,createdAt:Date.now()});{const pp=S.posts.find(x=>x.id===postId);if(pp&&pp.authorId)pushSend([pp.authorId],'❤️ '+nameOf(S.myId),'Suka kenangan anda','kk-lk-'+postId);}}
   }catch(e){toast('Tidak dapat menyimpan. Cuba lagi.');}
   finally{S.busy.delete(key);}
 }
@@ -2878,7 +2880,7 @@ async function setReaction(postId,e){
   try{
     const ref=S.db.doc('likes/'+key);
     if(cur&&cur.r===e)await ref.delete();
-    else{if(cur)await ref.delete();S.popKey=postId;await ref.set({postId:postId,uid:S.myId,r:e,createdAt:Date.now()});{const pp=S.posts.find(x=>x.id===postId);if(pp&&pp.authorId)pushSend([pp.authorId],e+' '+nameOf(S.myId)+' bereaksi pada kenangan anda','','kk-lk-'+postId);}}
+    else{if(cur)await ref.delete();S.popKey=postId;await ref.set({postId:postId,uid:S.myId,r:e,createdAt:Date.now()});{const pp=S.posts.find(x=>x.id===postId);if(pp&&pp.authorId)pushSend([pp.authorId],e+' '+nameOf(S.myId),'Bereaksi pada kenangan anda','kk-lk-'+postId);}}
   }catch(x){toast('Tidak dapat menyimpan. Cuba lagi.');}
   finally{S.busy.delete(key);}
 }
@@ -2888,7 +2890,7 @@ async function sendComment(postId){
   const key='c:'+postId; if(S.busy.has(key))return; S.busy.add(key);
   try{
     await S.db.collection('comments').add({postId:postId,authorId:S.myId,text:text.slice(0,500),createdAt:Date.now()});
-    {const pp=S.posts.find(x=>x.id===postId);if(pp&&pp.authorId)pushSend([pp.authorId],nameOf(S.myId)+' mengulas kenangan anda',text.slice(0,100),'kk-cm-'+postId);}
+    {const pp=S.posts.find(x=>x.id===postId);if(pp&&pp.authorId)pushSend([pp.authorId],'💬 '+nameOf(S.myId),'Komen: '+text.slice(0,100),'kk-cm-'+postId);}
     delete S.drafts[postId]; render();
   }catch(e){toast('Komen tidak dapat dihantar. Cuba lagi.');}
   finally{S.busy.delete(key);}
@@ -3231,7 +3233,7 @@ async function submit(){
       return;
     }
     await S.db.collection('posts').add(Object.assign({authorId:S.myId,createdAt:Date.now()},fields));
-    pushSend(PUSHSUBS.map(x=>x.uid),nameOf(S.myId)+' tambah kenangan baharu',fields.place||String(fields.text||'').slice(0,90),'kk-post');
+    pushSend(PUSHSUBS.map(x=>x.uid),'📸 '+nameOf(S.myId),'Kenangan baharu · '+(fields.place||String(fields.text||'').slice(0,80)),'kk-post');
     F.files.forEach(f=>URL.revokeObjectURL(f.url)); F.files=[]; F.emoji=''; renderPreviews();F.voice=null;renderVoice();
     $('f-story').value='';$('f-place').value='';$('f-date').value='';updCount();
     F.busy=false; $('submit').disabled=false; setStatus('');
@@ -3319,6 +3321,7 @@ document.addEventListener('click',e=>{
   else if(a==='invite')inviteMember();
   else if(a==='backup')backupAll();
   else if(a==='nt')ntToggle();
+  else if(a==='nt-test'){toast('Menghantar ujian…');(async()=>{if(!S.pushOn)await pushSubscribe();renderSet();await pushSend([S.myId],'🔔 Ujian notifikasi','Jika anda nampak ini, notifikasi berfungsi.','kk-test',true);})();}
   else if(a==='loc-start')locStart(+v||1);
   else if(a==='loc-now')locWrite({msg:''}).then(ok=>{if(ok)toast('Lokasi dikemas kini.');});
   else if(a==='loc-ok')locOk();
