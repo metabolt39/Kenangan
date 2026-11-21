@@ -2624,7 +2624,11 @@ async function render(){
   else if(!S.ready)h=loadingHtml();
   else h=S.tab==='galeri'?galeriHtml():S.tab==='peta'?petaHtml():S.tab==='keluarga'?keluargaHtml():S.tab==='jelajah'?cadanganHtml():utamaHtml(m);
   if(S.err&&!S.noDb)h='<p class="note">Sebahagian data tidak dapat dimuat ('+esc(S.err)+'). Muat semula halaman untuk cuba lagi.</p>'+h;
+  const sy=window.scrollY, same=(window._lastTab===S.tab+'|'+(S.album||'')+'|'+(S.place||'')+'|'+(S.gby||''));
+  window._lastTab=S.tab+'|'+(S.album||'')+'|'+(S.place||'')+'|'+(S.gby||'');
+  if(same&&sy>0)view.style.minHeight=view.offsetHeight+'px';
   view.innerHTML=h;
+  if(same&&sy>0){window.scrollTo(0,sy);clearTimeout(window._mhT);window._mhT=setTimeout(()=>{view.style.minHeight='';},1500);}
   S.popKey='';
   if(fid){const el=$(fid);if(el){el.focus({preventScroll:true});if(ss!=null){try{el.setSelectionRange(ss,se);}catch(e){}}}}
   wkFill();
