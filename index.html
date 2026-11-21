@@ -539,6 +539,7 @@ button{cursor:pointer}
 .bd-l>div{display:flex;align-items:center;gap:8px;font-size:14px;padding:6px 2px}
 .bd-l>div span{flex:1;min-width:0}
 .bd-l>div small{color:var(--ink-2)}
+.bd-l .bage{font-weight:700;color:var(--accent)}
 #pbook{display:none}
 @media print{
   @page{size:A4;margin:14mm}
@@ -1113,7 +1114,7 @@ function renderSet(){
   $('set-admin').hidden=!S.isOwner;
   const nt=ntOn(); $('nt-b').textContent=nt?'Matikan notifikasi':'Hidupkan notifikasi';
   $('set-nt').textContent=nt?'Hidup. Anda dapat pemberitahuan bila ada kenangan, komen atau reaksi baharu, selagi app terbuka di latar belakang.':'Dapatkan pemberitahuan bila ada kenangan, komen atau reaksi baharu. Berfungsi bila app terbuka di latar belakang; app yang ditutup sepenuhnya tidak boleh menghantar pemberitahuan.';
-  $('set-bdl').innerHTML=S.bd.length?S.bd.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(b=>'<div><span><svg class="i" aria-hidden="true"><use href="#i-cake"></use></svg> '+esc(b.name)+' <small>'+esc(fmtDate(b.date))+'</small></span>'+((b.by===S.myId||S.canEdit)?'<button type="button" class="icon-btn" data-act="bd-del" data-id="'+esc(b.id)+'" aria-label="Padam '+esc(b.name)+'">'+icon('trash')+'</button>':'')+'</div>').join(''):'<p class="set-p">Belum ada. Tambah hari lahir ahli keluarga supaya app ingatkan.</p>';
+  $('set-bdl').innerHTML=S.bd.length?S.bd.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(b=>'<div><span><svg class="i" aria-hidden="true"><use href="#i-cake"></use></svg> '+esc(b.name)+' <small>'+esc(fmtDate(b.date))+'</small> <small class="bage">· '+esc(ageNow(b.date))+'</small></span>'+((b.by===S.myId||S.canEdit)?'<button type="button" class="icon-btn" data-act="bd-del" data-id="'+esc(b.id)+'" aria-label="Padam '+esc(b.name)+'">'+icon('trash')+'</button>':'')+'</div>').join(''):'<p class="set-p">Belum ada. Tambah hari lahir ahli keluarga supaya app ingatkan.</p>';
 }
 function openSet(){
   S.setPrev=document.activeElement; renderSet();
@@ -1985,6 +1986,13 @@ function locSnap(snap){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)locTick(false);});
 /* ---------- hari lahir ---------- */
 function normBd(id,d){return {id:id,name:str(d.name).trim().slice(0,40),date:validDate(d.date)?d.date:'',by:str(d.by)};}
+function ageNow(ds){
+  const p=String(ds).split('-').map(Number); if(p.length<3||!p[0])return '';
+  const n=new Date(); let m=(n.getFullYear()-p[0])*12+(n.getMonth()+1-p[1]); if(n.getDate()<p[2])m--;
+  if(m<0)return '';
+  if(m<12)return m+' bulan';
+  const y=Math.floor(m/12); return y+' tahun';
+}
 function bdInfo(b){
   const t=new Date(); const t0=new Date(t.getFullYear(),t.getMonth(),t.getDate());
   const p=b.date.split('-').map(Number); let y=t0.getFullYear(); let n=new Date(y,p[1]-1,p[2]);
