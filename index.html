@@ -3119,11 +3119,20 @@ document.addEventListener('click',e=>{
   else if(a==='submit')submit();
   else if(a==='edit')editPost(id);
   else if(a==='more'){if(S.more.has(id))S.more.delete(id);else S.more.add(id);render();}
-  else if(a==='gps-place'){toast('Mengesan lokasi…');getPos().then(async c=>{if(!c)return;F.coord=c;renderCoord();
-    const inp=$('f-place'),nm=await revName(c.lat,c.lon);
-    if(nm&&inp&&!inp.value.trim()){inp.value=nm;inp.dispatchEvent(new Event('input',{bubbles:true}));toast('Lokasi: '+nm);}
-    else if(!nm)toast('Lokasi disimpan, tapi nama tempat tak dapat dikesan. Taip sendiri.');
-    else toast('Lokasi disimpan untuk kenangan ini.');});}
+  else if(a==='gps-place'){
+    const st=$('f-gps-s'),inp=$('f-place');
+    if(st)st.textContent='Mengesan lokasi…';
+    getPos().then(async c=>{
+      if(!c){if(st)st.textContent='Gagal. Cuba lagi.';return;}
+      F.coord=c;
+      if(st)st.textContent='Mencari nama tempat…';
+      let nm=await revName(c.lat,c.lon);
+      if(!nm){const ng=stateOf(c.lon,c.lat);if(ng)nm=ng;}
+      if(nm&&inp&&!inp.value.trim()){inp.value=nm;inp.dispatchEvent(new Event('input',{bubbles:true}));}
+      renderCoord();
+      if(st&&nm)st.insertAdjacentHTML('afterbegin','<b>'+esc(nm)+'</b> ');
+      else if(st&&!nm)st.insertAdjacentHTML('afterbegin','Nama tak dapat dikesan, taip sendiri. ');
+    });}
   else if(a==='gps-clear'){F.coord=null;renderCoord();}
   else if(a==='setloc'){const o=mapData().off.find(x=>pk(x.name)===v);S.locSet=S.locSet===v?'':v;S.locQ=o?o.name:'';render();}
   else if(a==='loc-search'){
