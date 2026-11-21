@@ -2213,6 +2213,14 @@ function ntItems(){
     out.push({k:'c'+c.id,t:c.createdAt,ic:'💬',h:'<b>'+esc(nameOf(c.authorId))+'</b> mengulas kenangan anda',s:c.text,pid:c.postId});});
   S.likes.forEach(l=>{if(l.uid===me||!mine.has(l.postId))return;
     out.push({k:'l'+l.id,t:0,ic:l.r,h:'<b>'+esc(nameOf(l.uid))+'</b> bereaksi pada kenangan anda',s:'',pid:l.postId,like:1});});
+  if(INFO.d&&INFO.d.warn&&INFO.d.warn.length){
+    let ws={};try{ws=JSON.parse(localStorage.getItem('kk-warnseen')||'{}');}catch(e){}
+    const now=Date.now();let ch=false;
+    Object.keys(ws).forEach(k=>{if(now-ws[k]>3*864e5){delete ws[k];ch=true;}});
+    INFO.d.warn.forEach(w=>{const k='w'+String(w.t+w.x).slice(0,60);if(!ws[k]){ws[k]=now;ch=true;}
+      out.push({k:k,t:ws[k],ic:'⚠️',h:'<b>'+esc(w.t)+'</b>',s:w.x,w:1});});
+    if(ch)try{localStorage.setItem('kk-warnseen',JSON.stringify(ws));}catch(e){}
+  }
   return out;
 }
 function ntUnread(items){
@@ -2241,7 +2249,7 @@ function openNt(){
     const un2=lk.filter(i=>un.has(i.k)).length;
     h+='<div class="ntl"><span class="nti">❤️</span><div class="ntx"><span>'+lk.length+' reaksi pada kenangan anda'+(un2?' · <b class="ntn">'+un2+' baharu</b>':'')+'</span></div></div>';
   }
-  h+=dated.map(i=>'<button type="button" class="ntl'+(un.has(i.k)?' un':'')+'" data-act="nt-go" data-id="'+esc(i.pid)+'"><span class="nti">'+esc(i.ic)+'</span><span class="ntx"><span>'+i.h+'</span>'+(i.s?'<span class="nts">'+esc(String(i.s).slice(0,90))+'</span>':'')+'<span class="ntt">'+ntAgo(i.t)+'</span></span></button>').join('');
+  h+=dated.map(i=>i.w?'<div class="ntl warn'+(un.has(i.k)?' un':'')+'"><span class="nti">'+esc(i.ic)+'</span><span class="ntx"><span>'+i.h+'</span>'+(i.s?'<span class="nts" style="white-space:normal">'+esc(i.s)+'</span>':'')+'<span class="ntt">'+ntAgo(i.t)+'</span></span></div>':'<button type="button" class="ntl'+(un.has(i.k)?' un':'')+'" data-act="nt-go" data-id="'+esc(i.pid)+'"><span class="nti">'+esc(i.ic)+'</span><span class="ntx"><span>'+i.h+'</span>'+(i.s?'<span class="nts">'+esc(String(i.s).slice(0,90))+'</span>':'')+'<span class="ntt">'+ntAgo(i.t)+'</span></span></button>').join('');
   if(!h)h='<p class="nt-e">Belum ada aktiviti baharu daripada keluarga.</p>';
   $('ntl-b').innerHTML=h;
   $('nt').hidden=false;document.body.style.overflow='hidden';
@@ -2637,8 +2645,12 @@ async function infoLoad(force){
     tj('https://air-quality-api.open-meteo.com/v1/air-quality?latitude='+c.lat+'&longitude='+c.lon+'&current=us_aqi,pm2_5').then(r=>{if(r.current&&r.current.us_aqi!=null)d.aqi=Math.round(r.current.us_aqi);}).catch(()=>{}),
     tj('https://api.data.gov.my/weather/warning').then(a=>{
       if(!Array.isArray(a))return;const now=Date.now();
+      const seen=new Set();
       d.warn=a.filter(w=>{
         const js=JSON.stringify(w).toLowerCase();
+        const hd=String(w.heading_bm||w.heading_en||'')+' '+String(w.text_bm||w.text_en||'').slice(0,80);
+        if(/perairan|laut bergelora/i.test(hd))return false;
+        const dk=hd.toLowerCase();if(seen.has(dk))return false;seen.add(dk);
         const vt=w.valid_to||(w.warning_issue&&w.warning_issue.valid_to)||'';
         if(vt){const t=Date.parse(String(vt).replace(' ','T'));if(t&&t<now)return false;}
         return !st||js.indexOf(st.toLowerCase())>=0;
@@ -2649,6 +2661,7 @@ async function infoLoad(force){
   await Promise.all(jobs);
   INFO.busy=false;INFO.d=d;INFO.key=key;
   try{localStorage.setItem('kk-infodata',JSON.stringify({key:key,at:Date.now(),d:d}));}catch(e){}
+  try{ntBadge();}catch(e){}
   if(S.tab==='utama')render();
 }
 function infoNext(d){
@@ -2663,8 +2676,6 @@ function infoHtml(){
   infoLoad();
   const d=INFO.d,c=infoCoord(),n=new Date();
   const doa=DOA[dayOfYear()%DOA.length];
-  let warn='';
-  if(d&&d.warn&&d.warn.length)warn=d.warn.map(w=>'<div class="iw" role="alert"><b>⚠️ '+esc(w.t)+'</b>'+(w.x?'<span>'+esc(w.x)+'</span>':'')+'</div>').join('');
   const nx=d&&infoNext(d);
   const sum=!d?'Memuatkan waktu solat…':(nx?esc(nx.n)+' '+esc(nx.t)+' · '+(nx.esok?'esok · ':'')+remTxt(nx.r)+(d.hj?' · '+esc(d.hj):''):(d.hj?esc(d.hj):'Info hari ini'));
   let b='';
@@ -2678,7 +2689,7 @@ function infoHtml(){
     b+='<div class="ilk"><a class="chip" href="https://www.google.com/maps/search/restoran+halal/@'+c.lat+','+c.lon+',15z" target="_blank" rel="noopener">'+icon('pin')+'Cari makan halal berdekatan</a></div>';
     b+='</div>';
   }
-  return warn+'<div class="icard"><button type="button" class="ih" data-act="info-tg" aria-expanded="'+S.infoOpen+'"><span class="ih-i" aria-hidden="true">'+icon('clock')+'</span><span class="ih-t"><b>Info hari ini</b><span>'+sum+'</span></span><span class="ih-c" aria-hidden="true">'+(S.infoOpen?'▲':'▼')+'</span></button>'+b+'</div>';
+  return '<div class="icard"><button type="button" class="ih" data-act="info-tg" aria-expanded="'+S.infoOpen+'"><span class="ih-i" aria-hidden="true">'+icon('clock')+'</span><span class="ih-t"><b>Info hari ini</b><span>'+sum+'</span></span><span class="ih-c" aria-hidden="true">'+(S.infoOpen?'▲':'▼')+'</span></button>'+b+'</div>';
 }
 function todayStrip(){
   const it=[],bc=[];
