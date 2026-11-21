@@ -855,7 +855,7 @@ button.ntl{cursor:pointer}
 @media (prefers-reduced-motion:reduce){:root[data-3d="1"] *{transition:none!important}}
 
 /* ===== Kad peringatan hari lahir ===== */
-.tbds{display:grid;gap:10px;margin:0 0 14px}
+.tbds{display:grid;gap:10px;margin:14px 0 14px}
 .tbd{display:flex;align-items:center;gap:14px;width:100%;padding:12px 16px 12px 12px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer;box-shadow:var(--shadow)}
 .tbd-i{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft)}
 .tbd-i .i{width:24px;height:24px;stroke:var(--accent)}
@@ -2569,7 +2569,7 @@ function todayStrip(){
   it.sort((a,b)=>a.d-b.d);
   const cards=bc.slice(0,3).map(x=>{
     const when=x.d===0?'Hari ini':x.d===1?'Esok':'Dalam '+x.d+' hari';
-    const sub=[when,x.i.md,x.i.age?'ke\u2011'+x.i.age:''].filter(Boolean).join(' · ');
+    const sub=[x.d===0?when:'',x.i.md,x.i.age?'ke\u2011'+x.i.age:''].filter(Boolean).join(' · ');
     const big=x.d===0?'<span class="tbd-d fest" aria-hidden="true">🎉</span>':'<span class="tbd-d" aria-hidden="true"><b>'+x.d+'</b><small>hari</small></span>';
     return '<button type="button" class="tbd'+(x.d===0?' today':'')+'" data-act="tab" data-v="keluarga"><span class="tbd-i" aria-hidden="true">'+icon('cake')+'</span><span class="tbd-t"><b>Hari lahir '+esc(x.n)+'</b><span>'+esc(sub)+'</span></span>'+big+'</button>';
   }).join('');
