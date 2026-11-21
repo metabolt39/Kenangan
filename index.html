@@ -938,6 +938,13 @@ button.ntl{cursor:pointer}
     <div id="cap-l"></div>
   </section>
 </div>
+<div class="scrim" id="bk" hidden>
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="bk-t">
+    <div class="sheet-h"><h2 id="bk-t">Buku kenangan siap</h2><button type="button" class="icon-btn" data-act="bk-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <p id="bk-m" style="margin:12px 0 16px;color:var(--ink-2)"></p>
+    <div style="display:grid;gap:10px"><button type="button" class="btn block" data-act="bk-share">Kongsi / Simpan</button><button type="button" class="btn block ghost" data-act="bk-open">Buka PDF</button></div>
+  </section>
+</div>
 <div class="scrim" id="nt" hidden>
   <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="nt-t">
     <div class="sheet-h"><h2 id="nt-t">Notifikasi</h2><button type="button" class="icon-btn" data-act="nt-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
@@ -2115,7 +2122,180 @@ function updBadge(){
   try{const n=S.posts.filter(isNew).length;if(n&&navigator.setAppBadge)navigator.setAppBadge(n).catch(()=>{});else if(!n&&navigator.clearAppBadge)navigator.clearAppBadge().catch(()=>{});}catch(e){}
 }
 /* ---------- cetak buku ---------- */
+/* ---------- buku PDF cantik (dilukis sendiri, tak bergantung dialog cetak) ---------- */
+const BKW=1240,BKH=1754,BKM=100;
+const BK={file:null,url:'',name:''};
+function bkRR(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function bkLoad(u){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=u;});}
+function bkCover(c,img,x,y,w,h,r){
+  c.save();bkRR(c,x,y,w,h,r);c.clip();
+  const s=Math.max(w/img.width,h/img.height),dw=img.width*s,dh=img.height*s;
+  c.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);c.restore();
+}
+function bkFit(c,img,x,y,w,h,r){
+  const s=Math.min(w/img.width,h/img.height),dw=img.width*s,dh=img.height*s,dx=x+(w-dw)/2,dy=y+(h-dh)/2;
+  c.save();c.shadowColor='rgba(60,40,10,.28)';c.shadowBlur=36;c.shadowOffsetY=12;
+  c.fillStyle='#fff';bkRR(c,dx-14,dy-14,dw+28,dh+28,r+10);c.fill();c.restore();
+  c.save();bkRR(c,dx,dy,dw,dh,r);c.clip();c.drawImage(img,dx,dy,dw,dh);c.restore();
+}
+function bkWrap(c,text,maxW){
+  const out=[];
+  String(text).split('\n').forEach(par=>{
+    if(!par.trim()){out.push('');return;}
+    let line='';
+    par.split(/\s+/).forEach(w=>{
+      const t=line?line+' '+w:w;
+      if(c.measureText(t).width>maxW&&line){out.push(line);line=w;}else line=t;
+    });
+    if(line)out.push(line);
+  });
+  return out;
+}
+function bkBase(c,pn){
+  c.fillStyle='#FBF6EC';c.fillRect(0,0,BKW,BKH);
+  const g=c.createLinearGradient(0,0,BKW,0);g.addColorStop(0,'#F97316');g.addColorStop(.55,'#FF6B6B');g.addColorStop(1,'#EAB308');
+  c.fillStyle=g;c.fillRect(0,0,BKW,16);
+  if(pn){
+    c.strokeStyle='#E6DCC8';c.lineWidth=2;c.beginPath();c.moveTo(BKM,BKH-110);c.lineTo(BKW-BKM,BKH-110);c.stroke();
+    c.fillStyle='#9A8F7D';c.font='500 24px '+BK.fb;c.textAlign='left';c.fillText('Kenangan Keluarga Ahmad',BKM,BKH-66);
+    c.textAlign='right';c.fillText(String(pn),BKW-BKM,BKH-66);c.textAlign='left';
+  }
+}
+async function bkJpg(cv){return new Uint8Array(await new Promise(r=>cv.toBlob(b=>b.arrayBuffer().then(r),'image/jpeg',.88)));}
+function bkPdf(pages){
+  const enc=new TextEncoder(),chunks=[],offs=[];let off=0;
+  const push=b=>{if(typeof b==='string')b=enc.encode(b);chunks.push(b);off+=b.length;};
+  const N=pages.length;
+  push('%PDF-1.4\n');
+  offs[1]=off;push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+  offs[2]=off;push('2 0 obj\n<< /Type /Pages /Count '+N+' /Kids ['+pages.map((_,i)=>(5+3*i)+' 0 R').join(' ')+'] >>\nendobj\n');
+  pages.forEach((p,i)=>{
+    const im=3+3*i,ct=4+3*i,pg=5+3*i,cs='q 595 0 0 842 0 0 cm /Im0 Do Q';
+    offs[im]=off;push(im+' 0 obj\n<< /Type /XObject /Subtype /Image /Width '+p.w+' /Height '+p.h+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+p.jpg.length+' >>\nstream\n');push(p.jpg);push('\nendstream\nendobj\n');
+    offs[ct]=off;push(ct+' 0 obj\n<< /Length '+cs.length+' >>\nstream\n'+cs+'\nendstream\nendobj\n');
+    offs[pg]=off;push(pg+' 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /XObject << /Im0 '+im+' 0 R >> >> /Contents '+ct+' 0 R >>\nendobj\n');
+  });
+  const tot=2+3*N,sx=off;
+  let x='xref\n0 '+(tot+1)+'\n0000000000 65535 f \n';
+  for(let i=1;i<=tot;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
+  push(x+'trailer\n<< /Size '+(tot+1)+' /Root 1 0 R >>\nstartxref\n'+sx+'\n%%EOF');
+  return new Blob(chunks,{type:'application/pdf'});
+}
+async function bkCoverPage(cv,c,o){
+  bkBase(c,0);
+  c.fillStyle='rgba(249,115,22,.10)';c.beginPath();c.arc(BKW-120,260,330,0,7);c.fill();
+  c.fillStyle='rgba(13,148,136,.09)';c.beginPath();c.arc(90,BKH-330,360,0,7);c.fill();
+  c.textAlign='center';c.fillStyle='#2B2620';
+  c.font='140px '+BK.fb;c.fillText(o.emo,BKW/2,300);
+  c.font='italic 700 104px '+BK.fd;
+  const tl=bkWrap(c,o.title,BKW-2*BKM-40).slice(0,3);
+  tl.forEach((t,i)=>c.fillText(t,BKW/2,470+i*124));
+  const y1=470+tl.length*124;
+  c.font='500 36px '+BK.fb;c.fillStyle='#6B6253';c.fillText(o.sub,BKW/2,y1+10);
+  if(o.img){
+    const s=720,cx=BKW/2,cy=Math.max(y1+70+s/2,1010);
+    c.save();c.translate(cx,cy);c.rotate(-.035);
+    c.shadowColor='rgba(60,40,10,.3)';c.shadowBlur=44;c.shadowOffsetY=16;c.fillStyle='#fff';
+    bkRR(c,-s/2-22,-s/2-22,s+44,s+96,18);c.fill();c.shadowColor='transparent';
+    bkCover(c,o.img,-s/2,-s/2,s,s,8);c.restore();
+  }
+  c.fillStyle='#9A8F7D';c.font='italic 600 34px '+BK.fd;c.fillText('Kenangan Keluarga Ahmad',BKW/2,BKH-90);
+  c.textAlign='left';
+  return {jpg:await bkJpg(cv),w:BKW,h:BKH};
+}
+async function bkMemPage(cv,c,o,pn){
+  bkBase(c,pn);
+  const W=BKW-2*BKM;
+  c.fillStyle='#0D9488';c.font='700 28px '+BK.fb;c.fillText((o.date||'').toUpperCase(),BKM,120);
+  if(o.place){c.fillStyle='#2B2620';c.font='italic 700 46px '+BK.fd;c.fillText('📍 '+o.place,BKM,184);}
+  const top=o.place?230:170,bottom=BKH-150;
+  c.font='400 33px '+BK.fb;
+  const lines=o.text?bkWrap(c,o.text,W-20):[],lh=54;
+  const n=o.imgs.length;
+  let take=lines.length,photoH;
+  if(n){
+    const minPh=n===1?480:420;
+    const maxLines=Math.max(4,Math.floor((bottom-top-minPh-170)/lh));
+    take=Math.min(lines.length,maxLines);
+    const textH=(take?take*lh+60:0)+60;
+    photoH=Math.min(n===1?1000:880,bottom-top-textH);
+  }else photoH=0;
+  let y=top;
+  if(n){
+    const gap=24,H=photoH,r=26;
+    if(n===1)bkFit(c,o.imgs[0],BKM,y,W,H,r);
+    else if(n===2){const w=(W-gap)/2;bkCover(c,o.imgs[0],BKM,y,w,H,r);bkCover(c,o.imgs[1],BKM+w+gap,y,w,H,r);}
+    else if(n===3){const w1=Math.round(W*.6),w2=W-w1-gap,h2=(H-gap)/2;bkCover(c,o.imgs[0],BKM,y,w1,H,r);bkCover(c,o.imgs[1],BKM+w1+gap,y,w2,h2,r);bkCover(c,o.imgs[2],BKM+w1+gap,y+h2+gap,w2,h2,r);}
+    else{const w=(W-gap)/2,h=(H-gap)/2;[0,1,2,3].forEach(i=>bkCover(c,o.imgs[i],BKM+(i%2)*(w+gap),y+Math.floor(i/2)*(h+gap),w,h,r));}
+    y+=H+60;
+  }
+  if(take){
+    c.fillStyle='#F97316';c.fillRect(BKM,y-34,8,take*lh+4);
+    c.fillStyle='#2B2620';c.font='400 33px '+BK.fb;
+    lines.slice(0,take).forEach((t,i)=>c.fillText(t,BKM+36,y+i*lh+8));
+    y+=take*lh+36;
+  }
+  const by=Math.min(y+20,BKH-140);
+  c.fillStyle='#9A8F7D';c.font='500 26px '+BK.fb;
+  c.fillText(o.by,BKM,by);
+  return {page:{jpg:await bkJpg(cv),w:BKW,h:BKH},rest:lines.slice(take)};
+}
+async function bkTextPage(cv,c,lines,pn){
+  bkBase(c,pn);
+  c.fillStyle='#9A8F7D';c.font='italic 600 30px '+BK.fd;c.fillText('… sambungan cerita',BKM,130);
+  c.fillStyle='#2B2620';c.font='400 33px '+BK.fb;
+  const lh=54,mx=Math.floor((BKH-150-200)/lh),use=lines.slice(0,mx);
+  use.forEach((t,i)=>c.fillText(t,BKM+36,210+i*lh));
+  c.fillStyle='#F97316';c.fillRect(BKM,176,8,use.length*lh+4);
+  return {page:{jpg:await bkJpg(cv),w:BKW,h:BKH},rest:lines.slice(mx)};
+}
+async function makeBook(){
+  const f=filt(P).filter(p=>!p.demo).slice().sort((a,b)=>dateOf(a).localeCompare(dateOf(b)));
+  if(!f.length){toast('Tiada kenangan untuk dicetak.');return;}
+  const cs=getComputedStyle(document.documentElement);
+  BK.fd=(cs.getPropertyValue('--font-display')||'Georgia,serif').trim();BK.fb=(cs.getPropertyValue('--font-body')||'sans-serif').trim();
+  try{await document.fonts.load('italic 700 40px '+BK.fd);await document.fonts.load('400 30px '+BK.fb);await document.fonts.ready;}catch(e){}
+  const al=albumById(S.album), ct=CAT[S.cat];
+  const title=al?al.name:S.place?placeName(S.place):(S.cat!=='semua'&&ct?ct[1]:'Kenangan Keluarga');
+  const emo=al?al.emoji:S.place?'📍':(S.cat!=='semua'&&ct?ct[2]:'🏡');
+  const d0=fmtDate(dateOf(f[0])), d1=fmtDate(dateOf(f[f.length-1]));
+  const sub=f.length+' kenangan'+(d0?' · '+d0+(d1&&d1!==d0?' – '+d1:''):'');
+  const total=f.reduce((a,p)=>a+Math.min(p.photos.length,4),0);
+  const cv=document.createElement('canvas');cv.width=BKW;cv.height=BKH;const c=cv.getContext('2d');
+  const pages=[];let n=0,coverImg=null;
+  const loadImgs=async p=>{const a=[];for(const id of p.photos.slice(0,4)){toast('Menyediakan buku… '+(++n)+' / '+total);const u=await fullData(id);if(u&&u.indexOf('data:image/')===0){const im=await bkLoad(u);if(im)a.push(im);}}return a;};
+  const first=await loadImgs(f[0]);coverImg=first[0]||null;
+  pages.push(await bkCoverPage(cv,c,{title,emo,sub,img:coverImg}));
+  for(let i=0;i<f.length;i++){
+    const p=f[i], imgs=i?await loadImgs(p):first, tg=tagNames(p);
+    const r=await bkMemPage(cv,c,{date:fmtDate(dateOf(p)),place:p.place,text:p.text,imgs,by:'Oleh '+nameOf(p.authorId)+(tg.length?' · bersama '+tg.join(', '):'')},pages.length+1);
+    pages.push(r.page);
+    let rest=r.rest;
+    while(rest.length){const t=await bkTextPage(cv,c,rest,pages.length+1);pages.push(t.page);rest=t.rest;}
+    imgs.length=0;
+    await new Promise(r=>setTimeout(r,0));
+  }
+  toast('Menyusun PDF…');
+  const blob=bkPdf(pages);
+  const name=(title.replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-')||'Kenangan')+'.pdf';
+  if(BK.url)try{URL.revokeObjectURL(BK.url);}catch(e){}
+  BK.file=new File([blob],name,{type:'application/pdf'});BK.url=URL.createObjectURL(blob);BK.name=name;
+  $('bk-m').textContent=pages.length+' muka surat siap. Tekan “Kongsi / Simpan”, kemudian pilih “Simpan ke Fail” untuk simpan PDF.';
+  $('bk').hidden=false;document.body.style.overflow='hidden';
+}
+function closeBk(){$('bk').hidden=true;document.body.style.overflow='';}
+async function bkShare(){
+  try{
+    if(navigator.canShare&&navigator.canShare({files:[BK.file]})){await navigator.share({files:[BK.file],title:BK.name});return;}
+  }catch(e){if(e&&e.name==='AbortError')return;}
+  const a=document.createElement('a');a.href=BK.url;a.download=BK.name;document.body.appendChild(a);a.click();a.remove();
+}
+function bkOpen(){const a=document.createElement('a');a.href=BK.url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();}
 async function printBook(){
+  try{await makeBook();}
+  catch(e){try{console.error(e);}catch(x){} toast('Tak dapat sediakan PDF, guna cetak biasa.');return printBookLegacy();}
+}
+async function printBookLegacy(){
   const f=filt(P).filter(p=>!p.demo).slice().sort((a,b)=>dateOf(a).localeCompare(dateOf(b)));
   if(!f.length){toast('Tiada kenangan untuk dicetak.');return;}
   const al=albumById(S.album), c=CAT[S.cat];
@@ -3073,6 +3253,9 @@ document.addEventListener('click',e=>{
   else if(a==='cap-del-ask'){S.capDel=id;renderCap();}
   else if(a==='cap-del-no'){S.capDel='';renderCap();}
   else if(a==='cap-del-yes'){S.capDel='';S.db.doc('capsules/'+id).delete().then(()=>toast('Kapsul dipadam.')).catch(()=>toast('Tak dapat dipadam.'));renderCap();}
+  else if(a==='bk-share')bkShare();
+  else if(a==='bk-open')bkOpen();
+  else if(a==='bk-close')closeBk();
   else if(a==='nt-open')openNt();
   else if(a==='nt-close')closeNt();
   else if(a==='nt-go'){closeNt();const p=findPost(id);if(p&&p.photos&&p.photos.length)openLB(p.photos.map(pid=>({id:pid,post:p})),0);else go('utama');}
@@ -3228,6 +3411,7 @@ document.addEventListener('keydown',e=>{
   else if(!$('cap').hidden&&e.key==='Escape')closeCap();
   else if(!$('stat').hidden&&e.key==='Escape')closeStat();
   else if(!$('nt').hidden&&e.key==='Escape')closeNt();
+  else if(!$('bk').hidden&&e.key==='Escape')closeBk();
   else if(!$('cal').hidden&&e.key==='Escape')closeCal();
   else if(!$('plc').hidden&&e.key==='Escape')closePlc();
   else if(!$('set').hidden&&e.key==='Escape')closeSet();
