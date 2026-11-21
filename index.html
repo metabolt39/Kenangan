@@ -803,7 +803,7 @@ body{padding-block:0 150px}
 
 .bell{position:relative}
 .bdg{position:absolute;top:2px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--coral);color:#fff;font:700 11px/18px var(--font-body);text-align:center;box-shadow:0 0 0 2px var(--surface)}
-#nt-b{display:grid;gap:8px;margin-top:12px}
+#ntl-b{display:grid;gap:8px;margin-top:12px}
 .ntl{display:flex;gap:12px;align-items:flex-start;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);text-align:left;font:inherit}
 button.ntl{cursor:pointer}
 .ntl.un{background:var(--accent-soft);border-color:transparent}
@@ -940,7 +940,7 @@ button.ntl{cursor:pointer}
 <div class="scrim" id="nt" hidden>
   <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="nt-t">
     <div class="sheet-h"><h2 id="nt-t">Notifikasi</h2><button type="button" class="icon-btn" data-act="nt-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
-    <div id="nt-b"></div>
+    <div id="ntl-b"></div>
   </section>
 </div>
 <div class="scrim" id="stat" hidden>
@@ -2088,7 +2088,7 @@ function openNt(){
   }
   h+=dated.map(i=>'<button type="button" class="ntl'+(un.has(i.k)?' un':'')+'" data-act="nt-go" data-id="'+esc(i.pid)+'"><span class="nti">'+esc(i.ic)+'</span><span class="ntx"><span>'+i.h+'</span>'+(i.s?'<span class="nts">'+esc(String(i.s).slice(0,90))+'</span>':'')+'<span class="ntt">'+ntAgo(i.t)+'</span></span></button>').join('');
   if(!h)h='<p class="nt-e">Belum ada aktiviti baharu daripada keluarga.</p>';
-  $('nt-b').innerHTML=h;
+  $('ntl-b').innerHTML=h;
   $('nt').hidden=false;document.body.style.overflow='hidden';
   ntMark(items);
 }
