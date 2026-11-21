@@ -795,6 +795,11 @@ body{padding-block:0 150px}
 .sec h2{font-family:var(--font-display)}
 .mem{border-radius:26px;box-shadow:var(--shadow)}
 @media (min-width:700px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.ahead{flex-wrap:wrap;row-gap:12px;padding:20px}
+.ahead .grow{flex:1 1 60%}
+.ahead .grow ~ *{flex:none}
+.ahead .grow ~ .btn:first-of-type{margin-left:0}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
