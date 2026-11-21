@@ -869,6 +869,31 @@ button.ntl{cursor:pointer}
 .tbd.today{background:linear-gradient(135deg,var(--coral-soft),var(--surface) 75%);border-color:transparent}
 .tbd.today .tbd-i{background:var(--surface)}
 .lh-more{margin:8px 0 2px}
+
+/* ===== Info hari ini ===== */
+.stamp .map.wz{margin-left:10px}.stamp .map:not(.wz){margin-left:auto}
+.icard{margin:0 0 14px;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+.ih{display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px 12px 12px;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.ih-i{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface-2);flex:none}
+.ih-i .i{width:20px;height:20px}
+.ih-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ih-t b{font-size:15px}.ih-t span{font-size:13px;color:var(--ink-2)}
+.ih-c{font-size:11px;color:var(--ink-2)}
+.ib{padding:0 16px 16px;display:flex;flex-direction:column;gap:14px}
+.ipt{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.ipt span{display:flex;flex-direction:column;align-items:center;padding:8px 2px;border-radius:12px;background:var(--surface-2)}
+.ipt span.on{background:var(--gold);color:#2A2521}
+.ipt small{font-size:11px;opacity:.8}.ipt b{font-size:14px}
+.in{margin:0;font-size:12px;color:var(--ink-2)}
+.idoa{padding:12px 14px;border-radius:14px;background:var(--surface-2)}
+.idoa small,.irow small{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.idoa .ar{font-family:'Amiri',serif;font-size:22px;line-height:1.9;text-align:right}
+.idoa p{margin:6px 0 0;font-size:13px;color:var(--ink-2)}
+.irow>div{display:flex;flex-direction:column;padding:4px 0}.irow>div span{font-size:13px;color:var(--ink-2)}
+.ilk .chip{text-decoration:none;display:inline-flex}
+.iw{display:flex;flex-direction:column;gap:4px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d;font-size:13px}
+.iw b{font-size:14px}
+:root[data-theme="dark"] .iw{background:#3b1414;border-color:#7f1d1d;color:#fecaca}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2532,7 +2557,7 @@ function postHtml(p,m){
   const stamp=(p.place||p.takenOn)?'<div class="stamp">'+
     (p.place?'<span class="pl">'+icon('pin')+'<span>'+esc(p.place)+'</span></span>':'')+
     (p.takenOn?'<span class="dt">'+esc(fmtDate(p.takenOn))+'</span>':'')+
-    (p.place&&!demo?'<a class="map" href="'+esc(mapUrl(p.place))+'" target="_blank" rel="noopener">Peta</a>':'')+'</div>':'';
+    (p.place&&!demo?'<a class="map" href="'+esc(mapUrl(p.place))+'" target="_blank" rel="noopener">Peta</a><a class="map wz" href="'+esc(wazeUrl(p.place,p.lat,p.lon))+'" target="_blank" rel="noopener">Waze</a>':'')+'</div>':'';
   const nL=likeSet.size;
   const dm='data-act="demo"';
   return '<article class="post" id="post-'+esc(p.id)+'">'+
@@ -2565,6 +2590,96 @@ function postHtml(p,m){
 }
 
 /* ---------- halaman ---------- */
+
+/* ===== Info hari ini ===== */
+const wazeUrl=(q,lat,lon)=>(lat!=null&&lon!=null&&lat!==''?'https://waze.com/ul?ll='+lat+','+lon+'&navigate=yes':'https://waze.com/ul?q='+encodeURIComponent(q)+'&navigate=yes');
+const HJ=['','Muharram','Safar','Rabiulawal','Rabiulakhir','Jamadilawal','Jamadilakhir','Rejab','Syaaban','Ramadan','Syawal','Zulkaedah','Zulhijjah'];
+const DOA=[
+['Sebelum makan','بِسْمِ اللَّهِ','Dengan nama Allah.'],
+['Selepas makan','الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ','Segala puji bagi Allah yang memberi kami makan dan minum serta menjadikan kami orang Islam.'],
+['Keluar rumah','بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ','Dengan nama Allah, aku bertawakal kepada Allah; tiada daya dan kekuatan melainkan dengan Allah.'],
+['Sebelum tidur','بِاسْمِكَ اللَّهُمَّ أَحْيَا وَبِاسْمِكَ أَمُوتُ','Dengan namaMu ya Allah aku hidup dan dengan namaMu aku mati.'],
+['Bangun tidur','الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ','Segala puji bagi Allah yang menghidupkan kami setelah mematikan kami, dan kepadaNya kami dibangkitkan.'],
+['Doa untuk ibu bapa','رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا','Wahai Tuhanku, kasihanilah mereka berdua sebagaimana mereka mendidikku semasa kecil.'],
+['Kebaikan dunia dan akhirat','رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ','Ya Tuhan kami, berilah kami kebaikan di dunia dan di akhirat, dan peliharalah kami daripada azab neraka. (Al-Baqarah: 201)'],
+['Untuk keluarga','رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا','Ya Tuhan kami, kurniakanlah kami pasangan dan zuriat penyejuk mata, dan jadikanlah kami pemimpin bagi orang bertakwa. (Al-Furqan: 74)'],
+['Ketika risau','حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ','Cukuplah Allah bagi kami, dan Dialah sebaik-baik pelindung.'],
+['Menuntut ilmu','رَبِّ زِدْنِي عِلْمًا','Wahai Tuhanku, tambahkanlah ilmuku.'],
+['Memudahkan urusan','رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي','Wahai Tuhanku, lapangkanlah dadaku dan mudahkanlah urusanku.'],
+['Masuk tandas','اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ','Ya Allah, aku berlindung denganMu daripada syaitan lelaki dan perempuan.'],
+['Keluar tandas','غُفْرَانَكَ','Aku memohon keampunanMu.'],
+['Memulakan perjalanan','سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ','Maha Suci Tuhan yang menundukkan ini untuk kami, padahal kami tidak mampu, dan kepada Tuhan kami kembali. (Az-Zukhruf: 13-14)']
+];
+const INFO={d:null,busy:false,key:''};
+S.infoOpen=false;try{S.infoOpen=localStorage.getItem('kk-info')==='1';}catch(e){}
+function infoCoord(){const m=/^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(S.lk||'');return m?{lat:+m[1],lon:+m[2],ok:true}:{lat:3.139,lon:101.687,ok:false};}
+const tj=(u,ms)=>{const c=new AbortController();const t=setTimeout(()=>c.abort(),ms||9000);return fetch(u,{signal:c.signal}).then(r=>{if(!r.ok)throw 0;return r.json();}).finally(()=>clearTimeout(t));};
+const ymdI=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+async function infoLoad(force){
+  if(DEMO||INFO.busy)return;
+  const c=infoCoord(),n=new Date(),day=ymdI(n),key=day+'|'+c.lat.toFixed(2)+','+c.lon.toFixed(2);
+  if(!force&&INFO.key===key&&INFO.d)return;
+  let cache=null;
+  try{cache=JSON.parse(localStorage.getItem('kk-infodata')||'null');}catch(e){}
+  if(!force&&cache&&cache.key===key&&Date.now()-cache.at<3*36e5){INFO.d=cache.d;INFO.key=key;return;}
+  INFO.busy=true;
+  const d={};
+  const dd=String(n.getDate()).padStart(2,'0')+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+n.getFullYear();
+  const st=c.ok?stateOf(c.lon,c.lat):'';
+  const jobs=[
+    tj('https://api.aladhan.com/v1/timings/'+dd+'?latitude='+c.lat+'&longitude='+c.lon+'&method=17').then(r=>{const t=r.data.timings,h=r.data.date.hijri;
+      d.pt=[['Subuh',t.Fajr],['Syuruk',t.Sunrise],['Zohor',t.Dhuhr],['Asar',t.Asr],['Maghrib',t.Maghrib],['Isyak',t.Isha]].map(x=>[x[0],String(x[1]).slice(0,5)]);
+      d.hj=+h.day+' '+(HJ[+h.month.number]||h.month.en)+' '+h.year+'H';}).catch(()=>{}),
+    tj('https://date.nager.at/api/v3/PublicHolidays/'+n.getFullYear()+'/MY').then(a=>{
+      d.hol=a.filter(x=>x.date>=day).slice(0,3).map(x=>({date:x.date,name:x.localName||x.name,en:x.name}));
+      if(d.hol.length<2&&n.getMonth()>8)return tj('https://date.nager.at/api/v3/PublicHolidays/'+(n.getFullYear()+1)+'/MY').then(b=>{d.hol=d.hol.concat(b.slice(0,3-d.hol.length).map(x=>({date:x.date,name:x.localName||x.name,en:x.name})));}).catch(()=>{});
+    }).catch(()=>{}),
+    tj('https://air-quality-api.open-meteo.com/v1/air-quality?latitude='+c.lat+'&longitude='+c.lon+'&current=us_aqi,pm2_5').then(r=>{if(r.current&&r.current.us_aqi!=null)d.aqi=Math.round(r.current.us_aqi);}).catch(()=>{}),
+    tj('https://api.data.gov.my/weather/warning').then(a=>{
+      if(!Array.isArray(a))return;const now=Date.now();
+      d.warn=a.filter(w=>{
+        const js=JSON.stringify(w).toLowerCase();
+        const vt=w.valid_to||(w.warning_issue&&w.warning_issue.valid_to)||'';
+        if(vt){const t=Date.parse(String(vt).replace(' ','T'));if(t&&t<now)return false;}
+        return !st||js.indexOf(st.toLowerCase())>=0;
+      }).slice(0,2).map(w=>{const wi=w.warning_issue||{};
+        return {t:w.heading_bm||w.heading_en||wi.title_bm||wi.title_en||w.title_bm||'Amaran cuaca',x:String(w.text_bm||w.text_en||'').slice(0,220)};});
+    }).catch(()=>{})
+  ];
+  await Promise.all(jobs);
+  INFO.busy=false;INFO.d=d;INFO.key=key;
+  try{localStorage.setItem('kk-infodata',JSON.stringify({key:key,at:Date.now(),d:d}));}catch(e){}
+  if(S.tab==='utama')render();
+}
+function infoNext(d){
+  if(!d.pt)return null;const n=new Date(),now=n.getHours()*60+n.getMinutes();
+  const arr=d.pt.filter(x=>x[0]!=='Syuruk');
+  for(const x of arr){const m=x[1].split(':');const t=+m[0]*60+(+m[1]);if(t>now)return {n:x[0],t:x[1],r:t-now};}
+  const m=arr[0][1].split(':');return {n:arr[0][0],t:arr[0][1],r:+m[0]*60+(+m[1])+1440-now,esok:true};
+}
+const remTxt=r=>r>=60?Math.floor(r/60)+' j '+(r%60)+' min':r+' min';
+function aqiLbl(a){return a<=50?['Baik','#16a34a']:a<=100?['Sederhana','#ca8a04']:a<=150?['Tidak sihat untuk golongan sensitif','#ea580c']:a<=200?['Tidak sihat','#dc2626']:['Sangat tidak sihat','#7e22ce'];}
+function infoHtml(){
+  infoLoad();
+  const d=INFO.d,c=infoCoord(),n=new Date();
+  const doa=DOA[dayOfYear()%DOA.length];
+  let warn='';
+  if(d&&d.warn&&d.warn.length)warn=d.warn.map(w=>'<div class="iw" role="alert"><b>⚠️ '+esc(w.t)+'</b>'+(w.x?'<span>'+esc(w.x)+'</span>':'')+'</div>').join('');
+  const nx=d&&infoNext(d);
+  const sum=!d?'Memuatkan waktu solat…':(nx?esc(nx.n)+' '+esc(nx.t)+' · '+(nx.esok?'esok · ':'')+remTxt(nx.r)+(d.hj?' · '+esc(d.hj):''):(d.hj?esc(d.hj):'Info hari ini'));
+  let b='';
+  if(S.infoOpen){
+    b+='<div class="ib">';
+    if(d&&d.pt)b+='<div class="ipt">'+d.pt.map(x=>'<span class="'+(nx&&nx.n===x[0]?'on':'')+'"><small>'+esc(x[0])+'</small><b>'+esc(x[1])+'</b></span>').join('')+'</div><p class="in">Waktu solat ikut kaedah JAKIM (Aladhan), berdasarkan lokasi '+(c.ok?esc(S.cityName||'anda'):'Kuala Lumpur (lokasi belum ditetapkan)')+'. Tarikh Hijrah ialah anggaran.</p>';
+    else if(d)b+='<p class="in">Waktu solat tidak dapat dimuatkan sekarang.</p>';
+    b+='<div class="idoa"><small>Doa hari ini · '+esc(doa[0])+'</small><div class="ar" dir="rtl" lang="ar">'+doa[1]+'</div><p>'+esc(doa[2])+'</p></div>';
+    if(d&&d.hol&&d.hol.length)b+='<div class="irow"><small>Cuti umum akan datang</small>'+d.hol.map(x=>{const dt=new Date(x.date+'T00:00:00'),k=Math.round((dt-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);return '<div><b>'+esc(x.name)+'</b><span>'+esc(fmtDate(x.date))+' · '+(k===0?'Hari ini':k===1?'Esok':k+' hari lagi')+'</span></div>';}).join('')+'</div>';
+    if(d&&d.aqi!=null){const l=aqiLbl(d.aqi);b+='<div class="irow"><small>Kualiti udara (AQI AS, bukan IPU rasmi)</small><div><b style="color:'+l[1]+'">'+d.aqi+' · '+l[0]+'</b></div></div>';}
+    b+='<div class="ilk"><a class="chip" href="https://www.google.com/maps/search/restoran+halal/@'+c.lat+','+c.lon+',15z" target="_blank" rel="noopener">'+icon('pin')+'Cari makan halal berdekatan</a></div>';
+    b+='</div>';
+  }
+  return warn+'<div class="icard"><button type="button" class="ih" data-act="info-tg" aria-expanded="'+S.infoOpen+'"><span class="ih-i" aria-hidden="true">'+icon('clock')+'</span><span class="ih-t"><b>Info hari ini</b><span>'+sum+'</span></span><span class="ih-c" aria-hidden="true">'+(S.infoOpen?'▲':'▼')+'</span></button>'+b+'</div>';
+}
 function todayStrip(){
   const it=[],bc=[];
   S.bd.filter(b=>b.date).forEach(b=>{const i=bdInfo(b);if(i.days<=7)bc.push({d:i.days,n:b.name,i:i});});
@@ -2598,6 +2713,7 @@ function utamaHtml(m){
   if(DEMO)h+=demoBanner();
   if(!DEMO)h+=newBannerHtml();
   if(!DEMO)h+=todayStrip();
+  if(!DEMO)h+=infoHtml();
   if(!DEMO&&S.cal.some(c=>c.date&&calDays(c)>=0))h+=calHtml();
   h+=memoryHtml();
   if(!DEMO)h+=throwHtml();
@@ -2694,7 +2810,7 @@ function petaHtml(){
   else h+='<ul class="places">'+pl.map(x=>'<li class="place"><button type="button" class="place-main" data-act="place" data-v="'+esc(x.key)+'">'+
     (x.thumb?'<img class="pt"'+isrc(x.thumb)+' alt="" loading="lazy">':'<span class="pt">'+icon('pin')+'</span>')+
     '<span class="pi"><strong>'+esc(x.name)+'</strong><span>'+x.count+' kenangan'+(x.last?' · '+esc(fmtMonth(x.last)):'')+'</span></span></button>'+
-    (DEMO?'':'<a class="map" href="'+esc(mapUrl(x.name))+'" target="_blank" rel="noopener">Peta</a>')+'</li>').join('')+'</ul>';
+    (DEMO?'':'<a class="map" href="'+esc(mapUrl(x.name))+'" target="_blank" rel="noopener">Peta</a><a class="map wz" href="'+esc(wazeUrl(x.name))+'" target="_blank" rel="noopener">Waze</a>')+'</li>').join('')+'</ul>';
   if(md.off.length&&!DEMO){
     h+='<div class="note"><p style="margin:0 0 8px">Belum dapat diletakkan pada peta. Tekan untuk tetapkan lokasi:</p><div class="chips">'+md.off.map(o=>'<button type="button" class="chip" data-act="setloc" data-v="'+esc(pk(o.name))+'" aria-pressed="'+(S.locSet===pk(o.name))+'">'+icon('pin')+esc(o.name)+'</button>').join('')+'</div></div>';
     if(S.locSet){
@@ -3352,6 +3468,7 @@ document.addEventListener('click',e=>{
   else if(a==='invite')inviteMember();
   else if(a==='backup')backupAll();
   else if(a==='nt')ntToggle();
+  else if(a==='info-tg'){S.infoOpen=!S.infoOpen;try{localStorage.setItem('kk-info',S.infoOpen?'1':'0');}catch(e){}render();}
   else if(a==='nt-test'){toast('Menghantar ujian…');(async()=>{if(!S.pushOn)await pushSubscribe();renderSet();await pushSend([S.myId],'🔔 Ujian notifikasi','Jika anda nampak ini, notifikasi berfungsi.','kk-test',true);})();}
   else if(a==='loc-start')locStart(+v||1);
   else if(a==='loc-now')locWrite({msg:''}).then(ok=>{if(ok)toast('Lokasi dikemas kini.');});
