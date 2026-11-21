@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#FAF5EA" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#131A29" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" id="tc" content="#FAF8F5">
+<script>(function(){var m='light';try{var s=localStorage.getItem('kk-mode');if(s==='dark'||s==='light')m=s;}catch(e){}document.documentElement.setAttribute('data-theme',m);var t=document.getElementById('tc');if(t)t.setAttribute('content',m==='dark'?'#0F172A':'#FAF8F5');})();</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kenangan Ahmad">
@@ -24,7 +24,7 @@
 <title>Kenangan Keluarga Ahmad</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,600&family=Lora:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;500;600;700&family=Share+Tech+Mono&family=Outfit:wght@500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Fraunces:ital,wght@0,600;0,700;1,600&family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,600&family=Lora:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&family=Share+Tech+Mono&family=Outfit:wght@500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Fraunces:ital,wght@0,600;0,700;1,600&family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap">
 </head>
 <body>
 <div class="gate" id="gate">
@@ -38,46 +38,46 @@ window.__setUse=r;})();
 <style>
 /* Susun atur: satu lajur sempit macam suapan telefon. Atas: sapaan dan Kenangan Hari Ini. Tengah: kad album bertindih, peta memori, suapan. Tab bawah: Utama, Galeri, Peta. Butang Tambah emas terapung. */
 :root{
-  --bg:#FAF5EA;
-  --surface:#FFFDF8;
-  --surface-2:#F1E9D9;
-  --ink:#2D2A26;
-  --ink-2:#6F675C;
-  --line:#E8DDC9;
-  --gold:#E2A93B;
-  --gold-ink:#8A5A00;
-  --teal:#3F8A7C;
-  --teal-soft:#DCEBE4;
-  --coral:#EE7B5E;
-  --coral-soft:#FCE4DB;
-  --accent:#2F7F73;
+  --bg:#FAF8F5;
+  --surface:#FFFFFF;
+  --surface-2:#F5F0E8;
+  --ink:#2A2521;
+  --ink-2:#6B6258;
+  --line:#ECE6DC;
+  --gold:#EAB308;
+  --gold-ink:#A16207;
+  --teal:#0D9488;
+  --teal-soft:#D7F0EC;
+  --coral:#FF6B6B;
+  --coral-soft:#FFE9E4;
+  --accent:#0D9488;
   --accent-ink:#FFFFFF;
-  --accent-soft:#D9ECE6;
-  --heart:#E4573D;
+  --accent-soft:#D7F0EC;
+  --heart:#F25C54;
   --sticky:#FFEFA8;
   --sticky-ink:#3D3000;
   --scrim:rgba(20,14,8,.58);
   --lb-bg:#0B0D12;
   --lb-ink:#F4F0E8;
-  --shadow:0 1px 2px rgba(80,60,20,.08),0 14px 30px -18px rgba(80,60,20,.4);
+  --shadow:0 1px 2px rgba(60,45,20,.06),0 10px 28px -16px rgba(60,45,20,.28);
   --font-display:'Playfair Display',Georgia,'Times New Roman',serif;
-  --font-serif:'Lora',Georgia,serif;
+  --font-serif:'Plus Jakarta Sans','Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
   --font-script:'Pinyon Script','Snell Roundhand','Apple Chancery',cursive;
-  --font-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-body:'Plus Jakarta Sans','Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#131A29; --surface:#1B2436; --surface-2:#26324A; --ink:#F2EEE6; --ink-2:#A9B2C3; --line:#2E3A52;
-    --gold:#F0BC52; --gold-ink:#F0BC52; --teal:#7CC4B3; --teal-soft:#1F3C41; --coral:#FF9A7E; --coral-soft:#3A2B33;
-    --accent:#7CC4B3; --accent-ink:#0C2A25; --accent-soft:#1F3C41; --heart:#FF8B7B;
+    --bg:#0F172A; --surface:#1E293B; --surface-2:#273449; --ink:#F1F5F9; --ink-2:#A6B3C7; --line:#334155;
+    --gold:#F5C451; --gold-ink:#F5C451; --teal:#2DD4BF; --teal-soft:#123F3D; --coral:#FF8A7A; --coral-soft:#3B2A33;
+    --accent:#2DD4BF; --accent-ink:#04201C; --accent-soft:#123F3D; --heart:#FB7185;
     --scrim:rgba(0,0,0,.66); --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#131A29; --surface:#1B2436; --surface-2:#26324A; --ink:#F2EEE6; --ink-2:#A9B2C3; --line:#2E3A52;
-  --gold:#F0BC52; --gold-ink:#F0BC52; --teal:#7CC4B3; --teal-soft:#1F3C41; --coral:#FF9A7E; --coral-soft:#3A2B33;
-  --accent:#7CC4B3; --accent-ink:#0C2A25; --accent-soft:#1F3C41; --heart:#FF8B7B;
+  --bg:#0F172A; --surface:#1E293B; --surface-2:#273449; --ink:#F1F5F9; --ink-2:#A6B3C7; --line:#334155;
+  --gold:#F5C451; --gold-ink:#F5C451; --teal:#2DD4BF; --teal-soft:#123F3D; --coral:#FF8A7A; --coral-soft:#3B2A33;
+  --accent:#2DD4BF; --accent-ink:#04201C; --accent-soft:#123F3D; --heart:#FB7185;
   --scrim:rgba(0,0,0,.66); --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);
   color-scheme:dark;
 }
@@ -216,6 +216,12 @@ button{cursor:pointer}
 .mapc{padding:12px 12px 10px;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--shadow)}
 .mapsvg{display:block;width:100%;height:auto}
 .land{fill:var(--teal-soft);stroke:var(--teal);stroke-width:1.2;stroke-linejoin:round}
+.st{fill:var(--teal-soft);stroke:var(--teal);stroke-width:.7;stroke-linejoin:round}
+.st.has{fill:var(--gold);fill-opacity:.28}
+.sl{font:600 5.4px var(--font-body);fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--surface);stroke-width:1.4px;stroke-linejoin:round;pointer-events:none}
+.sl.so{font-size:4.6px;fill:var(--ink-2)}
+.sx{stroke:var(--ink-2);stroke-width:.35;opacity:.7;pointer-events:none}
+.sd{fill:var(--ink-2);pointer-events:none}
 .mlabel{font:600 7px var(--font-body);letter-spacing:.18em;fill:var(--ink-2);text-anchor:middle;text-transform:uppercase}
 .pin{cursor:pointer}
 .pin .hit{fill:transparent}
@@ -619,9 +625,9 @@ button{cursor:pointer}
 @media (min-width:1000px){.pcs.full{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
 /* ===== tema baharu: warna dan fon ===== */
-:root[data-skin="kampung"]{--bg:#FBF5E9;--surface:#FFFDF7;--surface-2:#F1E7D2;--ink:#2B2620;--ink-2:#6B6253;--line:#E6D9BF;--gold:#EDA82E;--gold-ink:#8A5A00;--teal:#2F7D68;--teal-soft:#D6EBDD;--coral:#E2653A;--coral-soft:#FBDFD2;--accent:#2A7A63;--accent-ink:#FFFFFF;--accent-soft:#D6EBDD;--heart:#E0472F;--font-display:'Playfair Display',Georgia,serif;--font-body:'Figtree',system-ui,sans-serif}
-@media (prefers-color-scheme: dark){:root[data-skin="kampung"]:not([data-theme="light"]){--bg:#12201B;--surface:#1A2D26;--surface-2:#24392F;--ink:#F3EEDF;--ink-2:#A9BAB0;--line:#2C443A;--gold:#F2BE5A;--gold-ink:#F2BE5A;--teal:#7FD1B2;--teal-soft:#1F3D33;--coral:#FF9370;--coral-soft:#3B2A26;--accent:#7FD1B2;--accent-ink:#0B2A20;--accent-soft:#1F3D33;--heart:#FF8A72;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}}
-:root[data-skin="kampung"][data-theme="dark"]{--bg:#12201B;--surface:#1A2D26;--surface-2:#24392F;--ink:#F3EEDF;--ink-2:#A9BAB0;--line:#2C443A;--gold:#F2BE5A;--gold-ink:#F2BE5A;--teal:#7FD1B2;--teal-soft:#1F3D33;--coral:#FF9370;--coral-soft:#3B2A26;--accent:#7FD1B2;--accent-ink:#0B2A20;--accent-soft:#1F3D33;--heart:#FF8A72;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
+:root[data-skin="kampung"]{--bg:#FAF8F5;--surface:#FFFFFF;--surface-2:#F1E7D2;--ink:#2B2620;--ink-2:#6B6253;--line:#E6D9BF;--gold:#EDA82E;--gold-ink:#8A5A00;--teal:#2F7D68;--teal-soft:#D6EBDD;--coral:#E2653A;--coral-soft:#FBDFD2;--accent:#2A7A63;--accent-ink:#FFFFFF;--accent-soft:#D6EBDD;--heart:#E0472F;--font-display:'Playfair Display',Georgia,serif;--font-body:'Plus Jakarta Sans','Figtree',system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root[data-skin="kampung"]:not([data-theme="light"]){--bg:#12181B;--surface:#1A2226;--surface-2:#252F34;--ink:#F3EEDF;--ink-2:#A9BAB0;--line:#2C443A;--gold:#F2BE5A;--gold-ink:#F2BE5A;--teal:#7FD1B2;--teal-soft:#1F3D33;--coral:#FF9370;--coral-soft:#3B2A26;--accent:#7FD1B2;--accent-ink:#0B2A20;--accent-soft:#1F3D33;--heart:#FF8A72;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}}
+:root[data-skin="kampung"][data-theme="dark"]{--bg:#12181B;--surface:#1A2226;--surface-2:#252F34;--ink:#F3EEDF;--ink-2:#A9BAB0;--line:#2C443A;--gold:#F2BE5A;--gold-ink:#F2BE5A;--teal:#7FD1B2;--teal-soft:#1F3D33;--coral:#FF9370;--coral-soft:#3B2A26;--accent:#7FD1B2;--accent-ink:#0B2A20;--accent-soft:#1F3D33;--heart:#FF8A72;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 :root[data-skin="senja"]{--bg:#FBEFF5;--surface:#FFFBFD;--surface-2:#F1DDEA;--ink:#2B1B3D;--ink-2:#6E5A80;--line:#E7C9DB;--gold:#FFA94D;--gold-ink:#8A4300;--teal:#7A55D9;--teal-soft:#E6DBFA;--coral:#FF5C8A;--coral-soft:#FFD9E4;--accent:#6B3FD1;--accent-ink:#FFFFFF;--accent-soft:#E6DBFA;--heart:#F03E75;--font-display:'Fraunces',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif}
 @media (prefers-color-scheme: dark){:root[data-skin="senja"]:not([data-theme="light"]){--bg:#150F2B;--surface:#201845;--surface-2:#2D2360;--ink:#F6EEFF;--ink-2:#B7A8D6;--line:#3A2D78;--gold:#FFB867;--gold-ink:#FFB867;--teal:#B79CFF;--teal-soft:#31266B;--coral:#FF7FA6;--coral-soft:#4A2447;--accent:#B79CFF;--accent-ink:#1B0F45;--accent-soft:#31266B;--heart:#FF7FA6;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}}
 :root[data-skin="senja"][data-theme="dark"]{--bg:#150F2B;--surface:#201845;--surface-2:#2D2360;--ink:#F6EEFF;--ink-2:#B7A8D6;--line:#3A2D78;--gold:#FFB867;--gold-ink:#FFB867;--teal:#B79CFF;--teal-soft:#31266B;--coral:#FF7FA6;--coral-soft:#4A2447;--accent:#B79CFF;--accent-ink:#1B0F45;--accent-soft:#31266B;--heart:#FF7FA6;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
@@ -726,6 +732,51 @@ button{cursor:pointer}
 .lmem .lt{flex:1;min-width:0;display:flex;flex-direction:column}
 .lmem .lt span{font-size:13px;color:var(--ink-2)}
 .lmem .lt b{color:var(--ink)}
+
+/* ===== Tema terang/gelap: lapisan UI sahaja ===== */
+.ic-sun{display:none}
+:root[data-theme="dark"] .ic-sun{display:block}
+:root[data-theme="dark"] .ic-moon{display:none}
+body{padding-block:0 150px}
+.bar{background:color-mix(in srgb,var(--surface) 88%,transparent);box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 24px -18px rgba(60,45,20,.35)}
+.brand{font-family:var(--font-display);font-weight:700}
+.sec{margin-top:26px}
+.sec h2{font-size:19px;letter-spacing:.005em}
+.feed{gap:24px}
+.post{border-radius:24px;border:1px solid var(--line);box-shadow:var(--shadow)}
+.phead{padding:18px 12px 14px 20px;gap:12px}
+.who strong{font-size:15.5px;letter-spacing:.005em}
+.who span{font-size:12.5px;color:var(--ink-2)}
+.photos{padding:0 14px;gap:4px}
+.pic{border-radius:14px}
+.photos.one .pic img{border-radius:14px}
+.body{gap:14px;padding:20px 20px 8px}
+.story{font:400 16px/1.75 var(--font-body);color:var(--ink);letter-spacing:.002em}
+.stamp{gap:6px 14px}
+.stamp .pl{font:700 11.5px/1.3 var(--font-body);letter-spacing:.08em;color:var(--accent)}
+.stamp .dt{font:500 13px/1.3 var(--font-body);color:var(--ink-2);font-style:normal}
+.stamp .map{font-size:13px;font-weight:600}
+.tag{font-size:12px;padding:4px 12px 4px 8px}
+.acts{margin:6px 0 0;padding:8px 12px 10px;border-top:1px solid var(--line)}
+.act{border-radius:99px}
+.act:hover{background:var(--surface-2)}
+.act.liked{background:var(--coral-soft)}
+.rxs{padding:2px 20px 18px}
+.nota{margin:0 20px 18px}
+.cm-prev{width:calc(100% - 40px);margin:0 20px 18px;border-left-color:var(--gold)}
+.jt{border-radius:20px;background:var(--surface);box-shadow:var(--shadow);padding:12px 16px 12px 12px;margin-top:12px}
+.jt.tz{background:linear-gradient(135deg,var(--coral-soft),var(--surface) 70%);border-color:transparent}
+.jt.tz .jt-i{border-radius:16px;overflow:hidden}
+.jt.tz .pk{color:var(--coral);font-weight:700}
+.bds .bd{border-radius:18px;box-shadow:var(--shadow)}
+.fab{box-shadow:0 10px 24px -8px rgba(234,179,8,.55),0 2px 6px rgba(0,0,0,.18)}
+.tabs{background:color-mix(in srgb,var(--surface) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 -8px 24px -18px rgba(60,45,20,.4)}
+.tab{position:relative;min-height:56px;font-size:11.5px;letter-spacing:.01em;transition:background-color .15s,color .15s}
+.tab .i{transition:transform .15s}
+.tab[aria-current="page"]{color:var(--accent);background:var(--accent-soft);font-weight:700}
+.tab[aria-current="page"] .i{transform:translateY(-1px);stroke-width:2.3}
+@media (max-width:1099px){.tab[aria-current="page"]::before{content:"";position:absolute;top:3px;left:50%;width:20px;height:3px;margin-left:-10px;border-radius:3px;background:var(--accent)}}
+@media (min-width:1100px){.tab[aria-current="page"]{box-shadow:inset 3px 0 0 var(--accent)}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -751,6 +802,8 @@ button{cursor:pointer}
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.500" width="14" height="10" rx="2.500"/><path d="M8 10.500V8a4 4 0 0 1 8 0v2.500"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20.500h16M7 17v-5M12 17V6M17 17v-8"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.500 11l4.500 4.500 4.500-4.500M5 20h14"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 0 1 9.500 4 8.500 8.500 0 1 0 20 14.500z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.600 5.600L7 7M17 17l1.400 1.400M18.400 5.600L17 7M7 17l-1.400 1.400"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-7.8-4.7-9.5-9.6C1.3 7.4 3.5 4 7 4c2 0 3.6 1 5 2.9C13.4 5 15 4 17 4c3.5 0 5.7 3.4 4.5 6.9-1.7 4.9-9.5 9.6-9.5 9.6z"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 11.5a8 8 0 0 1-11.7 7.1L3.5 20l1.4-4.8A8 8 0 1 1 20.5 11.5z"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s7-6 7-11.5a7 7 0 1 0-14 0c0 5.5 7 11.5 7 11.5z"/><circle cx="12" cy="10" r="2.5"/></symbol>
@@ -777,6 +830,7 @@ button{cursor:pointer}
   <div class="bar" id="bar">
     <img class="logo" src="icon-192.png" alt="" width="32" height="32" onerror="this.remove()">
     <h1 class="brand">Kenangan Keluarga Ahmad</h1>
+    <button type="button" class="icon-btn rnd" data-act="mode" id="mode-b" aria-label="Tukar mod terang atau gelap"><svg class="i ic-moon" aria-hidden="true"><use href="#i-moon"></use></svg><svg class="i ic-sun" aria-hidden="true"><use href="#i-sun"></use></svg></button>
     <button type="button" class="icon-btn rnd" data-act="search" aria-label="Cari kenangan" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-search"></use></svg></button>
     <button type="button" class="me" data-act="settings" aria-label="Tetapan dan akaun" aria-haspopup="dialog"><span id="me-av"></span></button>
   </div>
@@ -1009,6 +1063,13 @@ function closeSet(){
   $('set').hidden=true; $('cityf').hidden=true;
   if($('lb').hidden&&$('sheet').hidden)document.body.style.overflow='';
   if(S.setPrev&&S.setPrev.focus)try{S.setPrev.focus({preventScroll:true});}catch(e){}
+}
+function applyMode(m,save){
+  if(m!=='dark')m='light';
+  document.documentElement.setAttribute('data-theme',m);
+  const t=document.getElementById('tc');if(t)t.setAttribute('content',m==='dark'?'#0F172A':'#FAF8F5');
+  const b=document.getElementById('mode-b');if(b){b.setAttribute('aria-label',m==='dark'?'Tukar ke mod terang':'Tukar ke mod gelap');b.setAttribute('title',m==='dark'?'Mod terang':'Mod gelap');}
+  if(save){try{localStorage.setItem('kk-mode',m);}catch(e){}}
 }
 function applySkin(k){
   const r=document.documentElement;
@@ -1329,9 +1390,25 @@ function mapData(){
   });
   return {pins:Array.from(pins.values()).sort((a,b)=>b.lat-a.lat),off:Array.from(off.values())};
 }
-const VBW=480,VBH=204;
+const NEG=[["Sabah","Sabah",117.0,5.2,0,0,0,[[11770,416,11764,423,11770,427,11779,425,11782,420,11790,418,11791,416,11770,416],[11659,433,11652,440,11649,435,11649,432,11645,432,11641,429,11639,429,11636,436,11631,438,11623,436,11613,438,11611,435,11602,427,11598,433,11588,435,11584,439,11582,428,11577,423,11573,424,11564,415,11563,422,11567,432,11564,436,11559,439,11556,457,11566,482,11564,494,11561,496,11542,496,11548,503,11556,507,11557,517,11561,521,11560,523,11556,521,11549,522,11540,530,11540,532,11537,531,11536,532,11539,541,11555,554,11560,564,11562,561,11558,555,11560,552,11562,557,11567,553,11576,552,11582,553,11585,556,11593,576,11605,584,11607,593,11614,607,11613,610,11610,609,11611,613,11615,615,11622,624,11629,623,11629,628,11624,627,11632,631,11635,638,11650,650,11652,657,11664,670,11667,688,11670,689,11672,698,11677,703,11684,696,11685,689,11682,690,11681,686,11686,682,11684,675,11679,667,11678,659,11685,659,11697,671,11698,675,11706,685,11703,693,11708,695,11708,699,11712,699,11715,700,11726,694,11723,682,11727,675,11730,664,11736,663,11746,655,11753,662,11756,654,11760,651,11764,652,11770,645,11771,646,11773,645,11774,639,11772,625,11766,625,11760,620,11766,611,11766,607,11763,604,11767,601,11767,597,11762,594,11749,589,11747,587,11757,590,11777,591,11777,594,11788,595,11797,605,11802,606,11805,603,11808,593,11813,586,11806,581,11792,581,11791,578,11796,569,11805,572,11811,571,11813,569,11818,581,11826,583,11834,579,11837,581,11859,568,11857,553,11860,562,11865,564,11874,555,11880,552,11882,548,11883,551,11892,545,11893,539,11898,540,11898,544,11909,541,11919,545,11927,536,11927,520,11916,511,11868,494,11857,497,11850,493,11843,502,11836,504,11829,500,11829,498,11825,499,11822,497,11814,488,11813,486,11818,483,11828,470,11833,465,11838,464,11841,460,11843,459,11844,461,11848,460,11849,458,11847,454,11850,451,11855,453,11860,452,11865,444,11863,442,11859,443,11859,440,11856,436,11839,435,11835,436,11833,434,11816,431,11798,423,11789,426,11781,433,11771,437,11767,443,11766,442,11761,438,11763,436,11765,427,11760,421,11763,418,11757,416,11744,419,11736,426,11720,436,11716,433,11688,434,11680,433,11671,437,11668,434,11659,433],[11873,449,11875,449,11876,446,11867,444,11864,450,11873,449],[11851,465,11855,467,11860,464,11857,460,11855,462,11854,460,11835,468,11843,468,11846,470,11851,465],[11747,677,11751,670,11751,667,11744,664,11735,665,11735,668,11744,670,11744,672,11740,674,11747,677],[11700,736,11702,732,11701,728,11698,729,11698,725,11689,723,11691,721,11689,719,11685,720,11690,729,11696,731,11700,736],[11717,734,11725,736,11728,733,11726,720,11725,718,11714,717,11707,710,11706,720,11707,728,11717,734]]],["Perlis","Perlis",99.55,6.85,1,100.2,6.5,[[10019,671,10021,669,10027,670,10033,656,10038,653,10037,646,10021,630,10020,626,10015,633,10013,644,10015,654,10017,657,10016,668,10019,671]]],["Kedah","Kedah",100.75,5.95,0,0,0,[[10038,653,10047,651,10063,644,10073,649,10073,646,10081,641,10083,624,10091,624,10097,627,10102,624,10108,625,10109,621,10109,619,10105,616,10105,613,10109,609,10108,594,10102,590,10097,580,10097,577,10095,577,10098,572,10097,566,10093,561,10095,559,10094,552,10088,548,10085,535,10076,532,10069,521,10056,508,10052,510,10050,513,10056,514,10052,547,10053,555,10035,557,10034,567,10038,566,10039,568,10036,569,10038,581,10035,601,10025,622,10020,626,10021,630,10037,646,10038,653],[9979,624,9984,629,9982,618,9977,620,9977,622,9979,624],[9990,636,9992,633,9987,629,9984,632,9983,632,9973,626,9972,635,9966,636,9965,644,9977,642,9984,647,9991,639,9990,636]]],["Kelantan","Kelantan",102.05,5.4,0,0,0,[[10178,574,10191,586,10193,598,10206,609,10207,626,10216,620,10219,620,10218,622,10217,622,10218,623,10220,623,10232,619,10238,613,10250,590,10254,585,10239,569,10241,561,10239,543,10244,537,10241,518,10253,511,10250,508,10251,491,10255,491,10264,486,10267,479,10266,477,10261,477,10260,469,10255,471,10251,467,10245,471,10240,472,10237,470,10234,464,10228,466,10223,464,10218,466,10212,476,10204,473,10200,476,10197,476,10191,462,10189,467,10185,469,10180,476,10178,474,10177,464,10165,456,10159,456,10152,460,10147,457,10138,461,10134,468,10139,471,10138,475,10142,479,10141,483,10145,485,10146,489,10144,497,10146,500,10153,527,10155,528,10162,536,10168,533,10175,537,10175,549,10174,551,10167,552,10169,558,10166,566,10169,569,10170,577,10171,578,10174,578,10178,574]]],["Perak","Perak",101.2,4.7,0,0,0,[[10097,577,10100,573,10106,571,10112,563,10121,568,10125,579,10156,591,10163,586,10163,583,10167,577,10170,576,10169,569,10166,566,10169,558,10167,552,10175,550,10175,537,10168,533,10162,536,10155,528,10153,527,10146,500,10144,497,10146,489,10145,485,10141,483,10142,479,10138,475,10139,471,10134,468,10138,461,10136,456,10139,450,10134,443,10137,440,10145,438,10143,434,10145,432,10147,422,10151,420,10152,413,10155,412,10158,408,10156,400,10160,387,10160,380,10163,377,10152,368,10137,379,10134,379,10133,377,10134,369,10127,367,10124,372,10117,372,10113,375,10108,373,10108,375,10110,375,10109,378,10106,375,10106,379,10102,380,10097,377,10098,381,10094,383,10094,386,10078,384,10072,387,10070,392,10071,398,10080,399,10083,402,10087,402,10086,404,10078,402,10077,410,10068,417,10063,416,10062,418,10062,425,10057,432,10065,456,10060,457,10059,461,10067,467,10060,467,10059,474,10063,476,10061,477,10062,479,10058,480,10058,485,10055,488,10049,487,10051,491,10044,492,10036,508,10040,512,10049,514,10052,510,10057,508,10069,521,10076,532,10085,535,10088,548,10094,554,10095,559,10093,561,10097,566,10098,572,10095,577,10097,577]]],["Sarawak","Sarawak",113.3,2.6,0,0,0,[[11535,431,11536,435,11527,447,11527,464,11521,483,11515,489,11515,491,11519,492,11521,496,11532,490,11536,490,11542,496,11561,496,11564,494,11566,482,11556,458,11556,450,11559,439,11565,435,11568,431,11563,422,11564,415,11561,400,11558,395,11554,392,11554,390,11559,386,11554,363,11560,343,11556,343,11552,336,11548,321,11552,316,11548,311,11546,303,11531,299,11524,304,11521,298,11512,291,11507,283,11510,276,11506,271,11507,267,11506,261,11507,259,11515,260,11521,251,11519,249,11511,247,11497,236,11492,235,11491,228,11478,225,11475,213,11478,204,11484,204,11483,190,11468,184,11467,169,11462,160,11456,154,11457,147,11455,143,11450,144,11437,151,11417,142,11409,147,11391,144,11381,134,11362,123,11352,131,11340,129,11332,135,11316,139,11309,143,11296,142,11302,151,11301,155,11297,157,11285,158,11280,154,11247,157,11240,152,11230,150,11216,143,11215,141,11219,138,11209,114,11191,111,11182,101,11176,99,11162,103,11154,100,11150,96,11147,102,11137,101,11120,108,11088,101,11080,95,11078,90,11070,90,11066,87,11061,89,11055,85,11046,88,11036,98,11026,99,11026,104,11017,117,11007,120,10996,130,10992,139,10984,140,10980,147,10978,146,10977,150,10965,162,10964,178,10957,179,10954,183,10953,191,10960,198,10965,208,10965,194,10969,187,10989,176,10993,169,11017,170,11021,168,11025,171,11029,167,11031,171,11030,177,11033,180,11039,170,11042,170,11051,174,11052,172,11047,162,11051,163,11054,160,11059,161,11073,155,11073,150,11068,145,11076,148,11077,155,11079,157,11084,157,11092,153,11104,143,11114,137,11123,139,11134,133,11138,135,11133,137,11130,141,11125,142,11118,140,11106,146,11101,156,11104,168,11112,169,11118,163,11122,164,11127,163,11117,166,11116,169,11113,171,11110,177,11113,179,11111,184,11118,195,11121,207,11127,207,11124,209,11125,213,11134,211,11138,216,11136,217,11133,213,11127,215,11118,215,11118,219,11124,222,11118,225,11122,242,11125,244,11137,234,11145,237,11149,235,11142,243,11140,248,11149,247,11152,249,11142,254,11144,268,11153,276,11167,284,11186,288,11201,289,11273,307,11301,316,11308,326,11307,328,11316,335,11320,342,11328,348,11331,356,11339,365,11343,375,11374,400,11395,427,11399,444,11398,459,11412,456,11425,448,11429,436,11428,426,11442,426,11448,414,11457,406,11459,402,11463,402,11477,413,11482,426,11481,428,11478,426,11478,428,11483,434,11485,440,11485,442,11481,443,11479,446,11477,464,11474,473,11486,481,11495,482,11496,487,11502,492,11503,466,11508,450,11509,441,11517,436,11535,431],[11141,239,11141,237,11139,238,11137,236,11134,241,11131,243,11130,270,11132,278,11135,277,11138,270,11138,252,11141,239]]],["Pulau Pinang","P. Pinang",99.4,5.0,1,100.35,5.35,[[10040,512,10043,519,10042,525,10043,529,10038,539,10038,550,10035,557,10053,555,10052,547,10056,514,10040,512],[10031,545,10034,542,10029,526,10018,527,10020,530,10018,546,10021,544,10027,547,10031,545]]],["Selangor","Selangor",100.2,3.95,1,101.4,3.4,[[10172,260,10167,263,10154,266,10140,282,10129,285,10130,289,10128,291,10137,300,10137,308,10132,312,10130,327,10124,334,10120,336,10111,347,10104,362,10093,369,10089,376,10081,379,10084,384,10094,386,10094,383,10098,381,10097,377,10102,380,10106,379,10106,375,10109,378,10110,375,10108,375,10108,373,10113,375,10117,372,10124,372,10127,367,10134,369,10135,372,10133,377,10136,379,10144,375,10151,368,10163,377,10167,372,10177,367,10181,359,10177,350,10179,343,10176,337,10183,329,10193,325,10196,314,10196,304,10188,287,10186,286,10176,286,10177,274,10172,260],[10134,305,10134,301,10127,297,10131,306,10132,307,10134,305]]],["Negeri Sembilan","N. Sembilan",100.7,2.5,1,102.1,2.75,[[10199,239,10193,242,10187,239,10185,248,10180,252,10178,258,10172,260,10177,274,10176,286,10186,286,10188,287,10196,303,10195,322,10192,326,10193,328,10200,323,10205,322,10207,317,10213,319,10239,312,10247,303,10267,289,10269,290,10270,284,10263,263,10264,260,10262,256,10262,248,10260,242,10238,249,10227,246,10218,249,10215,247,10207,246,10206,243,10205,244,10199,239]]],["Melaka","Melaka",101.4,1.9,1,102.3,2.3,[[10249,209,10215,224,10205,234,10200,236,10199,239,10205,244,10206,243,10207,246,10215,247,10218,249,10227,246,10238,249,10260,242,10252,235,10250,223,10248,221,10254,217,10254,214,10249,209]]],["Johor","Johor",103.35,2.1,0,0,0,[[10364,267,10372,264,10377,265,10384,252,10384,246,10395,234,10398,225,10398,219,10411,198,10412,187,10415,184,10417,185,10420,180,10426,164,10429,147,10428,137,10417,135,10411,138,10406,149,10415,155,10411,155,10405,151,10401,160,10397,165,10401,155,10401,145,10397,142,10384,148,10370,145,10360,135,10355,138,10355,133,10352,127,10345,134,10341,147,10337,154,10321,161,10304,172,10293,175,10284,185,10270,186,10265,194,10256,202,10256,205,10249,209,10254,214,10254,217,10248,221,10250,223,10252,235,10260,242,10262,248,10263,263,10270,284,10281,279,10299,260,10315,253,10336,259,10362,245,10364,249,10360,253,10362,260,10360,263,10364,267],[10422,279,10421,272,10416,271,10413,275,10413,279,10416,282,10415,286,10417,289,10422,279]]],["Pahang","Pahang",102.6,3.75,0,0,0,[[10344,417,10339,410,10343,395,10341,396,10339,394,10338,380,10335,379,10334,374,10339,362,10346,353,10345,350,10348,351,10343,337,10346,320,10344,292,10352,279,10364,267,10360,263,10362,260,10360,253,10364,248,10361,245,10336,259,10315,253,10299,260,10281,279,10270,284,10269,290,10267,289,10247,303,10239,312,10213,319,10207,317,10205,322,10200,323,10195,328,10192,326,10183,329,10176,337,10179,343,10177,350,10181,355,10181,360,10177,367,10167,372,10160,379,10160,387,10156,400,10158,408,10155,412,10152,413,10151,420,10147,422,10145,432,10143,434,10145,438,10137,440,10134,443,10139,450,10136,457,10138,461,10147,457,10152,460,10159,456,10166,456,10177,464,10178,474,10180,476,10185,469,10189,467,10191,462,10197,476,10200,476,10204,473,10212,476,10218,466,10223,464,10228,466,10234,464,10237,470,10240,472,10245,471,10251,467,10255,471,10260,469,10260,474,10262,478,10266,477,10269,472,10273,469,10284,468,10288,462,10287,457,10284,455,10286,450,10289,447,10295,446,10298,448,10302,441,10301,434,10296,433,10293,427,10290,414,10292,411,10301,413,10312,409,10318,404,10320,404,10321,402,10324,402,10332,388,10334,395,10330,408,10332,414,10332,419,10344,417]]],["Terengganu","Terengganu",103.0,4.85,0,0,0,[[10254,585,10263,580,10267,573,10288,557,10298,553,10312,538,10345,481,10347,455,10345,449,10350,431,10345,422,10345,417,10332,419,10332,414,10330,408,10334,395,10332,388,10324,402,10321,402,10320,404,10318,404,10312,409,10301,413,10292,412,10290,414,10294,428,10296,433,10302,434,10303,440,10301,444,10297,448,10295,446,10288,447,10284,454,10287,458,10287,465,10284,468,10275,468,10269,472,10264,486,10251,492,10250,508,10253,511,10241,518,10244,537,10239,543,10241,561,10239,569,10254,585]]],["Labuan","Labuan",114.4,4.9,1,115.22,5.32,[[11525,537,11526,529,11524,527,11520,528,11516,525,11519,534,11524,539,11525,537]]],["Kuala Lumpur","KL",100.55,3.1,1,101.68,3.13,[[10167,323,10171,321,10175,321,10176,319,10174,313,10175,305,10173,303,10166,304,10167,309,10162,314,10162,318,10167,323]]],["Putrajaya","",0,0,0,0,0,[[10171,298,10173,293,10168,288,10167,296,10171,298]]]];
+const VBW=496,VBH=204;
+function inRing(r,x,y){let c=false;for(let i=0,j=r.length-2;i<r.length;i+=2){const xi=r[i]/100,yi=r[i+1]/100,xj=r[j]/100,yj=r[j+1]/100;if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c;j=i;}return c;}
+function stateOf(lng,lat){for(const st of NEG){for(const r of st[7]){if(inRing(r,lng,lat))return st[0];}}return '';}
+function negPath(r){let d='';for(let i=0;i<r.length;i+=2)d+=(i?'L':'M')+mx(r[i]/100).toFixed(1)+' '+my(r[i+1]/100).toFixed(1);return d+'Z';}
+function negHtml(md){
+  const has=new Set();md.pins.forEach(pn=>{const n=stateOf(pn.lng,pn.lat);if(n)has.add(n);});
+  let h='';
+  NEG.forEach(st=>{h+='<g class="stg"><title>'+esc(st[0])+'</title>'+st[7].map(r=>'<path class="st'+(has.has(st[0])?' has':'')+'" d="'+negPath(r)+'"/>').join('')+'</g>';});
+  NEG.forEach(st=>{
+    if(!st[1])return;
+    const x=mx(st[2]),y=my(st[3]);
+    if(st[4]){h+='<line class="sx" x1="'+x.toFixed(1)+'" y1="'+y.toFixed(1)+'" x2="'+mx(st[5]).toFixed(1)+'" y2="'+my(st[6]).toFixed(1)+'"/><circle class="sd" cx="'+mx(st[5]).toFixed(1)+'" cy="'+my(st[6]).toFixed(1)+'" r=".9"/>';}
+    h+='<text class="sl'+(st[4]?' so':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'">'+esc(st[1])+'</text>';
+  });
+  return h;
+}
 function mapSvg(md){
-  let h='<svg class="mapsvg" viewBox="0 0 '+VBW+' '+VBH+'" role="img" aria-label="Peta ringkas Malaysia dengan pin tempat kenangan"><path class="land" d="'+poly(PEN)+'"/><path class="land" d="'+poly(BOR)+'"/><text class="mlabel" x="66" y="200">Semenanjung</text><text class="mlabel" x="335" y="200">Sabah dan Sarawak</text>';
+  let h='<svg class="mapsvg" viewBox="0 0 '+VBW+' '+VBH+'" role="img" aria-label="Peta ringkas Malaysia dengan pin tempat kenangan">'+negHtml(md)+'';
   const ord=md.pins.slice().sort((a,b)=>minDate(a).localeCompare(minDate(b)));
   if(ord.length>1){
     let d='M'+mx(ord[0].lng).toFixed(1)+' '+my(ord[0].lat).toFixed(1);
@@ -1383,7 +1460,7 @@ function plcCard(x){
 }
 function teaserHtml(){
   const fi=(dayOfYear()*7+S.discN)%PLC.length, f=PLC[fi];
-  return '<button type="button" class="jt" data-act="tab" data-v="jelajah">'+plcImg(f[0],'jt-i')+'<span class="jt-t"><span class="pk">Jom ke mana? · cadangan hari ini</span><b>'+esc(f[1])+'</b><span>'+esc(f[2])+' · lihat '+PLC.length+' tempat menarik</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+  return '<button type="button" class="jt tz" data-act="tab" data-v="jelajah">'+plcImg(f[0],'jt-i')+'<span class="jt-t"><span class="pk">Jom ke mana? · cadangan hari ini</span><b>'+esc(f[1])+'</b><span>'+esc(f[2])+' · lihat '+PLC.length+' tempat menarik</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
 }
 function cadanganHtml(){
   const doy=dayOfYear(), fi=(doy*7+S.discN)%PLC.length, f=PLC[fi];
@@ -2846,6 +2923,7 @@ document.addEventListener('click',e=>{
   if(a==='settings')openSet();
   else if(a==='set-close')closeSet();
   else if(a==='big'){applyBig(parseInt(v,10)||0);renderSet();}
+  else if(a==='mode'){applyMode(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark',true);}
   else if(a==='skin'){applySkin(v);try{localStorage.setItem('kk-skin',v);}catch(x){}}
   else if(a==='import'){$('f-import').click();}
   else if(a==='invite')inviteMember();
