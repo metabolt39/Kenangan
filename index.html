@@ -777,6 +777,24 @@ body{padding-block:0 150px}
 .tab[aria-current="page"] .i{transform:translateY(-1px);stroke-width:2.3}
 @media (max-width:1099px){.tab[aria-current="page"]::before{content:"";position:absolute;top:3px;left:50%;width:20px;height:3px;margin-left:-10px;border-radius:3px;background:var(--accent)}}
 @media (min-width:1100px){.tab[aria-current="page"]{box-shadow:inset 3px 0 0 var(--accent)}}
+
+/* ===== Tab lain: Galeri, Jelajah, Peta, Keluarga (UI sahaja) ===== */
+.jts{gap:12px;margin-bottom:10px}
+.jts .jt{margin-top:0}
+.jt-t b{font-size:16.5px}
+.jt-t .pk{letter-spacing:.09em}
+.cards{gap:14px}
+.card,.tile,.mapc,.cap-r{border:1px solid var(--line);box-shadow:var(--shadow)}
+.card{border-radius:22px}
+.tile{border-radius:20px;padding:16px 8px 14px}
+.mapc{border-radius:24px;padding:16px 14px 12px}
+.cap-r{border-radius:18px;padding:14px 16px}
+.segc,.seg{background:var(--surface-2)}
+.chip{border-color:var(--line);font-weight:600}
+.chip[aria-pressed="true"],.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sec h2{font-family:var(--font-display)}
+.mem{border-radius:26px;box-shadow:var(--shadow)}
+@media (min-width:700px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
