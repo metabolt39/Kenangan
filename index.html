@@ -831,6 +831,28 @@ button.ntl{cursor:pointer}
 
 /* Pilihan A: butang + bulat dan kecil pada telefon supaya tak menutup kandungan */
 @media (max-width:699px){.fab{width:54px;min-height:54px;padding:0;gap:0;justify-content:center}.fab .fl{display:none}}
+
+/* ===== Kesan 3D (pilihan dalam Tetapan) ===== */
+:root[data-3d="1"]{--d3-hi:rgba(255,255,255,.85);--d3-lo:rgba(60,40,10,.20);--d3-sh:rgba(60,40,10,.30)}
+:root[data-3d="1"][data-theme="dark"]{--d3-hi:rgba(255,255,255,.10);--d3-lo:rgba(0,0,0,.55);--d3-sh:rgba(0,0,0,.65)}
+:root[data-3d="1"] .post,:root[data-3d="1"] .acard,:root[data-3d="1"] .jt,:root[data-3d="1"] .bd,:root[data-3d="1"] .ev,:root[data-3d="1"] .tile,:root[data-3d="1"] .cap-r,:root[data-3d="1"] .mapc{
+  box-shadow:inset 0 1px 0 var(--d3-hi),0 3px 0 var(--d3-lo),0 18px 30px -14px var(--d3-sh),0 4px 10px -4px var(--d3-lo);
+  transform-style:preserve-3d;will-change:transform}
+:root[data-3d="1"] .post .pic{box-shadow:0 8px 16px -8px var(--d3-sh),0 0 0 3px var(--surface);transform:translateZ(0)}
+:root[data-3d="1"] .photos{gap:8px}
+:root[data-3d="1"] .btn:not(.ghost),:root[data-3d="1"] .fab{
+  background-image:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 55%,rgba(0,0,0,.12));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 0 rgba(0,0,0,.28),0 14px 22px -8px var(--d3-sh);
+  transition:transform .08s,box-shadow .08s}
+:root[data-3d="1"] .btn:not(.ghost):active,:root[data-3d="1"] .fab:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 1px 0 rgba(0,0,0,.28),0 6px 10px -6px var(--d3-sh)}
+:root[data-3d="1"] .chip,:root[data-3d="1"] .icon-btn.rnd{box-shadow:inset 0 1px 0 var(--d3-hi),0 2px 0 var(--d3-lo),0 6px 10px -6px var(--d3-sh)}
+:root[data-3d="1"] .chip:active,:root[data-3d="1"] .icon-btn.rnd:active{transform:translateY(2px);box-shadow:inset 0 1px 0 var(--d3-hi),0 0 0 var(--d3-lo)}
+:root[data-3d="1"] .bar{box-shadow:inset 0 1px 0 var(--d3-hi),0 4px 0 var(--d3-lo),0 22px 34px -16px var(--d3-sh)}
+:root[data-3d="1"] .tabs{box-shadow:inset 0 1px 0 var(--d3-hi),0 -4px 0 var(--d3-lo),0 -18px 30px -16px var(--d3-sh)}
+:root[data-3d="1"] .tab[aria-current="page"]{box-shadow:inset 0 1px 0 var(--d3-hi),0 3px 0 var(--d3-lo),0 10px 14px -8px var(--d3-sh);transform:translateY(-3px)}
+:root[data-3d="1"] .tab .i{filter:drop-shadow(0 3px 2px var(--d3-lo))}
+:root[data-3d="1"] .stack i{box-shadow:0 8px 14px -6px var(--d3-sh)}
+@media (prefers-reduced-motion:reduce){:root[data-3d="1"] *{transition:none!important}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1116,7 +1138,7 @@ function applyBig(n){
 }
 function renderSet(){
   const sk=$('set-skins'); if(!sk)return;
-  sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('');
+  sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('')+'<button type="button" class="tile" data-act="fx3d" aria-pressed="'+(document.documentElement.getAttribute('data-3d')==='1')+'"><i style="background:linear-gradient(135deg,#FF8A3D,#F43F5E)"></i>Kesan 3D</button>';
   $('set-big').innerHTML=BIGL.map((l,i)=>'<button type="button" data-act="big" data-v="'+i+'" aria-pressed="'+(S.big===i)+'">'+l+'</button>').join('');
   $('set-me').innerHTML=(S.myId?av(S.myId):'')+'<div class="nm"><strong>'+esc(S.myId?nameOf(S.myId):'Tetamu')+'</strong><span>'+(S.isOwner?'Pentadbir':'Ahli keluarga')+'</span></div>'+(window.__signOut?'<button type="button" class="btn sm ghost" data-act="signout">Log keluar</button>':'');
   const city=(S.live&&S.live.city)||S.cityName||S.city||'';
@@ -1136,6 +1158,27 @@ function closeSet(){
   if($('lb').hidden&&$('sheet').hidden)document.body.style.overflow='';
   if(S.setPrev&&S.setPrev.focus)try{S.setPrev.focus({preventScroll:true});}catch(e){}
 }
+function applyFx3d(on,save){
+  if(on)document.documentElement.setAttribute('data-3d','1');else document.documentElement.removeAttribute('data-3d');
+  if(save){try{localStorage.setItem('kk-3d',on?'1':'0');}catch(e){}}
+}
+(function(){
+  const SEL='.post,.acard,.mem,.ev,.tile,.jt,.bd,.cap-r';let cur=null;
+  const reset=()=>{if(cur){cur.style.transform='';cur.style.transition='transform .35s cubic-bezier(.2,.8,.2,1)';cur=null;}};
+  const tilt=e=>{
+    if(document.documentElement.getAttribute('data-3d')!=='1')return;
+    if(e.pointerType!=='mouse'&&e.type==='pointermove'&&!cur)return;
+    const el=e.target.closest&&e.target.closest(SEL); if(!el){reset();return;}
+    if(cur&&cur!==el)reset();
+    const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    const k=Math.min(1,320/r.width)*7;
+    cur=el;el.style.transition='transform .08s linear';
+    el.style.transform='perspective(900px) rotateX('+(-y*k).toFixed(2)+'deg) rotateY('+(x*k).toFixed(2)+'deg) translateZ(0) scale(1.012)';
+  };
+  document.addEventListener('pointerdown',tilt,{passive:true});
+  document.addEventListener('pointermove',tilt,{passive:true});
+  ['pointerup','pointercancel','pointerleave','scroll','blur'].forEach(t=>window.addEventListener(t,reset,{passive:true,capture:true}));
+})();
 function applyMode(m,save){
   if(m!=='dark')m='light';
   document.documentElement.setAttribute('data-theme',m);
@@ -3234,6 +3277,7 @@ document.addEventListener('click',e=>{
   else if(a==='set-close')closeSet();
   else if(a==='big'){applyBig(parseInt(v,10)||0);renderSet();}
   else if(a==='mode'){applyMode(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark',true);}
+  else if(a==='fx3d'){const on=document.documentElement.getAttribute('data-3d')!=='1';applyFx3d(on,true);renderSet();}
   else if(a==='skin'){applySkin(v);try{localStorage.setItem('kk-skin',v);}catch(x){}}
   else if(a==='import'){$('f-import').click();}
   else if(a==='invite')inviteMember();
@@ -3474,6 +3518,7 @@ async function init(){
   try{S.nt=localStorage.getItem('kk-nt')==='1';}catch(e){}
   try{applyBig(parseInt(localStorage.getItem('kk-big')||'0',10)||0);}catch(e){}
   try{applySkin(localStorage.getItem('kk-skin')||'kampung');}catch(e){applySkin('kampung');}
+  try{applyFx3d(localStorage.getItem('kk-3d')==='1');}catch(e){}
   route();
   let cl=window.claude;
   for(let i=0;i<20&&(!cl||!cl.use);i++){await new Promise(r=>setTimeout(r,150));cl=window.claude;}
