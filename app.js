@@ -111,6 +111,7 @@ async function start() {
   };
 
   window.__signOut = () => Au.signOut(auth).then(() => location.reload());
+  window.__idToken = () => (auth.currentUser ? auth.currentUser.getIdToken() : Promise.resolve(''));
 
   const loginView = (msg) => {
     let inv = ''; try { inv = sessionStorage.getItem('kk-k') ? '<p><b>Awak dijemput!</b> Log masuk dengan Google untuk menyertai.</p>' : ''; } catch (e) {}

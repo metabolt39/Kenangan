@@ -1145,7 +1145,7 @@ function renderSet(){
   $('set-loc').textContent=S.gpsOn?'Mengikut lokasi anda'+(city?': '+city:'')+'.':'Bandar dipilih'+(city?': '+city:'')+'.';
   $('set-admin').hidden=!S.isOwner;
   const nt=ntOn(); $('nt-b').textContent=nt?'Matikan notifikasi':'Hidupkan notifikasi';
-  $('set-nt').textContent=nt?'Hidup. Anda dapat pemberitahuan bila ada kenangan, komen atau reaksi baharu, selagi app terbuka di latar belakang.':'Dapatkan pemberitahuan bila ada kenangan, komen atau reaksi baharu. Berfungsi bila app terbuka di latar belakang; app yang ditutup sepenuhnya tidak boleh menghantar pemberitahuan.';
+  $('set-nt').textContent=(PUSH_URL&&nt)?'Hidup. Anda akan dapat pemberitahuan di skrin walaupun app ditutup, bila ada kenangan, komen atau reaksi baharu.':PUSH_URL?'Dapatkan pemberitahuan di skrin bila ada kenangan, komen atau reaksi baharu, walaupun app ditutup. Setiap ahli perlu hidupkan sekali di peranti masing-masing.':nt?'Hidup. Anda dapat pemberitahuan bila ada kenangan, komen atau reaksi baharu, selagi app terbuka di latar belakang.':'Dapatkan pemberitahuan bila ada kenangan, komen atau reaksi baharu. Berfungsi bila app terbuka di latar belakang; app yang ditutup sepenuhnya tidak boleh menghantar pemberitahuan.';
   $('set-bdl').innerHTML=S.bd.length?S.bd.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(b=>'<div><span><svg class="i" aria-hidden="true"><use href="#i-cake"></use></svg> '+esc(b.name)+' <small>'+esc(fmtDate(b.date))+'</small> <small class="bage">· '+esc(ageNow(b.date))+'</small></span>'+((b.by===S.myId||S.canEdit)?'<button type="button" class="icon-btn" data-act="bd-del" data-id="'+esc(b.id)+'" aria-label="Padam '+esc(b.name)+'">'+icon('trash')+'</button>':'')+'</div>').join(''):'<p class="set-p">Belum ada. Tambah hari lahir ahli keluarga supaya app ingatkan.</p>';
 }
 function openSet(){
@@ -2091,18 +2091,52 @@ async function bdDel(id){
 }
 /* ---------- notifikasi ---------- */
 const NT={known:{}};
+/* Notifikasi tolak (Web Push) melalui pelayan percuma Cloudflare. Kosongkan PUSH_URL untuk mematikan. */
+const PUSH_URL='https://kenangan-push.ibnusoidin39.workers.dev';
+const PUSH_KEY='BL3ExPc-iN6pKcx_WZIDRHH-ngGWF4gib_EutsxwSpl53DQ6HeZV6HLSrrbLm-rBdzDyvwVoYGhLjoAsninEHcU';
+let PUSHSUBS=[];
+const urlB64=b=>{b=b.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';const r=atob(b),o=new Uint8Array(r.length);for(let i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o;};
+async function pushSubscribe(){
+  if(!PUSH_URL||!S.myId||!navigator.serviceWorker||!('PushManager' in window))return false;
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){try{sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64(PUSH_KEY)});}
+      catch(e){const old=await reg.pushManager.getSubscription();if(old)await old.unsubscribe();sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64(PUSH_KEY)});}}
+    const j=sub.toJSON();
+    await S.db.doc('push/'+S.myId).set({endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,at:Date.now()});
+    S.pushOn=true;return true;
+  }catch(e){S.pushOn=false;return false;}
+}
+async function pushUnsubscribe(){
+  S.pushOn=false;
+  try{const reg=await navigator.serviceWorker.ready;const sub=await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe();}catch(e){}
+  try{if(S.myId)await S.db.doc('push/'+S.myId).delete();}catch(e){}
+}
+async function pushSend(uids,title,body,tag){
+  try{
+    if(!PUSH_URL||!S.myId||!window.__idToken)return;
+    const set=new Set(uids);set.delete(S.myId);
+    const subs=PUSHSUBS.filter(x=>set.has(x.uid)&&x.endpoint&&x.p256dh&&x.auth).map(x=>({uid:x.uid,endpoint:x.endpoint,p256dh:x.p256dh,auth:x.auth}));
+    if(!subs.length)return;
+    const token=await window.__idToken(); if(!token)return;
+    const r=await fetch(PUSH_URL,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({subs,title,body:body||'',tag:tag||'kk'})});
+    if(!r.ok)return; const j=await r.json();
+    (j.gone||[]).forEach(u=>{try{S.db.doc('push/'+u).delete();}catch(e){}});
+  }catch(e){}
+}
 function ntOn(){return !!S.nt&&('Notification' in window)&&Notification.permission==='granted';}
 async function ntToggle(){
-  if(ntOn()){S.nt=false;try{localStorage.setItem('kk-nt','0');}catch(e){}renderSet();return;}
+  if(ntOn()){S.nt=false;try{localStorage.setItem('kk-nt','0');}catch(e){}pushUnsubscribe();renderSet();return;}
   if(!('Notification' in window)){toast('Peranti ini tidak menyokong notifikasi.');return;}
   let r=Notification.permission; if(r!=='granted'){try{r=await Notification.requestPermission();}catch(e){}}
-  if(r==='granted'){S.nt=true;try{localStorage.setItem('kk-nt','1');}catch(e){}toast('Notifikasi dihidupkan.');}
+  if(r==='granted'){S.nt=true;try{localStorage.setItem('kk-nt','1');}catch(e){}toast('Notifikasi dihidupkan.');pushSubscribe();}
   else toast('Kebenaran notifikasi ditolak. Boleh ubah dalam tetapan pelayar.');
   renderSet();
 }
 function notify(t,b,tag){
   if(!document.hidden){toast(t+(b?': '+b:''));return;}
-  if(!ntOn()||!navigator.serviceWorker)return;
+  if(!ntOn()||!navigator.serviceWorker||(PUSH_URL&&S.pushOn))return;
   navigator.serviceWorker.ready.then(r=>r.showNotification(t,{body:b||'',icon:'icon-192.png',badge:'icon-192.png',tag:tag||'kk'})).catch(()=>{});
 }
 function ntScan(k,snap){
@@ -2832,7 +2866,7 @@ async function toggleLike(postId){
   const liked=S.likes.some(l=>l.id===key);
   try{
     const ref=S.db.doc('likes/'+key);
-    if(liked)await ref.delete(); else {S.popKey=postId;await ref.set({postId:postId,uid:S.myId,createdAt:Date.now()});}
+    if(liked)await ref.delete(); else {S.popKey=postId;await ref.set({postId:postId,uid:S.myId,createdAt:Date.now()});{const pp=S.posts.find(x=>x.id===postId);if(pp&&pp.authorId)pushSend([pp.authorId],'❤️ '+nameOf(S.myId)+' suka kenangan anda','','kk-lk-'+postId);}}
   }catch(e){toast('Tidak dapat menyimpan. Cuba lagi.');}
   finally{S.busy.delete(key);}
 }
@@ -2844,7 +2878,7 @@ async function setReaction(postId,e){
   try{
     const ref=S.db.doc('likes/'+key);
     if(cur&&cur.r===e)await ref.delete();
-    else{if(cur)await ref.delete();S.popKey=postId;await ref.set({postId:postId,uid:S.myId,r:e,createdAt:Date.now()});}
+    else{if(cur)await ref.delete();S.popKey=postId;await ref.set({postId:postId,uid:S.myId,r:e,createdAt:Date.now()});{const pp=S.posts.find(x=>x.id===postId);if(pp&&pp.authorId)pushSend([pp.authorId],e+' '+nameOf(S.myId)+' bereaksi pada kenangan anda','','kk-lk-'+postId);}}
   }catch(x){toast('Tidak dapat menyimpan. Cuba lagi.');}
   finally{S.busy.delete(key);}
 }
@@ -2854,6 +2888,7 @@ async function sendComment(postId){
   const key='c:'+postId; if(S.busy.has(key))return; S.busy.add(key);
   try{
     await S.db.collection('comments').add({postId:postId,authorId:S.myId,text:text.slice(0,500),createdAt:Date.now()});
+    {const pp=S.posts.find(x=>x.id===postId);if(pp&&pp.authorId)pushSend([pp.authorId],nameOf(S.myId)+' mengulas kenangan anda',text.slice(0,100),'kk-cm-'+postId);}
     delete S.drafts[postId]; render();
   }catch(e){toast('Komen tidak dapat dihantar. Cuba lagi.');}
   finally{S.busy.delete(key);}
@@ -3196,6 +3231,7 @@ async function submit(){
       return;
     }
     await S.db.collection('posts').add(Object.assign({authorId:S.myId,createdAt:Date.now()},fields));
+    pushSend(PUSHSUBS.map(x=>x.uid),nameOf(S.myId)+' tambah kenangan baharu',fields.place||String(fields.text||'').slice(0,90),'kk-post');
     F.files.forEach(f=>URL.revokeObjectURL(f.url)); F.files=[]; F.emoji=''; renderPreviews();F.voice=null;renderVoice();
     $('f-story').value='';$('f-place').value='';$('f-date').value='';updCount();
     F.busy=false; $('submit').disabled=false; setStatus('');
@@ -3554,6 +3590,8 @@ async function init(){
   S.db.collection('capsules').onSnapshot(snap=>{S.caps=snap.docs.map(d=>normCap(d.id,d.data()||{})).filter(c=>c.openOn);render();if(!$('cap').hidden)renderCap();},()=>{});
   S.db.collection('cal').onSnapshot(snap=>{S.cal=snap.docs.map(d=>normCal(d.id,d.data()||{})).filter(c=>c.title&&c.date);render();if(!$('cal').hidden)renderCal();if(!snap.metadata.fromCache&&!NT.calOk){NT.calOk=true;calRemind();}},()=>{});
   S.db.collection('locs').onSnapshot(locSnap,()=>{});
+  S.db.collection('push').onSnapshot(sn=>{PUSHSUBS=sn.docs.map(d=>Object.assign({uid:d.id},d.data()||{}));},()=>{});
+  if(ntOn())pushSubscribe();
   S.db.collection('albums').onSnapshot(snap=>{
     S.albums=snap.docs.map(d=>normAlbum(d.id,d.data()||{})).filter(a=>a.name);
     S.albumsOk=true;
