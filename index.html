@@ -949,9 +949,7 @@ html{overscroll-behavior-y:contain}
 
 /* ===== Dua tema: Biru Laut dan Ros Taman (masing-masing terang / gelap) ===== */
 :root[data-skin="laut"]:not([data-theme="dark"]){--bg:#EAF2FC;--surface:#FFFFFF;--surface-2:#DCE8F7;--ink:#0B1F38;--ink-2:#46607E;--line:#C9DAEE;--gold:#E8A500;--gold-ink:#8A5A00;--teal:#0A7FB5;--teal-soft:#D3EAF8;--coral:#FF7A59;--coral-soft:#FFE6DE;--accent:#1456C8;--accent-ink:#FFFFFF;--accent-soft:#D6E5FB;--heart:#E5484D;--scrim:rgba(8,20,40,.6);--shadow:0 1px 2px rgba(10,40,90,.08),0 12px 28px -16px rgba(10,40,90,.35);color-scheme:light}
-:root[data-skin="laut"][data-theme="dark"]{--bg:#070E1B;--surface:#101B2E;--surface-2:#192843;--ink:#E8F0FC;--ink-2:#97ADCB;--line:#223555;--gold:#F5C451;--gold-ink:#F5C451;--teal:#38BDF8;--teal-soft:#0E2F4A;--coral:#FF8A6B;--coral-soft:#3A2630;--accent:#5EA2FF;--accent-ink:#04122B;--accent-soft:#16305C;--heart:#FF6B7A;--scrim:rgba(0,0,0,.7);--shadow:0 1px 0 rgba(255,255,255,.05) inset,0 14px 30px -18px rgba(0,0,0,.85);color-scheme:dark}
-:root[data-skin="ros"]:not([data-theme="dark"]){--bg:#FFEEF4;--surface:#FFFFFF;--surface-2:#FFDCE8;--ink:#3A0D22;--ink-2:#85506B;--line:#F6C9DA;--gold:#F0A030;--gold-ink:#8F5300;--teal:#B83280;--teal-soft:#FBD8E8;--coral:#FF7A9A;--coral-soft:#FFE0E8;--accent:#C81D66;--accent-ink:#FFFFFF;--accent-soft:#FFD3E3;--heart:#E11D74;--scrim:rgba(40,8,24,.6);--shadow:0 1px 2px rgba(120,20,70,.08),0 12px 28px -16px rgba(120,20,70,.35);color-scheme:light}
-:root[data-skin="ros"][data-theme="dark"]{--bg:#17080F;--surface:#271120;--surface-2:#381A2E;--ink:#FFE8F1;--ink-2:#D6A1BA;--line:#4B2139;--gold:#F5C451;--gold-ink:#F5C451;--teal:#FF8FB8;--teal-soft:#4A1B33;--coral:#FF9CB5;--coral-soft:#42202F;--accent:#FF7AAE;--accent-ink:#3A0620;--accent-soft:#4D1B36;--heart:#FF5C96;--scrim:rgba(0,0,0,.7);--shadow:0 1px 0 rgba(255,255,255,.05) inset,0 14px 30px -18px rgba(0,0,0,.85);color-scheme:dark}
+:root[data-skin="laut"][data-theme="dark"]{--bg:#10161E;--surface:#1A222D;--surface-2:#252F3C;--ink:#EEF2F7;--ink-2:#A3B1C2;--line:#2E3B4C;--gold:#F2BE5A;--gold-ink:#F2BE5A;--teal:#7CC4F2;--teal-soft:#1B3447;--coral:#FF9370;--coral-soft:#3B2A26;--accent:#6FB1FF;--accent-ink:#071A33;--accent-soft:#1C3555;--heart:#FF8A72;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 .bst-c{animation:bstc .75s ease-out forwards;font-size:30px}
 @keyframes bstc{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1)}}
 </style>
@@ -1237,7 +1235,7 @@ const QUOTES=[
   'Dari kampung ke kota, keluarga tetap pangkal cerita.'
 ];
 const WXS=[['cerah','Cerah'],['mendung','Mendung'],['hujan','Hujan']];
-const SKINS=[['laut','Biru Laut','linear-gradient(135deg,#0B3A8F,#38BDF8)'],['ros','Ros Taman','linear-gradient(135deg,#BE185D,#FDA4AF)']];
+const SKINS=[['laut','Biru Laut','linear-gradient(135deg,#0B3A8F,#38BDF8)'],['kampung','Hijau Kampung','linear-gradient(135deg,#2A7A63,#EDA82E)']];
 const BIGL=['Biasa','Besar','Lebih besar'];
 function applyBig(n){
   S.big=n>=0&&n<=2?n:0;
@@ -1303,9 +1301,9 @@ function applyMode(m,save){
 }
 function applySkin(k){
   const r=document.documentElement;
-  if(k==='senja')k='ros';
-  r.setAttribute('data-skin',SKINS.some(x=>x[0]===k)?k:'laut');
-  S.skin=SKINS.some(x=>x[0]===k)?k:'laut';
+  if(k==='senja'||k==='ros')k='kampung';
+  r.setAttribute('data-skin',SKINS.some(x=>x[0]===k)?k:'kampung');
+  S.skin=SKINS.some(x=>x[0]===k)?k:'kampung';
   if(typeof renderSet==='function')renderSet();
 }
 const VIEWS=['utama','galeri','jelajah','peta','keluarga'];
@@ -4038,7 +4036,7 @@ async function init(){
   try{const c=localStorage.getItem('kk-city');if(c)S.city=c.slice(0,60);S.lk=localStorage.getItem('kk-lk')||'';S.cityName=localStorage.getItem('kk-cityname')||'';if(!S.cityName)S.lk='';}catch(e){}
   try{S.nt=localStorage.getItem('kk-nt')==='1';}catch(e){}
   try{applyBig(parseInt(localStorage.getItem('kk-big')||'0',10)||0);}catch(e){}
-  try{applySkin(localStorage.getItem('kk-skin')||'laut');}catch(e){applySkin('laut');}
+  try{applySkin(localStorage.getItem('kk-skin')||'kampung');}catch(e){applySkin('kampung');}
   applyFx3d(false);
   applyGlass(true);
   try{applyMotion(localStorage.getItem('kk-motion')!=='0'&&!REDMO.matches);}catch(e){}
