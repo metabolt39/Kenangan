@@ -1623,7 +1623,9 @@ function teaserHtml(){
 function cadanganHtml(){
   const doy=dayOfYear(), fi=(doy*7+S.discN)%PLC.length, f=PLC[fi];
   const l=plcList(), w=wish();
-  let h=sec('Jom ke mana?','<button type="button" class="shuf-l" data-act="disc-shuf"><svg class="i" aria-hidden="true"><use href="#i-dice"></use></svg>Lain</button>');
+  const ic=infoCoord();
+  let h=DEMO?'':'<a class="jt" href="https://www.google.com/maps/search/restoran+halal/@'+ic.lat+','+ic.lon+',15z" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;margin-top:0;margin-bottom:6px"><span class="jt-i emo" aria-hidden="true">'+icon('pin')+'</span><span class="jt-t"><b>Cari makan halal berdekatan</b><span>Buka Google Maps di sekitar lokasi anda</span></span><span class="jt-a" aria-hidden="true">›</span></a>';
+  h+=sec('Jom ke mana?','<button type="button" class="shuf-l" data-act="disc-shuf"><svg class="i" aria-hidden="true"><use href="#i-dice"></use></svg>Lain</button>');
   h+='<button type="button" class="pfeat" data-act="plc" data-v="'+fi+'" aria-label="Cadangan: '+esc(f[1])+'">'+plcImg(f[0],'pfeat-i')+'<span class="pfeat-t"><span class="pk">'+(S.discN?'Cadangan pilihan':'Cadangan hari ini')+' · '+esc(f[2])+'</span><b>'+esc(f[1])+'</b><span>'+esc(f[4])+'</span></span></button>';
   h+='<div class="chips" role="group" aria-label="Jenis tempat"><button type="button" class="chip" data-act="pcat" data-v="semua" aria-pressed="'+(S.pcat==='semua')+'">Semua</button>'+PCAT.map(c=>'<button type="button" class="chip" data-act="pcat" data-v="'+c[0]+'" aria-pressed="'+(S.pcat===c[0])+'">'+icon(CIC[c[0]]||'pin')+esc(c[1])+'</button>').join('')+'<button type="button" class="chip" data-act="pcat" data-v="impian" aria-pressed="'+(S.pcat==='impian')+'">♡ Impian'+(w.length?' · '+w.length:'')+'</button></div>';
   h+=l.length?'<div class="pcs full">'+l.map(plcCard).join('')+'</div>':'<p class="note">Belum ada tempat dalam senarai impian. Buka mana-mana tempat dan tekan ♡.</p>';
@@ -2686,7 +2688,6 @@ function infoHtml(){
     b+='<div class="idoa"><small>Doa hari ini · '+esc(doa[0])+'</small><div class="ar" dir="rtl" lang="ar">'+doa[1]+'</div><p>'+esc(doa[2])+'</p></div>';
     if(d&&d.hol&&d.hol.length)b+='<div class="irow"><small>Cuti umum akan datang</small>'+d.hol.map(x=>{const dt=new Date(x.date+'T00:00:00'),k=Math.round((dt-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);return '<div><b>'+esc(x.name)+'</b><span>'+esc(fmtDate(x.date))+' · '+(k===0?'Hari ini':k===1?'Esok':k+' hari lagi')+'</span></div>';}).join('')+'</div>';
     if(d&&d.aqi!=null){const l=aqiLbl(d.aqi);b+='<div class="irow"><small>Kualiti udara (AQI AS, bukan IPU rasmi)</small><div><b style="color:'+l[1]+'">'+d.aqi+' · '+l[0]+'</b></div></div>';}
-    b+='<div class="ilk"><a class="chip" href="https://www.google.com/maps/search/restoran+halal/@'+c.lat+','+c.lon+',15z" target="_blank" rel="noopener">'+icon('pin')+'Cari makan halal berdekatan</a></div>';
     b+='</div>';
   }
   return '<div class="icard"><button type="button" class="ih" data-act="info-tg" aria-expanded="'+S.infoOpen+'"><span class="ih-i" aria-hidden="true">'+icon('clock')+'</span><span class="ih-t"><b>Info hari ini</b><span>'+sum+'</span></span><span class="ih-c" aria-hidden="true">'+(S.infoOpen?'▲':'▼')+'</span></button>'+b+'</div>';
