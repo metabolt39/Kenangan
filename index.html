@@ -894,6 +894,20 @@ button.ntl{cursor:pointer}
 .iw{display:flex;flex-direction:column;gap:4px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d;font-size:13px}
 .iw b{font-size:14px}
 :root[data-theme="dark"] .iw{background:#3b1414;border-color:#7f1d1d;color:#fecaca}
+
+/* ===== Kaca cecair (pilihan dalam Tetapan) ===== */
+:root[data-glass="1"]{--gl-bg:color-mix(in srgb,var(--surface) 52%,transparent);--gl-bd:rgba(255,255,255,.55);--gl-hi:rgba(255,255,255,.65);--gl-sh:0 10px 30px -12px rgba(40,30,10,.35)}
+:root[data-glass="1"][data-theme="dark"]{--gl-bg:color-mix(in srgb,var(--surface) 46%,transparent);--gl-bd:rgba(255,255,255,.16);--gl-hi:rgba(255,255,255,.16);--gl-sh:0 12px 34px -12px rgba(0,0,0,.7)}
+:root[data-glass="1"] body{background-image:radial-gradient(60vmax 50vmax at 8% 4%,color-mix(in srgb,var(--accent,#2f9e7a) 30%,transparent),transparent 60%),radial-gradient(55vmax 45vmax at 95% 35%,color-mix(in srgb,var(--gold,#EAB308) 26%,transparent),transparent 60%),radial-gradient(60vmax 50vmax at 30% 100%,color-mix(in srgb,var(--coral,#ff7a59) 24%,transparent),transparent 60%);background-attachment:fixed}
+:root[data-glass="1"] .post,:root[data-glass="1"] .acard,:root[data-glass="1"] .jt,:root[data-glass="1"] .bd,:root[data-glass="1"] .ev,:root[data-glass="1"] .tile,:root[data-glass="1"] .cap-r,:root[data-glass="1"] .icard,:root[data-glass="1"] .tbd,:root[data-glass="1"] .tchip,:root[data-glass="1"] .chip,:root[data-glass="1"] .note,:root[data-glass="1"] .pfeat,:root[data-glass="1"] .bar,:root[data-glass="1"] .tabs{
+  background:linear-gradient(135deg,var(--gl-hi) 0%,transparent 38%),var(--gl-bg)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.7);backdrop-filter:blur(18px) saturate(1.7);
+  border:1px solid var(--gl-bd)!important;
+  box-shadow:inset 0 1px 0 var(--gl-hi),inset 0 -1px 0 rgba(255,255,255,.06),var(--gl-sh)!important}
+:root[data-glass="1"] .chip[aria-pressed="true"]{background:linear-gradient(135deg,var(--gl-hi),transparent 60%),color-mix(in srgb,var(--accent,#2f9e7a) 55%,transparent)!important}
+:root[data-glass="1"] .ipt span,:root[data-glass="1"] .idoa{background:color-mix(in srgb,var(--surface-2) 50%,transparent)}
+:root[data-glass="1"] .ipt span.on{background:var(--gold)}
+:root[data-glass="1"] .sheet{-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6);background:color-mix(in srgb,var(--surface) 72%,transparent)}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1180,7 +1194,7 @@ function applyBig(n){
 }
 function renderSet(){
   const sk=$('set-skins'); if(!sk)return;
-  sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('')+'<button type="button" class="tile" data-act="fx3d" aria-pressed="'+(document.documentElement.getAttribute('data-3d')==='1')+'"><i style="background:linear-gradient(135deg,#FF8A3D,#F43F5E)"></i>Kesan 3D</button>';
+  sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('')+'<button type="button" class="tile" data-act="fx3d" aria-pressed="'+(document.documentElement.getAttribute('data-3d')==='1')+'"><i style="background:linear-gradient(135deg,#FF8A3D,#F43F5E)"></i>Kesan 3D</button><button type="button" class="tile" data-act="fxglass" aria-pressed="'+(document.documentElement.getAttribute('data-glass')==='1')+'"><i style="background:linear-gradient(135deg,#9be7ff,#c4b5fd)"></i>Kaca cecair</button>';
   $('set-big').innerHTML=BIGL.map((l,i)=>'<button type="button" data-act="big" data-v="'+i+'" aria-pressed="'+(S.big===i)+'">'+l+'</button>').join('');
   $('set-me').innerHTML=(S.myId?av(S.myId):'')+'<div class="nm"><strong>'+esc(S.myId?nameOf(S.myId):'Tetamu')+'</strong><span>'+(S.isOwner?'Pentadbir':'Ahli keluarga')+'</span></div>'+(window.__signOut?'<button type="button" class="btn sm ghost" data-act="signout">Log keluar</button>':'');
   const city=(S.live&&S.live.city)||S.cityName||S.city||'';
@@ -1200,6 +1214,10 @@ function closeSet(){
   $('set').hidden=true; $('cityf').hidden=true;
   if($('lb').hidden&&$('sheet').hidden)document.body.style.overflow='';
   if(S.setPrev&&S.setPrev.focus)try{S.setPrev.focus({preventScroll:true});}catch(e){}
+}
+function applyGlass(on,save){
+  if(on)document.documentElement.setAttribute('data-glass','1');else document.documentElement.removeAttribute('data-glass');
+  if(save){try{localStorage.setItem('kk-glass',on?'1':'0');}catch(e){}}
 }
 function applyFx3d(on,save){
   if(on)document.documentElement.setAttribute('data-3d','1');else document.documentElement.removeAttribute('data-3d');
@@ -1624,7 +1642,7 @@ function cadanganHtml(){
   const doy=dayOfYear(), fi=(doy*7+S.discN)%PLC.length, f=PLC[fi];
   const l=plcList(), w=wish();
   const ic=infoCoord();
-  let h=DEMO?'':'<a class="jt" href="https://www.google.com/maps/search/restoran+halal/@'+ic.lat+','+ic.lon+',15z" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;margin-top:0;margin-bottom:6px"><span class="jt-i emo" aria-hidden="true">'+icon('pin')+'</span><span class="jt-t"><b>Cari makan halal berdekatan</b><span>Buka Google Maps di sekitar lokasi anda</span></span><span class="jt-a" aria-hidden="true">›</span></a>';
+  let h=DEMO?'':'<a class="jt" href="https://www.google.com/maps/search/restoran+halal/@'+ic.lat+','+ic.lon+',15z" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;margin:14px 0 10px"><span class="jt-i emo" aria-hidden="true">'+icon('pin')+'</span><span class="jt-t"><b>Cari makan halal berdekatan</b><span>Buka Google Maps di sekitar lokasi anda</span></span><span class="jt-a" aria-hidden="true">›</span></a>';
   h+=sec('Jom ke mana?','<button type="button" class="shuf-l" data-act="disc-shuf"><svg class="i" aria-hidden="true"><use href="#i-dice"></use></svg>Lain</button>');
   h+='<button type="button" class="pfeat" data-act="plc" data-v="'+fi+'" aria-label="Cadangan: '+esc(f[1])+'">'+plcImg(f[0],'pfeat-i')+'<span class="pfeat-t"><span class="pk">'+(S.discN?'Cadangan pilihan':'Cadangan hari ini')+' · '+esc(f[2])+'</span><b>'+esc(f[1])+'</b><span>'+esc(f[4])+'</span></span></button>';
   h+='<div class="chips" role="group" aria-label="Jenis tempat"><button type="button" class="chip" data-act="pcat" data-v="semua" aria-pressed="'+(S.pcat==='semua')+'">Semua</button>'+PCAT.map(c=>'<button type="button" class="chip" data-act="pcat" data-v="'+c[0]+'" aria-pressed="'+(S.pcat===c[0])+'">'+icon(CIC[c[0]]||'pin')+esc(c[1])+'</button>').join('')+'<button type="button" class="chip" data-act="pcat" data-v="impian" aria-pressed="'+(S.pcat==='impian')+'">♡ Impian'+(w.length?' · '+w.length:'')+'</button></div>';
@@ -3492,6 +3510,7 @@ document.addEventListener('click',e=>{
   else if(a==='set-close')closeSet();
   else if(a==='big'){applyBig(parseInt(v,10)||0);renderSet();}
   else if(a==='mode'){applyMode(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark',true);}
+  else if(a==='fxglass'){const on=document.documentElement.getAttribute('data-glass')!=='1';applyGlass(on,true);renderSet();}
   else if(a==='fx3d'){const on=document.documentElement.getAttribute('data-3d')!=='1';applyFx3d(on,true);renderSet();}
   else if(a==='skin'){applySkin(v);try{localStorage.setItem('kk-skin',v);}catch(x){}}
   else if(a==='import'){$('f-import').click();}
@@ -3737,6 +3756,7 @@ async function init(){
   try{applyBig(parseInt(localStorage.getItem('kk-big')||'0',10)||0);}catch(e){}
   try{applySkin(localStorage.getItem('kk-skin')||'kampung');}catch(e){applySkin('kampung');}
   try{applyFx3d(localStorage.getItem('kk-3d')==='1');}catch(e){}
+  try{applyGlass(localStorage.getItem('kk-glass')!=='0');}catch(e){applyGlass(true);}
   route();
   let cl=window.claude;
   for(let i=0;i<20&&(!cl||!cl.use);i++){await new Promise(r=>setTimeout(r,150));cl=window.claude;}
