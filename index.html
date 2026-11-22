@@ -2790,13 +2790,15 @@ function applyMotion(on,save){
   if(save){try{localStorage.setItem('kk-motion',on?'1':'0');}catch(e){}}
 }
 let rvIO=null;
-function motionAfterRender(){
+const REV=new Set();
+function motionAfterRender(animate){
   if(!motionOn()||!window.IntersectionObserver)return;
-  if(!rvIO)rvIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('rv-in');rvIO.unobserve(e.target);}}),{threshold:.06});
+  if(animate===false){pxUpdate();return;}
+  if(!rvIO)rvIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('rv-in');if(e.target.id)REV.add(e.target.id);rvIO.unobserve(e.target);}}),{threshold:.06});
   const vh=window.innerHeight;
   document.querySelectorAll('#view .post,#view .intl').forEach(el=>{
     const r=el.getBoundingClientRect();
-    if(r.top<vh||r.bottom<0)return;
+    if(r.top<vh||r.bottom<0||(el.id&&REV.has(el.id)))return;
     el.classList.add('rv');rvIO.observe(el);
   });
   pxUpdate();
@@ -2816,6 +2818,7 @@ window.addEventListener('scroll',()=>{
   if(!motionOn())return;
   if(!pxT)pxT=requestAnimationFrame(pxUpdate);
   const y=window.scrollY,dy=y-lastY,b=document.getElementById('bar');
+  if(Date.now()-(window._prog||0)<250){lastY=y;return;}
   if(b&&Math.abs(dy)>6){
     if(y>140&&dy>0)b.classList.add('bar-hide');else b.classList.remove('bar-hide');
     lastY=y;
@@ -2832,7 +2835,7 @@ function burst(el,emo){
     document.body.appendChild(sp);setTimeout(()=>sp.remove(),1200);
   }
 }
-let _ut=0;['touchstart','touchmove','wheel'].forEach(ev=>window.addEventListener(ev,()=>{_ut=Date.now();},{passive:true}));
+let _ut=0;['touchstart','touchmove','wheel'].forEach(ev=>window.addEventListener(ev,()=>{_ut=Date.now();window._utt=_ut;},{passive:true}));
 function keepScroll(){const y0=window.scrollY;[250,600,1200].forEach(t=>setTimeout(()=>{if(Date.now()-_ut>400&&Math.abs(window.scrollY-y0)>50)window.scrollTo(0,y0);},t));}
 S.rndSeed=Math.floor(Math.random()*1e6);
 function interludes(){
@@ -3171,13 +3174,17 @@ async function render(){
   if(S.err&&!S.noDb)h='<p class="note">Sebahagian data tidak dapat dimuat ('+esc(S.err)+'). Muat semula halaman untuk cuba lagi.</p>'+h;
   const sy=window.scrollY, same=(window._lastTab===S.tab+'|'+(S.album||'')+'|'+(S.place||'')+'|'+(S.gby||''));
   window._lastTab=S.tab+'|'+(S.album||'')+'|'+(S.place||'')+'|'+(S.gby||'');
-  if(same&&sy>0)view.style.minHeight=view.offsetHeight+'px';
+  let anc=null;
+  if(same&&sy>0){view.style.minHeight=view.offsetHeight+'px';
+    const ps=view.querySelectorAll('.post');
+    for(const el of ps){const r=el.getBoundingClientRect();if(r.bottom>60){anc={id:el.id,top:r.top};break;}}}
   view.innerHTML=h;
-  if(same&&sy>0){window.scrollTo(0,sy);clearTimeout(window._mhT);window._mhT=setTimeout(()=>{view.style.minHeight='';},1500);}
+  const fixAnchor=()=>{if(!anc)return;const el=document.getElementById(anc.id);if(!el)return;const d=el.getBoundingClientRect().top-anc.top;if(Math.abs(d)>1){window._prog=Date.now();window.scrollBy(0,d);}};
+  if(same&&sy>0){window.scrollTo(0,sy);fixAnchor();[120,400,900].forEach(t=>setTimeout(()=>{if(Date.now()-(window._utt||0)>400)fixAnchor();},t));clearTimeout(window._mhT);window._mhT=setTimeout(()=>{view.style.minHeight='';},1500);}
   S.popKey='';
   if(fid){const el=$(fid);if(el){el.focus({preventScroll:true});if(ss!=null){try{el.setSelectionRange(ss,se);}catch(e){}}}}
   wkFill();
-  motionAfterRender();
+  motionAfterRender(!(same&&sy>0));
   geoLookup();
   $('dl-places').innerHTML=placesList().map(p=>'<option value="'+esc(p.name)+'"></option>').join('');
 }
@@ -3917,8 +3924,8 @@ document.addEventListener('click',e=>{
   else if(a==='album-del-no'){S.alDel=false;render();}
   else if(a==='album-del-yes')deleteAlbum();
   else if(a==='pin'){S.pin=(S.pin===v&&S.tab==='peta')?'':v;if(S.tab!=='peta')go('peta');else render();}
-  else if(a==='like'){keepScroll();if(t.getAttribute('aria-pressed')!=='true')burst(t);toggleLike(id);}
-  else if(a==='rx'){keepScroll();burst(t,v);setReaction(id,v);}
+  else if(a==='like'){if(t.getAttribute('aria-pressed')!=='true')burst(t);toggleLike(id);}
+  else if(a==='rx'){burst(t,v);setReaction(id,v);}
   else if(a==='rx-who'){S.whoOpen=S.whoOpen===id?'':id;render();}
   else if(a==='rx-more'){S.rxOpen=S.rxOpen===id?'':id;render();}
   else if(a==='cm'){
@@ -3928,7 +3935,7 @@ document.addEventListener('click',e=>{
       const top0=el.getBoundingClientRect().top,tmp=document.createElement('div');
       tmp.innerHTML=postHtml(pp,derive());
       const ne=tmp.firstElementChild;el.replaceWith(ne);
-      const d=ne.getBoundingClientRect().top-top0;if(Math.abs(d)>1)window.scrollBy(0,d);
+      const d=ne.getBoundingClientRect().top-top0;if(Math.abs(d)>1){window._prog=Date.now();window.scrollBy(0,d);}
       wkFill();pxUpdate();
     }else render();
   }
