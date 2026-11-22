@@ -2620,6 +2620,7 @@ const DOA=[
 ['Keluar tandas','غُفْرَانَكَ','Aku memohon keampunanMu.'],
 ['Memulakan perjalanan','سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ','Maha Suci Tuhan yang menundukkan ini untuk kami, padahal kami tidak mampu, dan kepada Tuhan kami kembali. (Az-Zukhruf: 13-14)']
 ];
+const ZON={'Selangor':'SGR01','Kuala Lumpur':'WLY01','Labuan':'WLY02','Johor':'JHR02','Kedah':'KDH01','Kelantan':'KTN01','Melaka':'MLK01','Negeri Sembilan':'NGS02','Pahang':'PHG02','Perak':'PRK02','Perlis':'PLS01','Pulau Pinang':'PNG01','Terengganu':'TRG01'};
 const INFO={d:null,busy:false,key:''};
 S.infoOpen=false;try{S.infoOpen=localStorage.getItem('kk-info')==='1';}catch(e){}
 function infoCoord(){const m=/^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(S.lk||'');return m?{lat:+m[1],lon:+m[2],ok:true}:{lat:3.139,lon:101.687,ok:false};}
@@ -2630,16 +2631,33 @@ async function infoLoad(force){
   const c=infoCoord(),n=new Date(),day=ymdI(n),key=day+'|'+c.lat.toFixed(2)+','+c.lon.toFixed(2);
   if(!force&&INFO.key===key&&INFO.d)return;
   let cache=null;
-  try{cache=JSON.parse(localStorage.getItem('kk-infodata')||'null');}catch(e){}
+  try{cache=JSON.parse(localStorage.getItem('kk-infodata2')||'null');}catch(e){}
   if(!force&&cache&&cache.key===key&&Date.now()-cache.at<3*36e5){INFO.d=cache.d;INFO.key=key;return;}
   INFO.busy=true;
   const d={};
   const dd=String(n.getDate()).padStart(2,'0')+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+n.getFullYear();
-  const st=c.ok?stateOf(c.lon,c.lat):'';
+  const st=c.ok?stateOf(c.lon,c.lat):'Kuala Lumpur';
   const jobs=[
-    tj('https://api.aladhan.com/v1/timings/'+dd+'?latitude='+c.lat+'&longitude='+c.lon+'&method=17').then(r=>{const t=r.data.timings,h=r.data.date.hijri;
-      d.pt=[['Subuh',t.Fajr],['Syuruk',t.Sunrise],['Zohor',t.Dhuhr],['Asar',t.Asr],['Maghrib',t.Maghrib],['Isyak',t.Isha]].map(x=>[x[0],String(x[1]).slice(0,5)]);
-      d.hj=+h.day+' '+(HJ[+h.month.number]||h.month.en)+' '+h.year+'H';}).catch(()=>{}),
+    (async()=>{
+      const z=ZON[st];
+      if(z){try{
+        const r=await tj('https://api.waktusolat.app/v2/solat/'+z);
+        const e=r.prayers.find(x=>x.day===n.getDate());
+        if(e&&e.fajr&&e.isha){
+          const f=t=>new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Kuala_Lumpur'}).format(new Date(t*1000));
+          d.pt=[['Subuh',e.fajr],['Syuruk',e.syuruk],['Zohor',e.dhuhr],['Asar',e.asr],['Maghrib',e.maghrib],['Isyak',e.isha]].map(x=>[x[0],f(x[1])]);
+          const hp=String(e.hijri||'').split('-');if(hp.length===3&&HJ[+hp[1]])d.hj=+hp[2]+' '+HJ[+hp[1]]+' '+hp[0]+'H';
+          d.src='JAKIM (zon '+z+')';
+          return;
+        }
+      }catch(x){}}
+      try{
+        const r=await tj('https://api.aladhan.com/v1/timings/'+dd+'?latitude='+c.lat+'&longitude='+c.lon+'&method=17');
+        const t=r.data.timings,h=r.data.date.hijri;
+        d.pt=[['Subuh',t.Fajr],['Syuruk',t.Sunrise],['Zohor',t.Dhuhr],['Asar',t.Asr],['Maghrib',t.Maghrib],['Isyak',t.Isha]].map(x=>[x[0],String(x[1]).slice(0,5)]);
+        d.hj='';d.src='anggaran Aladhan';
+      }catch(x){}
+    })(),
     tj('https://date.nager.at/api/v3/PublicHolidays/'+n.getFullYear()+'/MY').then(a=>{
       d.hol=a.filter(x=>x.date>=day).slice(0,3).map(x=>({date:x.date,name:x.localName||x.name,en:x.name}));
       if(d.hol.length<2&&n.getMonth()>8)return tj('https://date.nager.at/api/v3/PublicHolidays/'+(n.getFullYear()+1)+'/MY').then(b=>{d.hol=d.hol.concat(b.slice(0,3-d.hol.length).map(x=>({date:x.date,name:x.localName||x.name,en:x.name})));}).catch(()=>{});
@@ -2662,7 +2680,7 @@ async function infoLoad(force){
   ];
   await Promise.all(jobs);
   INFO.busy=false;INFO.d=d;INFO.key=key;
-  try{localStorage.setItem('kk-infodata',JSON.stringify({key:key,at:Date.now(),d:d}));}catch(e){}
+  try{localStorage.setItem('kk-infodata2',JSON.stringify({key:key,at:Date.now(),d:d}));}catch(e){}
   try{ntBadge();}catch(e){}
   if(S.tab==='utama')render();
 }
@@ -2683,7 +2701,7 @@ function infoHtml(){
   let b='';
   if(S.infoOpen){
     b+='<div class="ib">';
-    if(d&&d.pt)b+='<div class="ipt">'+d.pt.map(x=>'<span class="'+(nx&&nx.n===x[0]?'on':'')+'"><small>'+esc(x[0])+'</small><b>'+esc(x[1])+'</b></span>').join('')+'</div><p class="in">Waktu solat ikut kaedah JAKIM (Aladhan), berdasarkan lokasi '+(c.ok?esc(S.cityName||'anda'):'Kuala Lumpur (lokasi belum ditetapkan)')+'. Tarikh Hijrah ialah anggaran.</p>';
+    if(d&&d.pt)b+='<div class="ipt">'+d.pt.map(x=>'<span class="'+(nx&&nx.n===x[0]?'on':'')+'"><small>'+esc(x[0])+'</small><b>'+esc(x[1])+'</b></span>').join('')+'</div><p class="in">Sumber: '+esc(d.src||'')+', lokasi '+(c.ok?esc(S.cityName||'anda'):'Kuala Lumpur (lokasi belum ditetapkan)')+'.'+(d.src==='anggaran Aladhan'?' Tarikh Hijrah tidak dipaparkan kerana sumber utama tidak dapat dihubungi.':'')+'</p>';
     else if(d)b+='<p class="in">Waktu solat tidak dapat dimuatkan sekarang.</p>';
     b+='<div class="idoa"><small>Doa hari ini · '+esc(doa[0])+'</small><div class="ar" dir="rtl" lang="ar">'+doa[1]+'</div><p>'+esc(doa[2])+'</p></div>';
     if(d&&d.hol&&d.hol.length)b+='<div class="irow"><small>Cuti umum akan datang</small>'+d.hol.map(x=>{const dt=new Date(x.date+'T00:00:00'),k=Math.round((dt-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);return '<div><b>'+esc(x.name)+'</b><span>'+esc(fmtDate(x.date))+' · '+(k===0?'Hari ini':k===1?'Esok':k+' hari lagi')+'</span></div>';}).join('')+'</div>';
