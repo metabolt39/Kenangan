@@ -933,17 +933,19 @@ html{overscroll-behavior-y:contain}
 .intl-t .ar{font-family:'Amiri',serif;font-size:21px;line-height:1.8;text-align:right}
 .intl-i{width:84px;height:84px;border-radius:16px;object-fit:cover;flex:none;background:var(--surface-2)}
 .intl-b{display:flex;gap:8px;margin-top:6px}
-.mz-b{position:fixed;z-index:36;left:max(14px,env(safe-area-inset-left,0px));bottom:calc(80px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);font-size:20px;cursor:pointer;display:grid;place-items:center}
-.mz{position:fixed;z-index:60;left:12px;right:12px;max-width:420px;bottom:calc(136px + env(safe-area-inset-bottom,0px));padding:12px 14px 14px;border:1px solid var(--line);border-radius:22px;background:var(--surface);box-shadow:0 20px 50px -16px rgba(0,0,0,.5);opacity:0;transform:translateY(24px);pointer-events:none;transition:opacity .25s,transform .25s}
-.mz.open{opacity:1;transform:none;pointer-events:auto}
-.mz-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.mz iframe{width:100%;border:0;border-radius:14px;display:block}
-.mz-f{display:flex;gap:8px;margin-top:10px}
-.mz-f input{flex:1;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink)}
-.mz-h,.mz-n{margin:6px 0 0;font-size:12px;color:var(--ink-2)}
-@media (min-width:1100px){.mz-b{left:auto;right:200px;bottom:32px}.mz{left:auto;right:32px;bottom:100px}}
 :root[data-glass="1"] .intl{background:linear-gradient(135deg,var(--gl-hi) 0%,transparent 38%),var(--gl-bg)!important;border:1px solid var(--gl-bd)!important;box-shadow:inset 0 1px 0 var(--gl-hi),var(--gl-sh)!important}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
+
+#mz-host{position:fixed;left:-400px;top:0;width:200px;height:200px;overflow:hidden}
+#mz-host.show{left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));top:auto;width:auto;max-width:420px;height:auto;border-radius:16px;box-shadow:0 20px 50px -16px rgba(0,0,0,.55);z-index:60;overflow:hidden;background:var(--surface)}
+#mz-host iframe{width:100%;border:0;display:block}
+.mzp{display:flex;align-items:center;gap:8px;margin:0 0 14px;padding:6px 8px 6px 14px;min-height:46px;border-radius:99px;background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.mzp-i{display:grid;place-items:center;flex:none}
+.mzs{width:20px;height:20px;display:block}
+.mzp-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:600;color:var(--ink)}
+.mzp-b{flex:none;display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:50%;background:var(--accent);color:var(--accent-ink);cursor:pointer;padding:0}
+.mzp-b+.mzp-b{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.mz-in{flex:1;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink)}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1108,6 +1110,10 @@ html{overscroll-behavior-y:contain}
     <p class="set-p" id="set-nt"></p>
     <div class="set-row"><button type="button" class="btn sm" data-act="nt" id="nt-b">Hidupkan notifikasi</button> <button type="button" class="btn sm ghost" data-act="nt-test" id="nt-test" hidden>Hantar ujian</button></div>
     <p class="set-p" id="nt-st"></p>
+    <h3 class="set-h">Muzik</h3>
+    <p class="set-p">Tampal pautan YouTube (video atau playlist), Spotify atau fail .mp3. Di halaman Utama hanya jalur kecil dengan tajuk dan butang main akan keluar. Pautan disimpan pada peranti ini sahaja.</p>
+    <div class="set-row"><input id="mz-in" type="url" class="mz-in" placeholder="https://youtu.be/…" autocomplete="off" inputmode="url" aria-label="Pautan muzik"></div>
+    <div class="set-row"><button type="button" class="btn sm" data-act="mz-save">Simpan muzik</button><button type="button" class="btn sm ghost" data-act="mz-clear">Padam</button></div>
     <h3 class="set-h">Hari lahir keluarga</h3>
     <div class="bd-l" id="set-bdl"></div>
     <div class="bd-f"><input id="bd-n" type="text" maxlength="40" placeholder="Nama (cth. Atok)" aria-label="Nama" autocomplete="off"><input id="bd-d" type="date" aria-label="Tarikh lahir" max="2100-12-31"><button type="button" class="btn sm" data-act="bd-add">Tambah hari lahir</button></div>
@@ -1229,6 +1235,7 @@ function applyBig(n){
   try{localStorage.setItem('kk-big',String(S.big));}catch(e){}
 }
 function renderSet(){
+  { const mi=document.getElementById('mz-in'); if(mi&&document.activeElement!==mi&&typeof MZ!=='undefined')mi.value=MZ.url||''; }
   const sk=$('set-skins'); if(!sk)return;
   sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('')+'<button type="button" class="tile" data-act="fx3d" aria-pressed="'+(document.documentElement.getAttribute('data-3d')==='1')+'"><i style="background:linear-gradient(135deg,#FF8A3D,#F43F5E)"></i>Kesan 3D</button><button type="button" class="tile" data-act="fxglass" aria-pressed="'+(document.documentElement.getAttribute('data-glass')==='1')+'"><i style="background:linear-gradient(135deg,#9be7ff,#c4b5fd)"></i>Kaca cecair</button><button type="button" class="tile" data-act="fxmotion" aria-pressed="'+(document.documentElement.getAttribute('data-motion')==='1')+'"><i style="background:linear-gradient(135deg,#fde68a,#fb7185)"></i>Animasi</button>';
   $('set-big').innerHTML=BIGL.map((l,i)=>'<button type="button" data-act="big" data-v="'+i+'" aria-pressed="'+(S.big===i)+'">'+l+'</button>').join('');
@@ -2874,16 +2881,14 @@ function interludes(){
     pull=0;
   },{passive:true});
 })();
-/* pemain muzik */
+/* pemain muzik (pautan diletak dalam Tetapan, di Utama hanya jalur kecil) */
 function mzEmbed(u){
   u=String(u||'').trim();if(!u)return null;
   if(/^https:\/\/[^\s]+\.(mp3|m4a|aac|ogg|wav)(\?[^\s]*)?$/i.test(u))return {t:'audio',u:u};
   const yt=(id,l)=>{
     if(id&&!/^[\w-]{6,15}$/.test(id))id='';
     if(l&&!/^[\w-]{6,60}$/.test(l))l='';
-    if(id)return {t:'frame',u:'https://www.youtube-nocookie.com/embed/'+id+(l?'?list='+l:''),h:220};
-    if(l)return {t:'frame',u:'https://www.youtube-nocookie.com/embed/videoseries?list='+l,h:220};
-    return null;
+    return (id||l)?{t:'yt',id:id||'',list:l||''}:null;
   };
   try{
     const x=new URL(u),h=x.hostname.replace(/^www\.|^m\./,'');
@@ -2900,37 +2905,84 @@ function mzEmbed(u){
   }catch(e){}
   return null;
 }
-const MZ={url:'',built:''};
-function mzBuild(){
-  const box=document.getElementById('mz-p');if(!box)return;
-  if(MZ.built===MZ.url)return;
-  const em=mzEmbed(MZ.url);MZ.built=MZ.url;
-  if(!em){box.innerHTML='<p class="mz-h">Tampal pautan YouTube, Spotify atau fail .mp3, kemudian tekan Mainkan.</p>';return;}
-  box.innerHTML=em.t==='audio'?'<audio controls preload="none" src="'+esc(em.u)+'" style="width:100%"></audio>':'<iframe src="'+esc(em.u)+'" height="'+em.h+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="Pemain muzik"></iframe>';
+const MZ={url:'',em:null,st:'idle',title:'',pl:null,a:null,sp:false};
+const MZI={
+  note:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="17.5" cy="16" r="2.5" fill="currentColor"/></svg>',
+  play:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>',
+  stop:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>',
+  dn:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  up:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
+function mzPillHtml(){
+  if(DEMO||!MZ.url||!MZ.em)return '';
+  const sp=MZ.em.t==='frame',pl=MZ.st==='playing';
+  return '<div class="mzp" id="mzp"><span class="mzp-i">'+MZI.note+'</span><span class="mzp-t">'+esc(MZ.title||'Muzik keluarga')+'</span>'+
+    (sp?'<button type="button" class="mzp-b" data-act="mz-sp" aria-label="Buka atau tutup pemain">'+(MZ.sp?MZI.up:MZI.dn)+'</button>'
+       :'<button type="button" class="mzp-b" data-act="mz-pp" aria-label="'+(pl?'Jeda':'Main')+'">'+(pl?MZI.pause:MZI.play)+'</button><button type="button" class="mzp-b" data-act="mz-stop" aria-label="Henti">'+MZI.stop+'</button>')+'</div>';
+}
+function mzRefresh(){const el=document.getElementById('mzp');if(el)el.outerHTML=mzPillHtml();}
+function mzYtLoad(cb){
+  if(window.YT&&window.YT.Player)return cb();
+  const prev=window.onYouTubeIframeAPIReady;
+  window.onYouTubeIframeAPIReady=()=>{try{if(prev)prev();}catch(e){}cb();};
+  if(!document.getElementById('yt-api')){const sc=document.createElement('script');sc.id='yt-api';sc.src='https://www.youtube.com/iframe_api';document.head.appendChild(sc);}
+}
+function mzYtTitle(){try{const d=MZ.pl&&MZ.pl.getVideoData&&MZ.pl.getVideoData();if(d&&d.title)MZ.title=d.title;}catch(e){}}
+function mzSetup(){
+  const host=document.getElementById('mz-host');if(!host)return;
+  try{if(MZ.pl&&MZ.pl.destroy)MZ.pl.destroy();}catch(e){}
+  if(MZ.a){try{MZ.a.pause();}catch(e){}}
+  MZ.pl=null;MZ.a=null;MZ.st='idle';MZ.title='';MZ.sp=false;host.className='';host.innerHTML='';
+  const em=MZ.em=mzEmbed(MZ.url);
+  if(!em){mzRefresh();return;}
+  if(em.t==='audio'){
+    const a=new Audio();a.preload='none';a.src=em.u;
+    a.onplay=()=>{MZ.st='playing';mzRefresh();};
+    a.onpause=()=>{if(MZ.st!=='idle')MZ.st='paused';mzRefresh();};
+    a.onended=()=>{MZ.st='idle';mzRefresh();};
+    MZ.a=a;try{MZ.title=decodeURIComponent(em.u.split('?')[0].split('/').pop()).replace(/\.[^.]+$/,'');}catch(e){}
+  }else if(em.t==='yt'){
+    host.innerHTML='<div id="mz-yt"></div>';
+    mzYtLoad(()=>{
+      const pv={playsinline:1,rel:0},o={height:'200',width:'200',playerVars:pv,events:{
+        onReady:()=>{mzYtTitle();mzRefresh();},
+        onStateChange:e=>{const c=e.data;MZ.st=(c===1||c===3)?'playing':c===2?'paused':'idle';mzYtTitle();mzRefresh();}}};
+      if(em.id){o.videoId=em.id;if(em.list)pv.list=em.list;}else{pv.listType='playlist';pv.list=em.list;}
+      try{MZ.pl=new YT.Player('mz-yt',o);}catch(e){}
+    });
+  }else{
+    MZ.title='Spotify';
+    host.innerHTML='<iframe src="'+esc(em.u)+'" height="'+em.h+'" allow="autoplay; encrypted-media; fullscreen" loading="lazy" title="Pemain Spotify"></iframe>';
+  }
+  mzRefresh();
 }
 function mzInit(){
-  if(document.getElementById('mz'))return;
+  if(document.getElementById('mz-host'))return;
+  const h=document.createElement('div');h.id='mz-host';document.body.appendChild(h);
   try{MZ.url=localStorage.getItem('kk-music')||'';}catch(e){}
-  const b=document.createElement('button');b.type='button';b.id='mz-b';b.className='mz-b';b.setAttribute('data-act','mz-open');b.setAttribute('aria-label','Pemain muzik');b.hidden=true;b.textContent='🎵';
-  const d=document.createElement('div');d.id='mz';d.className='mz';d.setAttribute('role','dialog');d.setAttribute('aria-label','Pemain muzik');
-  d.innerHTML='<div class="mz-top"><b>🎵 Muzik</b><button type="button" class="icon-btn" data-act="mz-close" aria-label="Tutup">'+icon('x')+'</button></div><div id="mz-p"></div><div class="mz-f"><input type="url" id="mz-in" placeholder="Tampal pautan YouTube / Spotify / .mp3" autocomplete="off" inputmode="url"><button type="button" class="btn sm" data-act="mz-play">Mainkan</button></div><button type="button" class="lnk" data-act="mz-clear">Padam pautan</button><p class="mz-n">Muzik berhenti jika app ditutup atau ditukar ke app lain.</p>';
-  document.body.appendChild(b);document.body.appendChild(d);
-  document.getElementById('mz-in').value=MZ.url;
+  mzSetup();
 }
-function mzOpen(){
-  const d=document.getElementById('mz');if(!d)return;
-  const o=!d.classList.contains('open');d.classList.toggle('open',o);
-  if(o)mzBuild();
-}
-function mzPlay(){
+function mzSave(){
   const v=document.getElementById('mz-in').value.trim();
+  if(!v){mzClear();return;}
   if(!mzEmbed(v)){toast('Pautan tidak dikenali. Guna YouTube, Spotify atau fail .mp3');return;}
   MZ.url=v;try{localStorage.setItem('kk-music',v);}catch(e){}
-  MZ.built='';mzBuild();
+  mzSetup();toast('Muzik disimpan. Tekan main di halaman Utama.');
 }
 function mzClear(){
-  MZ.url='';MZ.built='';try{localStorage.removeItem('kk-music');}catch(e){}
-  document.getElementById('mz-in').value='';document.getElementById('mz-p').innerHTML='';mzBuild();
+  MZ.url='';try{localStorage.removeItem('kk-music');}catch(e){}
+  const i=document.getElementById('mz-in');if(i)i.value='';
+  mzSetup();toast('Pautan muzik dipadam');
+}
+function mzPP(){
+  if(MZ.a){if(MZ.st==='playing')MZ.a.pause();else{MZ.st='playing';MZ.a.play().catch(()=>{MZ.st='idle';mzRefresh();toast('Fail muzik tidak dapat dimainkan');});}mzRefresh();return;}
+  if(MZ.pl&&MZ.pl.playVideo){try{if(MZ.st==='playing')MZ.pl.pauseVideo();else MZ.pl.playVideo();}catch(e){}}
+  else toast('Pemain belum sedia, cuba sebentar lagi');
+}
+function mzStop(){
+  if(MZ.a){MZ.st='idle';MZ.a.pause();try{MZ.a.currentTime=0;}catch(e){}mzRefresh();return;}
+  if(MZ.pl&&MZ.pl.stopVideo){try{MZ.pl.stopVideo();}catch(e){}MZ.st='idle';mzRefresh();}
 }
 function todayStrip(){
   const it=[],bc=[];
@@ -2966,6 +3018,7 @@ function utamaHtml(m){
   if(!DEMO)h+=newBannerHtml();
   if(!DEMO)h+=todayStrip();
   if(!DEMO)h+=infoHtml();
+  if(!DEMO)h+=mzPillHtml();
   if(!DEMO&&S.cal.some(c=>c.date&&calDays(c)>=0))h+=calHtml();
   h+=memoryHtml();
   if(!DEMO)h+=throwHtml();
@@ -3113,7 +3166,6 @@ async function render(){
   if(fid){const el=$(fid);if(el){el.focus({preventScroll:true});if(ss!=null){try{el.setSelectionRange(ss,se);}catch(e){}}}}
   wkFill();
   motionAfterRender();
-  { const mb=document.getElementById('mz-b'); if(mb)mb.hidden=!S.myId||DEMO; }
   geoLookup();
   $('dl-places').innerHTML=placesList().map(p=>'<option value="'+esc(p.name)+'"></option>').join('');
 }
@@ -3726,8 +3778,10 @@ document.addEventListener('click',e=>{
   else if(a==='backup')backupAll();
   else if(a==='nt')ntToggle();
   else if(a==='info-tg'){S.infoOpen=!S.infoOpen;try{localStorage.setItem('kk-info',S.infoOpen?'1':'0');}catch(e){}render();}
-  else if(a==='mz-open'||a==='mz-close'){if(a==='mz-close'){const d=document.getElementById('mz');if(d)d.classList.remove('open');}else mzOpen();}
-  else if(a==='mz-play')mzPlay();
+  else if(a==='mz-pp')mzPP();
+  else if(a==='mz-stop')mzStop();
+  else if(a==='mz-sp'){MZ.sp=!MZ.sp;const h=document.getElementById('mz-host');if(h)h.classList.toggle('show',MZ.sp);mzRefresh();}
+  else if(a==='mz-save')mzSave();
   else if(a==='mz-clear')mzClear();
   else if(a==='rnd-more'){S.rndSeed=Math.floor(Math.random()*1e6);render();}
   else if(a==='fxmotion'){applyMotion(!motionOn(),true);renderSet();}
