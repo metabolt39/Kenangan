@@ -1098,8 +1098,8 @@ html{overscroll-behavior-y:contain}
   <section class="sheet setp" role="dialog" aria-modal="true" aria-labelledby="set-t">
     <div class="sheet-h"><h2 id="set-t">Tetapan</h2><button type="button" class="icon-btn" data-act="set-close" aria-label="Tutup tetapan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
     <div class="set-me" id="set-me"></div>
-    <h3 class="set-h">Tema warna</h3>
-    <div class="tiles" id="set-skins" role="group" aria-label="Tema warna"></div>
+    <h3 class="set-h">Paparan</h3>
+    <div class="tiles" id="set-skins" role="group" aria-label="Paparan"></div>
     <h3 class="set-h">Saiz tulisan</h3>
     <div class="segc" id="set-big" role="group" aria-label="Saiz tulisan"></div>
     <h3 class="set-h">Cuaca dan lokasi</h3>
@@ -1237,7 +1237,7 @@ function applyBig(n){
 function renderSet(){
   { const mi=document.getElementById('mz-in'); if(mi&&document.activeElement!==mi&&typeof MZ!=='undefined')mi.value=MZ.url||''; }
   const sk=$('set-skins'); if(!sk)return;
-  sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('')+'<button type="button" class="tile" data-act="fx3d" aria-pressed="'+(document.documentElement.getAttribute('data-3d')==='1')+'"><i style="background:linear-gradient(135deg,#FF8A3D,#F43F5E)"></i>Kesan 3D</button><button type="button" class="tile" data-act="fxglass" aria-pressed="'+(document.documentElement.getAttribute('data-glass')==='1')+'"><i style="background:linear-gradient(135deg,#9be7ff,#c4b5fd)"></i>Kaca cecair</button><button type="button" class="tile" data-act="fxmotion" aria-pressed="'+(document.documentElement.getAttribute('data-motion')==='1')+'"><i style="background:linear-gradient(135deg,#fde68a,#fb7185)"></i>Animasi</button>';
+  sk.innerHTML='<button type="button" class="tile" data-act="mode-set" data-v="light" aria-pressed="'+(!(document.documentElement.getAttribute('data-theme')==='dark'))+'"><i style="background:linear-gradient(135deg,#FAF8F5,#EAB308)"></i>Terang</button><button type="button" class="tile" data-act="mode-set" data-v="dark" aria-pressed="'+(document.documentElement.getAttribute('data-theme')==='dark')+'"><i style="background:linear-gradient(135deg,#12181B,#7FD1B2)"></i>Gelap</button><button type="button" class="tile" data-act="fxmotion" aria-pressed="'+(document.documentElement.getAttribute('data-motion')==='1')+'"><i style="background:linear-gradient(135deg,#fde68a,#fb7185)"></i>Animasi</button>';
   $('set-big').innerHTML=BIGL.map((l,i)=>'<button type="button" data-act="big" data-v="'+i+'" aria-pressed="'+(S.big===i)+'">'+l+'</button>').join('');
   $('set-me').innerHTML=(S.myId?av(S.myId):'')+'<div class="nm"><strong>'+esc(S.myId?nameOf(S.myId):'Tetamu')+'</strong><span>'+(S.isOwner?'Pentadbir':'Ahli keluarga')+'</span></div>'+(window.__signOut?'<button type="button" class="btn sm ghost" data-act="signout">Log keluar</button>':'');
   const city=(S.live&&S.live.city)||S.cityName||S.city||'';
@@ -3769,6 +3769,7 @@ document.addEventListener('click',e=>{
   if(a==='settings')openSet();
   else if(a==='set-close')closeSet();
   else if(a==='big'){applyBig(parseInt(v,10)||0);renderSet();}
+  else if(a==='mode-set'){applyMode(v,true);renderSet();}
   else if(a==='mode'){applyMode(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark',true);}
   else if(a==='fxglass'){const on=document.documentElement.getAttribute('data-glass')!=='1';applyGlass(on,true);renderSet();}
   else if(a==='fx3d'){const on=document.documentElement.getAttribute('data-3d')!=='1';applyFx3d(on,true);renderSet();}
@@ -4021,9 +4022,9 @@ async function init(){
   try{const c=localStorage.getItem('kk-city');if(c)S.city=c.slice(0,60);S.lk=localStorage.getItem('kk-lk')||'';S.cityName=localStorage.getItem('kk-cityname')||'';if(!S.cityName)S.lk='';}catch(e){}
   try{S.nt=localStorage.getItem('kk-nt')==='1';}catch(e){}
   try{applyBig(parseInt(localStorage.getItem('kk-big')||'0',10)||0);}catch(e){}
-  try{applySkin(localStorage.getItem('kk-skin')||'kampung');}catch(e){applySkin('kampung');}
-  try{applyFx3d(localStorage.getItem('kk-3d')==='1');}catch(e){}
-  try{applyGlass(localStorage.getItem('kk-glass')!=='0');}catch(e){applyGlass(true);}
+  applySkin('kampung');
+  applyFx3d(false);
+  applyGlass(true);
   try{applyMotion(localStorage.getItem('kk-motion')!=='0'&&!REDMO.matches);}catch(e){}
   mzInit();
   route();
