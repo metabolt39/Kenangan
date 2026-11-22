@@ -2825,13 +2825,11 @@ window.addEventListener('scroll',()=>{
 function burst(el,emo){
   if(!motionOn()||!el)return;
   const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,set=['❤️','💖','✨','💗','💕'];
-  const big=document.createElement('span');big.className='bst bst-c';big.textContent=emo||'❤️';big.style.cssText='left:'+cx+'px;top:'+cy+'px';
-  document.body.appendChild(big);setTimeout(()=>big.remove(),800);
-  for(let i=0;i<7;i++){
+  for(let i=0;i<9;i++){
     const sp=document.createElement('span');sp.className='bst';sp.textContent=emo||set[i%set.length];
-    const ang=(i/7)*Math.PI*2+Math.random()*.6,d=26+Math.random()*22;
-    sp.style.cssText='left:'+cx+'px;top:'+cy+'px;--dx:'+(Math.cos(ang)*d).toFixed(0)+'px;--dy:'+(Math.sin(ang)*d).toFixed(0)+'px;font-size:'+(11+Math.random()*7).toFixed(0)+'px;animation-duration:.7s';
-    document.body.appendChild(sp);setTimeout(()=>sp.remove(),900);
+    const ang=-Math.PI/2+(Math.random()-.5)*2.4,d=50+Math.random()*70;
+    sp.style.cssText='left:'+cx+'px;top:'+cy+'px;--dx:'+(Math.cos(ang)*d).toFixed(0)+'px;--dy:'+(Math.sin(ang)*d).toFixed(0)+'px;font-size:'+(14+Math.random()*12).toFixed(0)+'px;animation-delay:'+(i*0.025)+'s';
+    document.body.appendChild(sp);setTimeout(()=>sp.remove(),1200);
   }
 }
 let _ut=0;['touchstart','touchmove','wheel'].forEach(ev=>window.addEventListener(ev,()=>{_ut=Date.now();},{passive:true}));
@@ -3923,7 +3921,17 @@ document.addEventListener('click',e=>{
   else if(a==='rx'){keepScroll();burst(t,v);setReaction(id,v);}
   else if(a==='rx-who'){S.whoOpen=S.whoOpen===id?'':id;render();}
   else if(a==='rx-more'){S.rxOpen=S.rxOpen===id?'':id;render();}
-  else if(a==='cm'){if(S.open.has(id))S.open.delete(id);else S.open.add(id);render();}
+  else if(a==='cm'){
+    if(S.open.has(id))S.open.delete(id);else S.open.add(id);
+    const el=document.getElementById('post-'+id),pp=P.find(x=>x.id===id);
+    if(el&&pp&&!pp.demo){
+      const top0=el.getBoundingClientRect().top,tmp=document.createElement('div');
+      tmp.innerHTML=postHtml(pp,derive());
+      const ne=tmp.firstElementChild;el.replaceWith(ne);
+      const d=ne.getBoundingClientRect().top-top0;if(Math.abs(d)>1)window.scrollBy(0,d);
+      wkFill();pxUpdate();
+    }else render();
+  }
   else if(a==='note'){if(S.noteOpen.has(id)){S.noteOpen.delete(id);delete S.drafts['n'+id];}else S.noteOpen.add(id);render();}
   else if(a==='note-save')saveNote(id);
   else if(a==='del-ask'){S.confirmDel=id;render();}
