@@ -941,7 +941,11 @@ html{overscroll-behavior-y:contain}
 #mz-host iframe{width:100%;border:0;display:block}
 .mzp{display:flex;align-items:center;gap:8px;margin:0 0 14px;padding:6px 8px 6px 14px;min-height:46px;border-radius:99px;background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
 .mzp-i{display:grid;place-items:center;flex:none}
-.mzs{width:20px;height:20px;display:block}
+.mzi{width:20px;height:20px;display:block}
+.eq{display:inline-flex;align-items:flex-end;gap:2px;height:18px;width:20px;justify-content:center}
+.eq i{display:block;width:3px;background:currentColor;border-radius:2px;height:5px;animation:eq 0.9s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:.2s}.eq i:nth-child(3){animation-delay:.4s}
+@keyframes eq{0%,100%{height:5px}50%{height:17px}}
 .mzp-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:600;color:var(--ink)}
 .mzp-b{flex:none;display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:50%;background:var(--accent);color:var(--accent-ink);cursor:pointer;padding:0}
 .mzp-b+.mzp-b{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}
@@ -978,6 +982,9 @@ html{overscroll-behavior-y:contain}
 .mzs-h{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
 .mzs-h small{width:100%;font-size:12px;font-weight:600;color:var(--ink-2)}
 .mzs-h .chip{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mzs{max-height:82vh;overflow:auto}
+.mzs-rb{margin-top:14px}
+.mzs-rb>small{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2967,6 +2974,7 @@ function interludes(){
 /* pemain muzik (pautan diletak dalam Tetapan, di Utama hanya jalur kecil) */
 function mzEmbed(u){
   u=String(u||'').trim();if(!u)return null;
+  if(/#radio$/.test(u)){const b=u.replace(/#radio$/,'');if(/^https:\/\/[^\s]+$/.test(b))return {t:'audio',u:b,radio:true};return null;}
   if(/^https:\/\/[^\s]+\.(mp3|m4a|aac|ogg|wav)(\?[^\s]*)?$/i.test(u))return {t:'audio',u:u};
   const yt=(id,l)=>{
     if(id&&!/^[\w-]{6,15}$/.test(id))id='';
@@ -2990,18 +2998,18 @@ function mzEmbed(u){
 }
 const MZ={url:'',em:null,st:'idle',title:'',pl:null,a:null,sp:false};
 const MZI={
-  note:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="17.5" cy="16" r="2.5" fill="currentColor"/></svg>',
-  play:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>',
-  pause:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>',
-  stop:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>',
-  dn:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  up:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  note:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="17.5" cy="16" r="2.5" fill="currentColor"/></svg>',
+  play:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>',
+  stop:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>',
+  dn:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  up:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 function mzPillHtml(){
   if(DEMO)return '';
-  if(!MZ.url||!MZ.em)return '<div class="mzp mzp-e" id="mzp"><span class="mzp-i">'+MZI.note+'</span><button type="button" class="mzp-t mzp-pick" data-act="mz-pick">Pilih muzik</button><button type="button" class="mzp-b" data-act="mz-pick" aria-label="Pilih muzik"><svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></button></div>';
+  if(!MZ.url||!MZ.em)return '<div class="mzp mzp-e" id="mzp"><span class="mzp-i">'+MZI.note+'</span><button type="button" class="mzp-t mzp-pick" data-act="mz-pick">Pilih muzik</button><button type="button" class="mzp-b" data-act="mz-pick" aria-label="Pilih muzik"><svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></button></div>';
   const sp=MZ.em.t==='frame',pl=MZ.st==='playing';
-  return '<div class="mzp" id="mzp"><span class="mzp-i">'+MZI.note+'</span><button type="button" class="mzp-t mzp-pick" data-act="mz-pick" aria-label="Tukar muzik">'+esc(MZ.title||'Muzik keluarga')+'</button>'+
+  return '<div class="mzp" id="mzp"><span class="mzp-i">'+(pl?'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>':MZI.note)+'</span><button type="button" class="mzp-t mzp-pick" data-act="mz-pick" aria-label="Tukar muzik">'+esc(MZ.title||'Muzik keluarga')+'</button>'+
     (sp?'<button type="button" class="mzp-b" data-act="mz-sp" aria-label="Buka atau tutup pemain">'+(MZ.sp?MZI.up:MZI.dn)+'</button>'
        :'<button type="button" class="mzp-b" data-act="mz-pp" aria-label="'+(pl?'Jeda':'Main')+'">'+(pl?MZI.pause:MZI.play)+'</button><button type="button" class="mzp-b" data-act="mz-stop" aria-label="Henti">'+MZI.stop+'</button>')+'</div>';
 }
@@ -3026,6 +3034,7 @@ function mzSetup(){
     a.onplay=()=>{MZ.st='playing';mzRefresh();};
     a.onpause=()=>{if(MZ.st!=='idle')MZ.st='paused';mzRefresh();};
     a.onended=()=>{MZ.st='idle';mzRefresh();};
+    a.onerror=()=>{if(MZ.st==='idle'&&!MZ.auto)return;MZ.st='idle';mzRefresh();toast('Siaran atau fail ini tidak dapat dimainkan sekarang');};
     MZ.a=a;if(MZ.auto){MZ.auto=false;a.play().catch(()=>{});}
     if(!MZ.title)try{MZ.title=decodeURIComponent(em.u.split('?')[0].split('/').pop()).replace(/\.[^.]+$/,'');}catch(e){}
   }else if(em.t==='yt'){
@@ -3050,12 +3059,12 @@ function mzHistSet(u,t){
   else h.unshift({u:u,t:t||''});
   h=h.slice(0,6);try{localStorage.setItem('kk-mzhist',JSON.stringify(h));}catch(e){}
 }
-function mzUse(u){
+function mzUse(u,name){
   u=String(u||'').trim();
   if(!mzEmbed(u)){toast('Pautan tidak dikenali. Guna pautan YouTube, Spotify atau fail .mp3');return false;}
   MZ.url=u;MZ.auto=true;try{localStorage.setItem('kk-music',u);}catch(e){}
-  mzHistSet(u,'');mzSetup();mzSheet(false);
-  const i=document.getElementById('mz-in');if(i)i.value=u;
+  mzHistSet(u,name||'');mzSetup();mzSheet(false);
+  const i=document.getElementById('mz-in');if(i)i.value=u.replace(/#radio$/,'');
   return true;
 }
 function mzSheet(open){
@@ -3065,6 +3074,27 @@ function mzSheet(open){
     document.getElementById('mzs-h').innerHTML=h.length?'<small>Terkini</small>'+h.map((x,i)=>'<button type="button" class="chip" data-act="mz-hist" data-i="'+i+'">'+esc(x.t||x.u.replace(/^https?:\/\/(www\.)?/,'').slice(0,32))+'</button>').join(''):'';
   }
   d.classList.toggle('open',!!open);
+}
+let RBL=[];
+const RBH=['https://de1.api.radio-browser.info','https://de2.api.radio-browser.info','https://nl1.api.radio-browser.info','https://at1.api.radio-browser.info'];
+async function rbGet(q){let last;for(const h of RBH){try{return await tj(h+'/json/stations/search?'+q,9000);}catch(e){last=e;}}throw last;}
+async function mzRadio(kind){
+  const box=document.getElementById('mzs-r2');if(!box)return;
+  box.innerHTML='<small>Memuatkan senarai radio…</small>';
+  const key='kk-rb-'+kind;let list=null;
+  try{list=JSON.parse(sessionStorage.getItem(key)||'null');}catch(e){}
+  if(!list){
+    try{
+      const r=await rbGet('countrycode=MY&hidebroken=true&order=clickcount&reverse=true&limit=80'+(kind==='islam'?'&tag=islam':''));
+      const ios=/iPhone|iPad|iPod/.test(navigator.userAgent),seen=new Set();
+      list=r.filter(x=>x&&x.url_resolved&&/^https:\/\//.test(x.url_resolved)&&(ios||!x.hls)&&x.lastcheckok!==0)
+        .map(x=>({n:String(x.name||'').trim().slice(0,40),u:x.url_resolved}))
+        .filter(x=>x.n&&!seen.has(x.n.toLowerCase())&&seen.add(x.n.toLowerCase())).slice(0,24);
+      try{sessionStorage.setItem(key,JSON.stringify(list));}catch(e){}
+    }catch(e){box.innerHTML='<small>Senarai radio tidak dapat dimuatkan. Semak internet dan cuba lagi.</small>';return;}
+  }
+  RBL=list;
+  box.innerHTML=list.length?list.map((x,i)=>'<button type="button" class="chip" data-act="mz-radio" data-i="'+i+'">'+esc(x.n)+'</button>').join(''):'<small>Tiada siaran ditemui.</small>';
 }
 async function mzPaste(){
   try{const t=await navigator.clipboard.readText();if(t&&mzUse(t))return;if(!t)toast('Tiada pautan disalin. Salin pautan dahulu dari YouTube atau Spotify.');}
@@ -3077,6 +3107,7 @@ function mzInit(){
       '<ol class="mzs-s"><li>Buka lagu atau playlist di YouTube / Spotify</li><li>Tekan <b>Kongsi → Salin pautan</b></li><li>Kembali ke sini, tekan <b>Tampal</b></li></ol>'+
       '<div class="mzs-r"><button type="button" class="btn" data-act="mz-paste">Tampal pautan</button><a class="btn ghost" href="https://www.youtube.com/results?search_query=nasyid+selawat" target="_blank" rel="noopener">Cari di YouTube</a></div>'+
       '<div class="mz-f"><input type="url" id="mz-in2" placeholder="atau tampal pautan di sini" autocomplete="off" inputmode="url" aria-label="Pautan muzik"><button type="button" class="btn sm" data-act="mz-use2">Main</button></div>'+
+      '<div class="mzs-rb"><small>Radio Malaysia (siaran langsung)</small><div class="mzs-r"><button type="button" class="btn sm ghost" data-act="mz-rb" data-v="all">Radio popular</button><button type="button" class="btn sm ghost" data-act="mz-rb" data-v="islam">Radio Islamik</button></div><div id="mzs-r2" class="mzs-h"></div></div>'+
       '<div id="mzs-h" class="mzs-h"></div>';
     document.body.appendChild(d);
   }
@@ -3975,6 +4006,8 @@ document.addEventListener('click',e=>{
   else if(a==='mz-x')mzSheet(false);
   else if(a==='mz-paste')mzPaste();
   else if(a==='mz-use2'){const i=document.getElementById('mz-in2');if(i)mzUse(i.value);}
+  else if(a==='mz-rb')mzRadio(v);
+  else if(a==='mz-radio'){const x=RBL[+t.dataset.i];if(x)mzUse(x.u+'#radio',x.n);}
   else if(a==='mz-hist'){const x=mzHist()[+t.dataset.i];if(x)mzUse(x.u);}
   else if(a==='mz-save')mzSave();
   else if(a==='mz-clear')mzClear();
