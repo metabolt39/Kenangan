@@ -965,6 +965,19 @@ html{overscroll-behavior-y:contain}
 .intl-t span{line-height:1.45}
 .intl-b{margin-top:8px}
 .intl-b .chip{padding:6px 14px;min-height:0}
+
+.mzp-pick{background:none;border:0;text-align:left;padding:8px 0;cursor:pointer;font:inherit;font-size:14px;font-weight:600;color:var(--ink)}
+.mzp-e .mzp-t{color:var(--ink-2)}
+.mzs{position:fixed;z-index:70;left:12px;right:12px;max-width:440px;margin:0 auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:14px 16px 16px;border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:0 24px 60px -16px rgba(0,0,0,.6);opacity:0;transform:translateY(30px);pointer-events:none;transition:opacity .25s,transform .25s}
+.mzs.open{opacity:1;transform:none;pointer-events:auto}
+.mzs-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mzs-s{margin:0 0 12px;padding-left:20px;font-size:13px;color:var(--ink-2);line-height:1.6}
+.mzs-s b{color:var(--ink)}
+.mzs-r{display:flex;gap:8px;flex-wrap:wrap}
+.mzs-r .btn{flex:1;text-align:center;text-decoration:none;justify-content:center}
+.mzs-h{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.mzs-h small{width:100%;font-size:12px;font-weight:600;color:var(--ink-2)}
+.mzs-h .chip{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1131,6 +1144,11 @@ html{overscroll-behavior-y:contain}
     <p class="set-p" id="set-nt"></p>
     <div class="set-row"><button type="button" class="btn sm" data-act="nt" id="nt-b">Hidupkan notifikasi</button> <button type="button" class="btn sm ghost" data-act="nt-test" id="nt-test" hidden>Hantar ujian</button></div>
     <p class="set-p" id="nt-st"></p>
+    <div id="pray-box" hidden>
+      <p class="set-p">Peringatan masuk waktu solat (Subuh, Zohor, Asar, Maghrib, Isyak) walaupun app ditutup, ikut lokasi anda.</p>
+      <div class="set-row"><button type="button" class="btn sm" data-act="pray-tg" id="pray-b">Hidupkan peringatan waktu solat</button></div>
+      <p class="set-p" id="pray-st"></p>
+    </div>
     <h3 class="set-h">Muzik</h3>
     <p class="set-p">Tampal pautan YouTube (video atau playlist), Spotify atau fail .mp3. Di halaman Utama hanya jalur kecil dengan tajuk dan butang main akan keluar. Pautan disimpan pada peranti ini sahaja.</p>
     <div class="set-row"><input id="mz-in" type="url" class="mz-in" placeholder="https://youtu.be/…" autocomplete="off" inputmode="url" aria-label="Pautan muzik"></div>
@@ -1255,7 +1273,14 @@ function applyBig(n){
   if(S.big)document.documentElement.setAttribute('data-big',String(S.big));else document.documentElement.removeAttribute('data-big');
   try{localStorage.setItem('kk-big',String(S.big));}catch(e){}
 }
+function prayUi(){
+  const bx=$('pray-box');if(!bx)return;
+  bx.hidden=!(PUSH_URL&&S.myId);
+  const b=$('pray-b');if(b){b.textContent=S.prayOn?'Matikan peringatan waktu solat':'Hidupkan peringatan waktu solat';b.classList.toggle('ghost',!!S.prayOn);}
+  const st=$('pray-st');if(st)st.textContent=S.prayOn?(S.praySt||'✓ Hidup. Waktu dikemas kini setiap kali anda buka app.'):'';
+}
 function renderSet(){
+  try{prayUi();}catch(e){}
   { const mi=document.getElementById('mz-in'); if(mi&&document.activeElement!==mi&&typeof MZ!=='undefined')mi.value=MZ.url||''; }
   const sk=$('set-skins'); if(!sk)return;
   sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('');
@@ -2250,6 +2275,26 @@ async function pushUnsubscribe(){
   try{const reg=await navigator.serviceWorker.ready;const sub=await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe();}catch(e){}
   try{if(S.myId)await S.db.doc('push/'+S.myId).delete();}catch(e){}
 }
+S.prayOn=false;try{S.prayOn=localStorage.getItem('kk-pray')==='1';}catch(e){}
+async function praySync(force){
+  try{
+    if(!PUSH_URL||!S.myId||!window.__idToken)return;
+    const tok=await window.__idToken();if(!tok)return;
+    const hd={'Authorization':'Bearer '+tok,'Content-Type':'application/json'};
+    if(!S.prayOn){if(force){await fetch(PUSH_URL+'/prayer',{method:'POST',headers:hd,body:JSON.stringify({on:false})});}return;}
+    if(!S.pushOn||!INFO.d||!INFO.d.pt)return;
+    const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(!sub)return;
+    const j=sub.toJSON(),t={};INFO.d.pt.forEach(x=>{t[x[0]]=x[1];});
+    const body={on:true,sub:{endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth},date:ymdI(new Date()),times:t,place:S.cityName||''};
+    const sig=body.date+JSON.stringify(t)+j.endpoint.slice(-20)+(S.cityName||'');
+    let last='';try{last=localStorage.getItem('kk-praysig')||'';}catch(e){}
+    if(!force&&last===sig)return;
+    const r=await fetch(PUSH_URL+'/prayer',{method:'POST',headers:hd,body:JSON.stringify(body)});
+    if(r.ok){try{localStorage.setItem('kk-praysig',sig);}catch(e){}S.praySt='✓ Hidup. Waktu dikemas kini setiap kali anda buka app.';}
+    else{S.praySt='✗ Pelayan belum disediakan untuk peringatan solat (kod '+r.status+'). Lihat langkah Cloudflare.';try{localStorage.removeItem('kk-praysig');}catch(e){}}
+    prayUi();
+  }catch(e){S.praySt='✗ Tidak dapat menghubungi pelayan.';prayUi();}
+}
 async function pushSend(uids,title,body,tag,self){
   try{
     if(!PUSH_URL||!S.myId||!window.__idToken)return;
@@ -2725,7 +2770,7 @@ async function infoLoad(force){
   if(!force&&INFO.key===key&&INFO.d)return;
   let cache=null;
   try{cache=JSON.parse(localStorage.getItem('kk-infodata2')||'null');}catch(e){}
-  if(!force&&cache&&cache.key===key&&Date.now()-cache.at<3*36e5){INFO.d=cache.d;INFO.key=key;return;}
+  if(!force&&cache&&cache.key===key&&Date.now()-cache.at<3*36e5){INFO.d=cache.d;INFO.key=key;try{praySync(false);}catch(e){}return;}
   INFO.busy=true;
   const d={};
   const dd=String(n.getDate()).padStart(2,'0')+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+n.getFullYear();
@@ -2775,6 +2820,7 @@ async function infoLoad(force){
   INFO.busy=false;INFO.d=d;INFO.key=key;
   try{localStorage.setItem('kk-infodata2',JSON.stringify({key:key,at:Date.now(),d:d}));}catch(e){}
   try{ntBadge();}catch(e){}
+  try{praySync(false);}catch(e){}
   if(S.tab==='utama')render();
 }
 function infoNext(d){
@@ -2952,9 +2998,10 @@ const MZI={
   up:'<svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 function mzPillHtml(){
-  if(DEMO||!MZ.url||!MZ.em)return '';
+  if(DEMO)return '';
+  if(!MZ.url||!MZ.em)return '<div class="mzp mzp-e" id="mzp"><span class="mzp-i">'+MZI.note+'</span><button type="button" class="mzp-t mzp-pick" data-act="mz-pick">Pilih muzik</button><button type="button" class="mzp-b" data-act="mz-pick" aria-label="Pilih muzik"><svg viewBox="0 0 24 24" class="mzs" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg></button></div>';
   const sp=MZ.em.t==='frame',pl=MZ.st==='playing';
-  return '<div class="mzp" id="mzp"><span class="mzp-i">'+MZI.note+'</span><span class="mzp-t">'+esc(MZ.title||'Muzik keluarga')+'</span>'+
+  return '<div class="mzp" id="mzp"><span class="mzp-i">'+MZI.note+'</span><button type="button" class="mzp-t mzp-pick" data-act="mz-pick" aria-label="Tukar muzik">'+esc(MZ.title||'Muzik keluarga')+'</button>'+
     (sp?'<button type="button" class="mzp-b" data-act="mz-sp" aria-label="Buka atau tutup pemain">'+(MZ.sp?MZI.up:MZI.dn)+'</button>'
        :'<button type="button" class="mzp-b" data-act="mz-pp" aria-label="'+(pl?'Jeda':'Main')+'">'+(pl?MZI.pause:MZI.play)+'</button><button type="button" class="mzp-b" data-act="mz-stop" aria-label="Henti">'+MZI.stop+'</button>')+'</div>';
 }
@@ -2965,12 +3012,13 @@ function mzYtLoad(cb){
   window.onYouTubeIframeAPIReady=()=>{try{if(prev)prev();}catch(e){}cb();};
   if(!document.getElementById('yt-api')){const sc=document.createElement('script');sc.id='yt-api';sc.src='https://www.youtube.com/iframe_api';document.head.appendChild(sc);}
 }
-function mzYtTitle(){try{const d=MZ.pl&&MZ.pl.getVideoData&&MZ.pl.getVideoData();if(d&&d.title)MZ.title=d.title;}catch(e){}}
+function mzYtTitle(){try{const d=MZ.pl&&MZ.pl.getVideoData&&MZ.pl.getVideoData();if(d&&d.title){MZ.title=d.title;mzHistSet(MZ.url,d.title);}}catch(e){}}
 function mzSetup(){
   const host=document.getElementById('mz-host');if(!host)return;
   try{if(MZ.pl&&MZ.pl.destroy)MZ.pl.destroy();}catch(e){}
   if(MZ.a){try{MZ.a.pause();}catch(e){}}
   MZ.pl=null;MZ.a=null;MZ.st='idle';MZ.title='';MZ.sp=false;host.className='';host.innerHTML='';
+  const hi=mzHist().find(x=>x.u===MZ.url);if(hi&&hi.t)MZ.title=hi.t;
   const em=MZ.em=mzEmbed(MZ.url);
   if(!em){mzRefresh();return;}
   if(em.t==='audio'){
@@ -2978,12 +3026,13 @@ function mzSetup(){
     a.onplay=()=>{MZ.st='playing';mzRefresh();};
     a.onpause=()=>{if(MZ.st!=='idle')MZ.st='paused';mzRefresh();};
     a.onended=()=>{MZ.st='idle';mzRefresh();};
-    MZ.a=a;try{MZ.title=decodeURIComponent(em.u.split('?')[0].split('/').pop()).replace(/\.[^.]+$/,'');}catch(e){}
+    MZ.a=a;if(MZ.auto){MZ.auto=false;a.play().catch(()=>{});}
+    if(!MZ.title)try{MZ.title=decodeURIComponent(em.u.split('?')[0].split('/').pop()).replace(/\.[^.]+$/,'');}catch(e){}
   }else if(em.t==='yt'){
     host.innerHTML='<div id="mz-yt"></div>';
     mzYtLoad(()=>{
       const pv={playsinline:1,rel:0},o={height:'200',width:'200',playerVars:pv,events:{
-        onReady:()=>{mzYtTitle();mzRefresh();},
+        onReady:()=>{mzYtTitle();mzRefresh();if(MZ.auto){MZ.auto=false;try{MZ.pl.playVideo();}catch(e){}}},
         onStateChange:e=>{const c=e.data;MZ.st=(c===1||c===3)?'playing':c===2?'paused':'idle';mzYtTitle();mzRefresh();}}};
       if(em.id){o.videoId=em.id;if(em.list)pv.list=em.list;}else{pv.listType='playlist';pv.list=em.list;}
       try{MZ.pl=new YT.Player('mz-yt',o);}catch(e){}
@@ -2994,7 +3043,43 @@ function mzSetup(){
   }
   mzRefresh();
 }
+function mzHist(){try{return JSON.parse(localStorage.getItem('kk-mzhist')||'[]');}catch(e){return [];}}
+function mzHistSet(u,t){
+  if(!u)return;let h=mzHist();const i=h.findIndex(x=>x.u===u);
+  if(i>=0){if(t&&h[i].t!==t){h[i].t=t;}else if(i===0)return;const x=h.splice(i,1)[0];h.unshift(x);}
+  else h.unshift({u:u,t:t||''});
+  h=h.slice(0,6);try{localStorage.setItem('kk-mzhist',JSON.stringify(h));}catch(e){}
+}
+function mzUse(u){
+  u=String(u||'').trim();
+  if(!mzEmbed(u)){toast('Pautan tidak dikenali. Guna pautan YouTube, Spotify atau fail .mp3');return false;}
+  MZ.url=u;MZ.auto=true;try{localStorage.setItem('kk-music',u);}catch(e){}
+  mzHistSet(u,'');mzSetup();mzSheet(false);
+  const i=document.getElementById('mz-in');if(i)i.value=u;
+  return true;
+}
+function mzSheet(open){
+  const d=document.getElementById('mzs');if(!d)return;
+  if(open){
+    const h=mzHist();
+    document.getElementById('mzs-h').innerHTML=h.length?'<small>Terkini</small>'+h.map((x,i)=>'<button type="button" class="chip" data-act="mz-hist" data-i="'+i+'">'+esc(x.t||x.u.replace(/^https?:\/\/(www\.)?/,'').slice(0,32))+'</button>').join(''):'';
+  }
+  d.classList.toggle('open',!!open);
+}
+async function mzPaste(){
+  try{const t=await navigator.clipboard.readText();if(t&&mzUse(t))return;if(!t)toast('Tiada pautan disalin. Salin pautan dahulu dari YouTube atau Spotify.');}
+  catch(e){toast('Tak dapat tampal automatik. Tampal pada kotak di bawah.');const i=document.getElementById('mz-in2');if(i)i.focus();}
+}
 function mzInit(){
+  if(!document.getElementById('mzs')){
+    const d=document.createElement('div');d.id='mzs';d.className='mzs';d.setAttribute('role','dialog');d.setAttribute('aria-label','Pilih muzik');
+    d.innerHTML='<div class="mzs-top"><b>Pilih muzik</b><button type="button" class="icon-btn" data-act="mz-x" aria-label="Tutup">'+icon('x')+'</button></div>'+
+      '<ol class="mzs-s"><li>Buka lagu atau playlist di YouTube / Spotify</li><li>Tekan <b>Kongsi → Salin pautan</b></li><li>Kembali ke sini, tekan <b>Tampal</b></li></ol>'+
+      '<div class="mzs-r"><button type="button" class="btn" data-act="mz-paste">Tampal pautan</button><a class="btn ghost" href="https://www.youtube.com/results?search_query=nasyid+selawat" target="_blank" rel="noopener">Cari di YouTube</a></div>'+
+      '<div class="mz-f"><input type="url" id="mz-in2" placeholder="atau tampal pautan di sini" autocomplete="off" inputmode="url" aria-label="Pautan muzik"><button type="button" class="btn sm" data-act="mz-use2">Main</button></div>'+
+      '<div id="mzs-h" class="mzs-h"></div>';
+    document.body.appendChild(d);
+  }
   if(document.getElementById('mz-host'))return;
   const h=document.createElement('div');h.id='mz-host';document.body.appendChild(h);
   try{MZ.url=localStorage.getItem('kk-music')||'';}catch(e){}
@@ -3630,6 +3715,50 @@ async function photoDate(file){
   }catch(e){}
   return file.lastModified?ymd(new Date(file.lastModified)):'';
 }
+function exifGps(v,t){
+  const le=v.getUint16(t)===0x4949;
+  const u16=o=>v.getUint16(o,le),u32=o=>v.getUint32(o,le);
+  const find=(ifd,tag)=>{const n=u16(ifd);for(let i=0;i<n&&i<200;i++){const e=ifd+2+i*12;if(u16(e)===tag)return e;}return 0;};
+  const g=find(t+u32(t+4),0x8825);if(!g)return null;
+  const gi=t+u32(g+8);
+  const rat=e=>{const o=t+u32(e+8);let r=0;for(let i=0;i<3;i++){const n=u32(o+i*8),d=u32(o+i*8+4);r+=d?n/d/Math.pow(60,i):0;}return r;};
+  const la=find(gi,2),lo=find(gi,4),lr=find(gi,1),orf=find(gi,3);
+  if(!la||!lo)return null;
+  let lat=rat(la),lon=rat(lo);
+  if(lr&&String.fromCharCode(v.getUint8(lr+8))==='S')lat=-lat;
+  if(orf&&String.fromCharCode(v.getUint8(orf+8))==='W')lon=-lon;
+  if(!isFinite(lat)||!isFinite(lon)||(Math.abs(lat)<1e-6&&Math.abs(lon)<1e-6)||Math.abs(lat)>90||Math.abs(lon)>180)return null;
+  return {lat:+lat.toFixed(6),lon:+lon.toFixed(6)};
+}
+async function photoGps(file){
+  try{
+    const v=new DataView(await file.slice(0,262144).arrayBuffer());
+    if(v.getUint16(0)!==0xFFD8)return null;
+    let o=2;
+    while(o+4<v.byteLength){
+      const m=v.getUint16(o);if(m<0xFF00||m===0xFFDA)break;
+      if(m===0xFFE1&&v.getUint32(o+4)===0x45786966)return exifGps(v,o+10);
+      o+=2+v.getUint16(o+2);
+    }
+  }catch(e){}
+  return null;
+}
+async function autoLoc(files){
+  if(F.edit||F.coord)return;
+  let c=null,how='gambar';
+  for(const f of files){c=await photoGps(f);if(c)break;}
+  if(!c&&files.some(f=>f.lastModified&&Date.now()-f.lastModified<18*36e5)&&navigator.permissions&&navigator.permissions.query){
+    try{const ps=await navigator.permissions.query({name:'geolocation'});if(ps.state==='granted'){c=await getPos();how='lokasi semasa anda';}}catch(e){}
+  }
+  if(!c||F.coord)return;
+  F.coord=c;renderCoord();
+  const inp=$('f-place');let nm='';
+  if(inp&&!inp.value.trim()){
+    nm=await revName(c.lat,c.lon);if(!nm)nm=stateOf(c.lon,c.lat)||'';
+    if(nm&&!inp.value.trim()){inp.value=nm;inp.dispatchEvent(new Event('input',{bubbles:true}));}
+  }
+  toast('Lokasi diambil daripada '+how+(nm?': '+nm:'')+'. Boleh ubah.');
+}
 async function autoDate(files){
   if(F.dateTouched||F.edit)return;
   const today=ymd(new Date()); let best='';
@@ -3646,7 +3775,7 @@ function addFiles(list){
     F.files.push({file:f,url:URL.createObjectURL(f),id:''});added.push(f);
   }
   renderPreviews();
-  if(added.length)autoDate(added);
+  if(added.length){autoDate(added);autoLoc(added);}
 }
 async function bitmapOf(file){
   try{return await createImageBitmap(file,{imageOrientation:'from-image'});}
@@ -3842,10 +3971,27 @@ document.addEventListener('click',e=>{
   else if(a==='mz-pp')mzPP();
   else if(a==='mz-stop')mzStop();
   else if(a==='mz-sp'){MZ.sp=!MZ.sp;const h=document.getElementById('mz-host');if(h)h.classList.toggle('show',MZ.sp);mzRefresh();}
+  else if(a==='mz-pick')mzSheet(true);
+  else if(a==='mz-x')mzSheet(false);
+  else if(a==='mz-paste')mzPaste();
+  else if(a==='mz-use2'){const i=document.getElementById('mz-in2');if(i)mzUse(i.value);}
+  else if(a==='mz-hist'){const x=mzHist()[+t.dataset.i];if(x)mzUse(x.u);}
   else if(a==='mz-save')mzSave();
   else if(a==='mz-clear')mzClear();
   else if(a==='rnd-more'){S.rndSeed=Math.floor(Math.random()*1e6);render();}
   else if(a==='fxmotion'){applyMotion(!motionOn(),true);renderSet();}
+  else if(a==='pray-tg'){
+    (async()=>{
+      if(!S.prayOn){
+        if(!S.pushOn){const ok=await pushSubscribe();if(!ok){toast('Hidupkan notifikasi dahulu di atas');renderSet();return;}}
+        S.prayOn=true;S.praySt='Menghantar waktu solat…';
+      }else{S.prayOn=false;S.praySt='';}
+      try{localStorage.setItem('kk-pray',S.prayOn?'1':'0');}catch(e){}
+      prayUi();
+      if(S.prayOn&&!(INFO.d&&INFO.d.pt))await infoLoad(true);
+      await praySync(true);
+    })();
+  }
   else if(a==='nt-test'){toast('Menghantar ujian…');(async()=>{if(!S.pushOn)await pushSubscribe();renderSet();await pushSend([S.myId],'🔔 Ujian notifikasi','Jika anda nampak ini, notifikasi berfungsi.','kk-test',true);})();}
   else if(a==='loc-start')locStart(+v||1);
   else if(a==='loc-now')locWrite({msg:''}).then(ok=>{if(ok)toast('Lokasi dikemas kini.');});
