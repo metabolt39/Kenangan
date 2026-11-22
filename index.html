@@ -946,6 +946,14 @@ html{overscroll-behavior-y:contain}
 .mzp-b{flex:none;display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:50%;background:var(--accent);color:var(--accent-ink);cursor:pointer;padding:0}
 .mzp-b+.mzp-b{background:transparent;color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}
 .mz-in{flex:1;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink)}
+
+/* ===== Dua tema: Biru Laut dan Ros Taman (masing-masing terang / gelap) ===== */
+:root[data-skin="laut"]:not([data-theme="dark"]){--bg:#EAF2FC;--surface:#FFFFFF;--surface-2:#DCE8F7;--ink:#0B1F38;--ink-2:#46607E;--line:#C9DAEE;--gold:#E8A500;--gold-ink:#8A5A00;--teal:#0A7FB5;--teal-soft:#D3EAF8;--coral:#FF7A59;--coral-soft:#FFE6DE;--accent:#1456C8;--accent-ink:#FFFFFF;--accent-soft:#D6E5FB;--heart:#E5484D;--scrim:rgba(8,20,40,.6);--shadow:0 1px 2px rgba(10,40,90,.08),0 12px 28px -16px rgba(10,40,90,.35);color-scheme:light}
+:root[data-skin="laut"][data-theme="dark"]{--bg:#070E1B;--surface:#101B2E;--surface-2:#192843;--ink:#E8F0FC;--ink-2:#97ADCB;--line:#223555;--gold:#F5C451;--gold-ink:#F5C451;--teal:#38BDF8;--teal-soft:#0E2F4A;--coral:#FF8A6B;--coral-soft:#3A2630;--accent:#5EA2FF;--accent-ink:#04122B;--accent-soft:#16305C;--heart:#FF6B7A;--scrim:rgba(0,0,0,.7);--shadow:0 1px 0 rgba(255,255,255,.05) inset,0 14px 30px -18px rgba(0,0,0,.85);color-scheme:dark}
+:root[data-skin="ros"]:not([data-theme="dark"]){--bg:#FFEEF4;--surface:#FFFFFF;--surface-2:#FFDCE8;--ink:#3A0D22;--ink-2:#85506B;--line:#F6C9DA;--gold:#F0A030;--gold-ink:#8F5300;--teal:#B83280;--teal-soft:#FBD8E8;--coral:#FF7A9A;--coral-soft:#FFE0E8;--accent:#C81D66;--accent-ink:#FFFFFF;--accent-soft:#FFD3E3;--heart:#E11D74;--scrim:rgba(40,8,24,.6);--shadow:0 1px 2px rgba(120,20,70,.08),0 12px 28px -16px rgba(120,20,70,.35);color-scheme:light}
+:root[data-skin="ros"][data-theme="dark"]{--bg:#17080F;--surface:#271120;--surface-2:#381A2E;--ink:#FFE8F1;--ink-2:#D6A1BA;--line:#4B2139;--gold:#F5C451;--gold-ink:#F5C451;--teal:#FF8FB8;--teal-soft:#4A1B33;--coral:#FF9CB5;--coral-soft:#42202F;--accent:#FF7AAE;--accent-ink:#3A0620;--accent-soft:#4D1B36;--heart:#FF5C96;--scrim:rgba(0,0,0,.7);--shadow:0 1px 0 rgba(255,255,255,.05) inset,0 14px 30px -18px rgba(0,0,0,.85);color-scheme:dark}
+.bst-c{animation:bstc .75s ease-out forwards;font-size:30px}
+@keyframes bstc{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1)}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1098,8 +1106,10 @@ html{overscroll-behavior-y:contain}
   <section class="sheet setp" role="dialog" aria-modal="true" aria-labelledby="set-t">
     <div class="sheet-h"><h2 id="set-t">Tetapan</h2><button type="button" class="icon-btn" data-act="set-close" aria-label="Tutup tetapan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
     <div class="set-me" id="set-me"></div>
-    <h3 class="set-h">Paparan</h3>
-    <div class="tiles" id="set-skins" role="group" aria-label="Paparan"></div>
+    <h3 class="set-h">Tema warna</h3>
+    <div class="tiles" id="set-skins" role="group" aria-label="Tema warna"></div>
+    <h3 class="set-h">Mod paparan</h3>
+    <div class="tiles" id="set-mode" role="group" aria-label="Mod paparan"></div>
     <h3 class="set-h">Saiz tulisan</h3>
     <div class="segc" id="set-big" role="group" aria-label="Saiz tulisan"></div>
     <h3 class="set-h">Cuaca dan lokasi</h3>
@@ -1227,7 +1237,7 @@ const QUOTES=[
   'Dari kampung ke kota, keluarga tetap pangkal cerita.'
 ];
 const WXS=[['cerah','Cerah'],['mendung','Mendung'],['hujan','Hujan']];
-const SKINS=[['kampung','Kampung','linear-gradient(135deg,#2A7A63,#EDA82E)'],['senja','Senja','linear-gradient(135deg,#6B3FD1,#FF5C8A)']];
+const SKINS=[['laut','Biru Laut','linear-gradient(135deg,#0B3A8F,#38BDF8)'],['ros','Ros Taman','linear-gradient(135deg,#BE185D,#FDA4AF)']];
 const BIGL=['Biasa','Besar','Lebih besar'];
 function applyBig(n){
   S.big=n>=0&&n<=2?n:0;
@@ -1237,7 +1247,8 @@ function applyBig(n){
 function renderSet(){
   { const mi=document.getElementById('mz-in'); if(mi&&document.activeElement!==mi&&typeof MZ!=='undefined')mi.value=MZ.url||''; }
   const sk=$('set-skins'); if(!sk)return;
-  sk.innerHTML='<button type="button" class="tile" data-act="mode-set" data-v="light" aria-pressed="'+(!(document.documentElement.getAttribute('data-theme')==='dark'))+'"><i style="background:linear-gradient(135deg,#FAF8F5,#EAB308)"></i>Terang</button><button type="button" class="tile" data-act="mode-set" data-v="dark" aria-pressed="'+(document.documentElement.getAttribute('data-theme')==='dark')+'"><i style="background:linear-gradient(135deg,#12181B,#7FD1B2)"></i>Gelap</button><button type="button" class="tile" data-act="fxmotion" aria-pressed="'+(document.documentElement.getAttribute('data-motion')==='1')+'"><i style="background:linear-gradient(135deg,#fde68a,#fb7185)"></i>Animasi</button>';
+  sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('');
+  { const sm=$('set-mode'); if(sm)sm.innerHTML='<button type="button" class="tile" data-act="mode-set" data-v="light" aria-pressed="'+(!(document.documentElement.getAttribute('data-theme')==='dark'))+'"><i style="background:linear-gradient(135deg,#FAF8F5,#EAB308)"></i>Terang</button><button type="button" class="tile" data-act="mode-set" data-v="dark" aria-pressed="'+(document.documentElement.getAttribute('data-theme')==='dark')+'"><i style="background:linear-gradient(135deg,#12181B,#7FD1B2)"></i>Gelap</button><button type="button" class="tile" data-act="fxmotion" aria-pressed="'+(document.documentElement.getAttribute('data-motion')==='1')+'"><i style="background:linear-gradient(135deg,#fde68a,#fb7185)"></i>Animasi</button>'; }
   $('set-big').innerHTML=BIGL.map((l,i)=>'<button type="button" data-act="big" data-v="'+i+'" aria-pressed="'+(S.big===i)+'">'+l+'</button>').join('');
   $('set-me').innerHTML=(S.myId?av(S.myId):'')+'<div class="nm"><strong>'+esc(S.myId?nameOf(S.myId):'Tetamu')+'</strong><span>'+(S.isOwner?'Pentadbir':'Ahli keluarga')+'</span></div>'+(window.__signOut?'<button type="button" class="btn sm ghost" data-act="signout">Log keluar</button>':'');
   const city=(S.live&&S.live.city)||S.cityName||S.city||'';
@@ -1292,8 +1303,9 @@ function applyMode(m,save){
 }
 function applySkin(k){
   const r=document.documentElement;
-  r.setAttribute('data-skin',SKINS.some(x=>x[0]===k)?k:'kampung');
-  S.skin=SKINS.some(x=>x[0]===k)?k:'kampung';
+  if(k==='senja')k='ros';
+  r.setAttribute('data-skin',SKINS.some(x=>x[0]===k)?k:'laut');
+  S.skin=SKINS.some(x=>x[0]===k)?k:'laut';
   if(typeof renderSet==='function')renderSet();
 }
 const VIEWS=['utama','galeri','jelajah','peta','keluarga'];
@@ -2815,13 +2827,17 @@ window.addEventListener('scroll',()=>{
 function burst(el,emo){
   if(!motionOn()||!el)return;
   const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,set=['❤️','💖','✨','💗','💕'];
-  for(let i=0;i<9;i++){
+  const big=document.createElement('span');big.className='bst bst-c';big.textContent=emo||'❤️';big.style.cssText='left:'+cx+'px;top:'+cy+'px';
+  document.body.appendChild(big);setTimeout(()=>big.remove(),800);
+  for(let i=0;i<7;i++){
     const sp=document.createElement('span');sp.className='bst';sp.textContent=emo||set[i%set.length];
-    const ang=-Math.PI/2+(Math.random()-.5)*2.4,d=50+Math.random()*70;
-    sp.style.cssText='left:'+cx+'px;top:'+cy+'px;--dx:'+(Math.cos(ang)*d).toFixed(0)+'px;--dy:'+(Math.sin(ang)*d).toFixed(0)+'px;font-size:'+(14+Math.random()*12).toFixed(0)+'px;animation-delay:'+(i*0.025)+'s';
-    document.body.appendChild(sp);setTimeout(()=>sp.remove(),1200);
+    const ang=(i/7)*Math.PI*2+Math.random()*.6,d=26+Math.random()*22;
+    sp.style.cssText='left:'+cx+'px;top:'+cy+'px;--dx:'+(Math.cos(ang)*d).toFixed(0)+'px;--dy:'+(Math.sin(ang)*d).toFixed(0)+'px;font-size:'+(11+Math.random()*7).toFixed(0)+'px;animation-duration:.7s';
+    document.body.appendChild(sp);setTimeout(()=>sp.remove(),900);
   }
 }
+let _ut=0;['touchstart','touchmove','wheel'].forEach(ev=>window.addEventListener(ev,()=>{_ut=Date.now();},{passive:true}));
+function keepScroll(){const y0=window.scrollY;[250,600,1200].forEach(t=>setTimeout(()=>{if(Date.now()-_ut>400&&Math.abs(window.scrollY-y0)>50)window.scrollTo(0,y0);},t));}
 S.rndSeed=Math.floor(Math.random()*1e6);
 function interludes(){
   if(DEMO||P.length<3)return [];
@@ -3905,8 +3921,8 @@ document.addEventListener('click',e=>{
   else if(a==='album-del-no'){S.alDel=false;render();}
   else if(a==='album-del-yes')deleteAlbum();
   else if(a==='pin'){S.pin=(S.pin===v&&S.tab==='peta')?'':v;if(S.tab!=='peta')go('peta');else render();}
-  else if(a==='like'){if(t.getAttribute('aria-pressed')!=='true')burst(t);toggleLike(id);}
-  else if(a==='rx'){burst(t,v);setReaction(id,v);}
+  else if(a==='like'){keepScroll();if(t.getAttribute('aria-pressed')!=='true')burst(t);toggleLike(id);}
+  else if(a==='rx'){keepScroll();burst(t,v);setReaction(id,v);}
   else if(a==='rx-who'){S.whoOpen=S.whoOpen===id?'':id;render();}
   else if(a==='rx-more'){S.rxOpen=S.rxOpen===id?'':id;render();}
   else if(a==='cm'){if(S.open.has(id))S.open.delete(id);else S.open.add(id);render();}
@@ -4022,7 +4038,7 @@ async function init(){
   try{const c=localStorage.getItem('kk-city');if(c)S.city=c.slice(0,60);S.lk=localStorage.getItem('kk-lk')||'';S.cityName=localStorage.getItem('kk-cityname')||'';if(!S.cityName)S.lk='';}catch(e){}
   try{S.nt=localStorage.getItem('kk-nt')==='1';}catch(e){}
   try{applyBig(parseInt(localStorage.getItem('kk-big')||'0',10)||0);}catch(e){}
-  applySkin('kampung');
+  try{applySkin(localStorage.getItem('kk-skin')||'laut');}catch(e){applySkin('laut');}
   applyFx3d(false);
   applyGlass(true);
   try{applyMotion(localStorage.getItem('kk-motion')!=='0'&&!REDMO.matches);}catch(e){}
