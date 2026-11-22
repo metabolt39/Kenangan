@@ -2593,6 +2593,15 @@ function tipHtml(){
   if(!(S.isOwner&&!S.tipGone))return '';
   return '<div class="tip"><p>Kongsikan pautan app ini dan kod keluarga kepada ahli keluarga supaya mereka boleh log masuk, menambah gambar dan memberi komen.</p><button type="button" class="icon-btn" data-act="tip-x" aria-label="Tutup petua">'+icon('x')+'</button></div>';
 }
+const IMGR={};
+try{Object.assign(IMGR,JSON.parse(sessionStorage.getItem('kk-imgr')||'{}'));}catch(e){}
+document.addEventListener('load',e=>{
+  const im=e.target;
+  if(!im||im.tagName!=='IMG'||!im.dataset||!im.dataset.ph||im.naturalWidth<8||im.naturalHeight<8)return;
+  const r=(im.naturalWidth/im.naturalHeight).toFixed(4);
+  if(IMGR[im.dataset.ph]!==r){IMGR[im.dataset.ph]=r;try{sessionStorage.setItem('kk-imgr',JSON.stringify(IMGR));}catch(x){}}
+  if(im.closest('.photos.one'))im.style.aspectRatio=r;
+},true);
 function photosHtml(p){
   const n=p.photos.length; if(!n)return '';
   const show=p.photos.slice(0,4), rest=n-4, r=show.length-1;
@@ -2601,7 +2610,7 @@ function photosHtml(p){
     const cls=i===0?'big':'r'+r;
     const more=(i===3&&rest>0)?'<span class="more">+'+rest+'</span>':'';
     const film=(i===0&&dateOf(p))?'<span class="film" aria-hidden="true">'+esc(filmStamp(dateOf(p)))+'</span>':'';
-    return '<button type="button" class="pic '+cls+'" data-act="photo" data-id="'+esc(p.id)+'" data-idx="'+i+'" aria-label="Buka gambar '+(i+1)+' daripada '+n+'"><img'+isrc(id)+' alt="'+esc(alt)+'" loading="lazy" decoding="async">'+more+film+'</button>';
+    return '<button type="button" class="pic '+cls+'" data-act="photo" data-id="'+esc(p.id)+'" data-idx="'+i+'" aria-label="Buka gambar '+(i+1)+' daripada '+n+'"><img'+isrc(id)+' data-ph="'+esc(id)+'"'+(n===1?' style="aspect-ratio:'+(IMGR[id]||'4/3')+'"':'')+' alt="'+esc(alt)+'" loading="lazy" decoding="async">'+more+film+'</button>';
   }).join('')+'</div>';
 }
 function noteHtml(p){
