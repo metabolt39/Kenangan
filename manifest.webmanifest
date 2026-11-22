@@ -1,6 +1,6 @@
 {
-  "name": "Kenangan Keluarga Ahmad",
-  "short_name": "Kenangan Ahmad",
+  "name": "Kenangan",
+  "short_name": "Kenangan",
   "description": "Simpan dan lihat semula gambar serta tempat kenangan keluarga.",
   "start_url": "./",
   "scope": "./",
