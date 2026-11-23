@@ -1000,6 +1000,32 @@ html{overscroll-behavior-y:contain}
 .mzs-row{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
 .mzs-row b{font-size:14px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mzs-row small{font-size:12px;color:var(--ink-2)}
+
+/* kemas: header album & bar alat galeri */
+.ahead{flex-wrap:wrap;align-items:center;gap:12px 14px}
+.ahead .grow{flex:1 1 220px}
+.aact{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto}
+.ahead .aact .btn.sm{min-height:44px;padding:0 18px;border-radius:99px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.ahead .aact .icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.ahead .aact .icon-btn .i{width:20px;height:20px}
+.ahead .aact .icon-btn.danger{color:#e5484d}
+@media (max-width:520px){.ahead .grow{flex:1 1 100%;order:1}.ahead .em{order:0}.aact{order:2;width:100%;justify-content:flex-end}}
+.gtb{gap:12px}
+.gtb .btn.sm{min-height:46px}
+.chip{min-height:42px}
+
+/* kepala album: susunan kemas */
+.ahead{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:6px 14px;padding:16px 18px}
+.ahead .grow{flex:none;min-width:0}
+.ahead .aact{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-end;gap:8px;margin:0}
+.ahead .aact .icon-btn{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 70%,transparent);color:var(--ink);display:grid;place-items:center;padding:0}
+.ahead .aact .icon-btn .i{width:20px;height:20px;margin:0}
+.ahead .aact .icon-btn.danger{color:#e5484d}
+.ahead .aact .btn.sm{min-height:44px;padding:0 16px;border-radius:99px;white-space:nowrap}
+@media (max-width:560px){
+  .ahead{grid-template-columns:auto minmax(0,1fr)}
+  .ahead .aact{grid-column:1/-1;justify-content:flex-end;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -3249,15 +3275,15 @@ function galeriHtml(){
     (S.place?'<button type="button" class="chip" data-act="clear-place" aria-pressed="true">'+icon('pin')+esc(placeName(S.place))+icon('x')+'</button>':'')+'</div>';
   const nPh=f.reduce((a,p)=>a+p.photos.length,0);
   if(S.q){
-    h+='<div class="ahead"><span class="em" aria-hidden="true"><svg class="i" aria-hidden="true"><use href="#i-search"></use></svg></span><div class="grow"><h2>Carian: “'+esc(S.q)+'”</h2><p>'+f.length+' kenangan'+(nPh?' · '+nPh+' gambar':'')+'</p></div><button type="button" class="btn sm ghost" data-act="clear-q">Tutup</button></div>';
+    h+='<div class="ahead"><span class="em" aria-hidden="true"><svg class="i" aria-hidden="true"><use href="#i-search"></use></svg></span><div class="grow"><h2>Carian: “'+esc(S.q)+'”</h2><p>'+f.length+' kenangan'+(nPh?' · '+nPh+' gambar':'')+'</p></div><div class="aact"><button type="button" class="icon-btn" data-act="clear-q" aria-label="Tutup carian" title="Tutup">'+icon('x')+'</button></div></div>';
   }
   if(S.cat!=='semua'||S.place||S.album){
     const c=CAT[S.cat]||CAT.keluarga, cover=(f.find(p=>p.photos.length)||{photos:[]}).photos[0], al=albumById(S.album);
     const who=al?Array.from(new Set(f.map(p=>p.authorId).filter(Boolean))).slice(0,4).map(nameOf).join(', '):'';
     const canDelAl=al&&!!S.myId&&(al.createdBy===S.myId||S.canEdit);
     h+='<div class="ahead"'+tintAttr(cover)+'><span class="em" aria-hidden="true">'+(al?al.emoji:S.place?'<svg class="i" aria-hidden="true"><use href="#i-pin"></use></svg>':c[2])+'</span><div class="grow"><h2>'+esc(al?al.name:S.place?placeName(S.place):c[1])+'</h2><p>'+f.length+' kenangan · '+nPh+' gambar'+(who?' · '+esc(who):'')+'</p></div>'+
-      (al?'':'<button type="button" class="btn sm ghost" data-act="reset-filter">'+icon('left')+'Semua album</button>')+'<button type="button" class="icon-btn" data-act="print-book" aria-label="Cetak sebagai buku PDF" title="Cetak buku"><svg class="i" aria-hidden="true"><use href="#i-print"></use></svg></button>'+(al?'<button type="button" class="btn sm ghost" data-act="clear-album">Tutup</button>':'')+
-      (canDelAl?'<button type="button" class="icon-btn" data-act="album-del-ask" aria-label="Padam acara">'+icon('trash')+'</button>':'')+'</div>';
+      '<div class="aact">'+(al?'':'<button type="button" class="btn sm ghost" data-act="reset-filter">'+icon('left')+'Semua album</button>')+'<button type="button" class="icon-btn" data-act="print-book" aria-label="Cetak sebagai buku PDF" title="Cetak buku"><svg class="i" aria-hidden="true"><use href="#i-print"></use></svg></button>'+
+      (canDelAl?'<button type="button" class="icon-btn danger" data-act="album-del-ask" aria-label="Padam acara" title="Padam acara">'+icon('trash')+'</button>':'')+(al?'<button type="button" class="icon-btn" data-act="clear-album" aria-label="Tutup album" title="Tutup">'+icon('x')+'</button>':'')+'</div></div>';
     if(al&&S.alDel)h+='<div class="confirm" role="alert" style="border-radius:14px;margin-top:8px"><span>Padam acara ini? Kenangan di dalamnya kekal.</span><button type="button" class="btn sm ghost" data-act="album-del-no">Batal</button><button type="button" class="btn sm" data-act="album-del-yes">Ya, padam</button></div>';
   }
   if(!f.length&&S.album)return h+'<div class="empty"><h2>Acara ini masih kosong</h2><p>Tekan + dan pilih acara ini untuk tambah gambar pertama.</p><button type="button" class="btn" data-act="new">Tambah kenangan</button></div>';
