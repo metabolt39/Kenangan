@@ -1039,6 +1039,14 @@ html{overscroll-behavior-y:contain}
 :root[data-glass="1"] .gtb .btn.sm[data-act="slide"]{background:var(--accent)!important;border:0!important}
 .gtb .seg{min-height:48px;align-items:center}
 @media (max-width:420px){.gtb{flex-direction:column;align-items:stretch}.gtb .seg{display:grid;grid-template-columns:1fr 1fr}.gtb .btn.sm[data-act="slide"]{justify-content:center}}
+
+.askb{max-width:420px;gap:12px}
+.askb h2{margin:0;font-size:20px}
+.askb .ask-d{margin:0;color:var(--muted,var(--ink));opacity:.8;font-size:15px;line-height:1.5}
+.askb .ask-b{display:flex;gap:10px;justify-content:flex-end}
+.askb .ask-b .btn{flex:1}
+.scrim:has(.askb){align-items:center;padding:20px}
+.askb{border-radius:22px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -4017,14 +4025,27 @@ async function backupAll(){
   bkSet('kk-lastbackup',Date.now());
   toast('Sandaran disimpan ('+Math.round(blob.size/1048576*10)/10+' MB).'+(miss?' '+miss+' gambar tak dapat dimuat.':''));
 }
+function askBox(o){
+  return new Promise(res=>{
+    const w=document.createElement('div');w.className='scrim';w.style.zIndex=90;
+    w.innerHTML='<section class="sheet askb" role="dialog" aria-modal="true" aria-labelledby="ask-t"><h2 id="ask-t">'+esc(o.t||'')+'</h2><p class="ask-d">'+esc(o.d||'')+'</p><label class="field"><span>'+esc(o.lbl||'')+'</span><input id="ask-i" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="'+(o.ro?500:60)+'" placeholder="'+esc(o.ph||'')+'"'+(o.ro?' readonly':'')+'></label><div class="ask-b">'+(o.ro?'':'<button type="button" class="btn ghost" data-a="x">Batal</button>')+'<button type="button" class="btn" data-a="ok">'+esc(o.ok||'OK')+'</button></div></section>';
+    const i=w.querySelector('#ask-i');i.value=o.val||'';
+    const done=v=>{w.remove();res(v);};
+    w.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b){done(b.dataset.a==='ok'&&!o.ro?i.value:'');return;}if(e.target===w)done('');});
+    i.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();done(o.ro?'':i.value);}else if(e.key==='Escape')done('');});
+    document.body.appendChild(w);
+    setTimeout(()=>{try{i.focus();if(o.ro)i.select();}catch(e){}},60);
+  });
+}
 async function inviteMember(){
-  const code=(window.prompt('Masukkan kod keluarga untuk dimasukkan dalam pautan jemputan:')||'').trim().slice(0,60);
+  const code=((await askBox({t:'Jemput ahli keluarga',d:'Masukkan kod keluarga yang sama seperti untuk sertai album. Ia akan diletakkan dalam pautan supaya ahli baru terus masuk. Peranti ini akan ingat kod tersebut.',lbl:'Kod keluarga',ph:'Kod yang sama untuk sertai album',val:(()=>{try{return localStorage.getItem('kk-invcode')||'';}catch(e){return '';}})(),ok:'Teruskan'}))||'').trim().slice(0,60);
   if(!code)return;
+  try{localStorage.setItem('kk-invcode',code);}catch(e){}
   const url=location.origin+location.pathname+'?k='+encodeURIComponent(code);
   const text='Jom sertai album keluarga kita! Buka pautan ini, log masuk dengan Google, dan awak terus masuk.';
   try{if(navigator.share){await navigator.share({title:'Kenangan Keluarga Ahmad',text:text,url:url});return;}}catch(e){if(e&&e.name==='AbortError')return;}
   try{await navigator.clipboard.writeText(text+'\n'+url);toast('Pautan jemputan disalin. Tampal dalam WhatsApp.');}
-  catch(e){window.prompt('Salin pautan ini dan hantar kepada ahli keluarga:',url);}
+  catch(e){await askBox({t:'Pautan jemputan',d:'Salin pautan ini dan hantar kepada ahli keluarga.',lbl:'Pautan',val:url,ok:'Tutup',ro:1});}
 }
 async function saveAlbum(){
   if(!canAct())return;
