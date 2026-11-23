@@ -1047,6 +1047,11 @@ html{overscroll-behavior-y:contain}
 .askb .ask-b .btn{flex:1}
 .scrim:has(.askb){align-items:center;padding:20px}
 .askb{border-radius:22px}
+
+.aq{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 12px;border-radius:99px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:rgba(255,255,255,.92);font-size:13px;white-space:nowrap}
+.aq[hidden]{display:none}
+.aq i{width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+.aq b{font-weight:700}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1113,7 +1118,7 @@ html{overscroll-behavior-y:contain}
     <div class="fx" id="fx" aria-hidden="true"></div>
     <p class="hi"><span id="hi-ic"></span><span id="hi-t">Selamat datang</span></p>
     <p class="mood" id="mood"></p>
-    <div class="wxrow"><button type="button" class="wx" id="wx" data-act="wx"></button><span class="sub" id="sub"></span></div>
+    <div class="wxrow"><button type="button" class="wx" id="wx" data-act="wx"></button><span class="aq" id="aq" hidden></span><span class="sub" id="sub"></span></div>
   </header>
   <div class="sbar" id="sbar" hidden role="search"><input id="q" type="search" placeholder="Cari cerita, tempat, nama, tarikh…" aria-label="Cari kenangan" autocomplete="off" enterkeyhint="search"><button type="button" class="btn sm ghost" data-act="clear-q">Kosongkan</button></div>
   <main id="view" aria-live="polite"></main>
@@ -3402,6 +3407,7 @@ async function render(){
   const nPh=S.posts.reduce((a,p)=>a+p.photos.length,0), nPl=new Set(S.posts.map(p=>pk(p.place)).filter(Boolean)).size;
   paintSky();
   $('sub').textContent=S.noDb?'Belum disambungkan':(S.ready?(S.posts.length?S.posts.length+' kenangan · '+nPh+' gambar · '+nPl+' tempat':'Album masih kosong'):'Memuat kenangan…');
+  try{const q=$('aq'),a=INFO.d&&INFO.d.aqi;if(q){if(a!=null){const l=aqiLbl(a);q.innerHTML='<i style="background:'+l[1]+'"></i>IPU <b>'+a+'</b> · '+esc(l[0].replace(' untuk golongan sensitif',''));q.title='Kualiti udara (AQI AS, anggaran). Bukan bacaan IPU rasmi.';q.hidden=false;}else q.hidden=true;}}catch(e){}
   $('me-av').innerHTML=S.myId?av(S.myId):'';
   document.querySelectorAll('.tab').forEach(t=>{if(t.dataset.v===S.tab)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current');});
   let h;
