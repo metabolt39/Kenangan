@@ -479,7 +479,7 @@ button{cursor:pointer}
   .lb:not([hidden]) .lb-stage img.zin{animation:zin .3s ease-out}
   .act.likepop .i{animation:pop .5s cubic-bezier(.3,1.5,.5,1)}
 }
-@media (hover:hover){
+@media (hover:hover) and (pointer:fine){
   .acard:hover,.place:hover{transform:translateY(-3px) scale(1.015);box-shadow:0 18px 34px -16px rgba(80,60,20,.5)}
   .mem:hover{transform:scale(1.01);box-shadow:0 22px 40px -18px rgba(80,60,20,.6)}
   .mi:hover,.pgrid button:hover,.tl-ph button:hover{transform:scale(1.04);box-shadow:0 10px 22px -10px rgba(0,0,0,.5);z-index:2}
@@ -1052,6 +1052,30 @@ html{overscroll-behavior-y:contain}
 .aq[hidden]{display:none}
 .aq i{width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.55)}
 .aq b{font-weight:700}
+
+/* Gerak: lengkung & tempoh kemas (ease-out, 100-340ms, hanya transform/opacity) */
+:root{--ease-out:cubic-bezier(.23,1,.32,1);--ease-in-out:cubic-bezier(.77,0,.175,1);--ease-drawer:cubic-bezier(.32,.72,0,1)}
+@keyframes kfade{from{opacity:0}}
+@keyframes ksheet{from{opacity:0;transform:translateY(28px)}}
+@media (prefers-reduced-motion:no-preference){
+  .scrim:not([hidden]){animation:kfade .2s var(--ease-out)}
+  .scrim:not([hidden])>.sheet,.scrim:not([hidden])>.askb{animation:ksheet .34s var(--ease-drawer)}
+  .mzs{animation:ksheet .3s var(--ease-drawer)}
+  .btn,.chip,.icon-btn,.act,.tile{transition:background-color .15s var(--ease-out),opacity .15s var(--ease-out),transform .14s var(--ease-out),box-shadow .2s var(--ease-out)}
+  .btn:active,.chip:active,.icon-btn:active,.act:active,.tile:active{transform:scale(.97)}
+  .tab:active .i{transform:scale(.88)}
+  .acard,.mem,.mi,.pgrid button,.place,.tl-ph button{transition-timing-function:var(--ease-out);transition-duration:.2s}
+  .rv.rv-in{transition:opacity .4s var(--ease-out),transform .45s var(--ease-out)}
+}
+@media (prefers-reduced-motion:reduce){
+  .scrim:not([hidden]){animation:kfade .15s linear}
+}
+
+@keyframes kin{from{opacity:0;transform:translateY(12px)}}
+@keyframes ktoast{from{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+@media (prefers-reduced-motion:no-preference){
+  .toast:not([hidden]){animation:ktoast .24s var(--ease-out)}
+}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -3017,8 +3041,9 @@ const REV=new Set();
 function motionAfterRender(animate){
   if(!motionOn()||!window.IntersectionObserver)return;
   if(animate===false){pxUpdate();return;}
-  if(!rvIO)rvIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('rv-in');if(e.target.id)REV.add(e.target.id);rvIO.unobserve(e.target);}}),{threshold:.06});
+  if(!rvIO)rvIO=new IntersectionObserver(es=>{let k=0;es.forEach(e=>{if(e.isIntersecting){if(k>0)e.target.style.transitionDelay=Math.min(k,4)*55+'ms';k++;e.target.classList.add('rv-in');if(e.target.id)REV.add(e.target.id);rvIO.unobserve(e.target);}});},{threshold:.06});
   const vh=window.innerHeight;
+  try{const kids=document.querySelectorAll('#view > *');for(let i=0;i<Math.min(kids.length,6);i++){const k=kids[i];if(k.classList.contains('rv')||k.hidden)continue;k.style.animation='kin .4s var(--ease-out) '+(i*50)+'ms both';k.addEventListener('animationend',()=>{k.style.animation='';},{once:true});}}catch(e){}
   document.querySelectorAll('#view .post,#view .intl').forEach(el=>{
     const r=el.getBoundingClientRect();
     if(r.top<vh||r.bottom<0||(el.id&&REV.has(el.id)))return;
