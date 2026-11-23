@@ -1026,6 +1026,19 @@ html{overscroll-behavior-y:contain}
   .ahead{grid-template-columns:auto minmax(0,1fr)}
   .ahead .aact{grid-column:1/-1;justify-content:flex-end;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
 }
+
+/* tema: pilihan jelas */
+.tile{position:relative}
+.tile .tl{font-size:11px;font-weight:600;color:var(--ink-2);margin-top:-4px}
+.tile[aria-pressed="true"]::after{content:"";position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+:root[data-glass="1"] .tile[aria-pressed="true"]{border:2px solid var(--accent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent),inset 0 1px 0 var(--gl-hi)!important}
+.tile[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+/* butang tayangan slaid */
+.gtb .btn.sm[data-act="slide"]{min-height:48px;padding:0 20px 0 9px;gap:10px;font-size:15px;font-weight:700;background:var(--accent);color:var(--accent-ink);border:0;box-shadow:0 8px 20px -10px var(--accent),inset 0 1px 0 rgba(255,255,255,.25)}
+.gtb .btn.sm[data-act="slide"] .i{width:32px;height:32px;padding:8px;margin:0;border-radius:50%;background:rgba(0,0,0,.16);flex:none;vertical-align:middle}
+:root[data-glass="1"] .gtb .btn.sm[data-act="slide"]{background:var(--accent)!important;border:0!important}
+.gtb .seg{min-height:48px;align-items:center}
+@media (max-width:420px){.gtb{flex-direction:column;align-items:stretch}.gtb .seg{display:grid;grid-template-columns:1fr 1fr}.gtb .btn.sm[data-act="slide"]{justify-content:center}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1182,6 +1195,7 @@ html{overscroll-behavior-y:contain}
     <div class="tiles" id="set-skins" role="group" aria-label="Tema warna"></div>
     <h3 class="set-h">Mod paparan</h3>
     <div class="tiles" id="set-mode" role="group" aria-label="Mod paparan"></div>
+    <p class="set-p" id="set-theme-now"></p>
     <h3 class="set-h">Saiz tulisan</h3>
     <div class="segc" id="set-big" role="group" aria-label="Saiz tulisan"></div>
     <h3 class="set-h">Cuaca dan lokasi</h3>
@@ -1331,8 +1345,9 @@ function renderSet(){
   try{prayUi();}catch(e){}
   { const mi=document.getElementById('mz-in'); if(mi&&document.activeElement!==mi&&typeof MZ!=='undefined')mi.value=MZ.url||''; }
   const sk=$('set-skins'); if(!sk)return;
-  sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+'</button>').join('');
-  { const sm=$('set-mode'); if(sm)sm.innerHTML='<button type="button" class="tile" data-act="mode-set" data-v="light" aria-pressed="'+(!(document.documentElement.getAttribute('data-theme')==='dark'))+'"><i style="background:linear-gradient(135deg,#FAF8F5,#EAB308)"></i>Terang</button><button type="button" class="tile" data-act="mode-set" data-v="dark" aria-pressed="'+(document.documentElement.getAttribute('data-theme')==='dark')+'"><i style="background:linear-gradient(135deg,#12181B,#7FD1B2)"></i>Gelap</button><button type="button" class="tile" data-act="fxmotion" aria-pressed="'+(document.documentElement.getAttribute('data-motion')==='1')+'"><i style="background:linear-gradient(135deg,#fde68a,#fb7185)"></i>Animasi</button>'; }
+  sk.innerHTML=SKINS.map(x=>'<button type="button" class="tile" data-act="skin" data-v="'+x[0]+'" aria-pressed="'+(S.skin===x[0])+'"><i style="background:'+x[2]+'"></i>'+esc(x[1])+(x[0]==='kampung'?'<small class="tl">Lalai</small>':'')+'</button>').join('');
+  { const tn=$('set-theme-now'); if(tn){const sk2=SKINS.find(x=>x[0]===S.skin);tn.textContent='Dipilih sekarang: '+(sk2?sk2[1]:'')+' · '+(document.documentElement.getAttribute('data-theme')==='dark'?'Gelap':'Terang')+'. Lalai: Hijau Kampung, Terang.';} }
+  { const sm=$('set-mode'); if(sm)sm.innerHTML='<button type="button" class="tile" data-act="mode-set" data-v="light" aria-pressed="'+(!(document.documentElement.getAttribute('data-theme')==='dark'))+'"><i style="background:linear-gradient(135deg,#FAF8F5,#EAB308)"></i>Terang<small class="tl">Lalai</small></button><button type="button" class="tile" data-act="mode-set" data-v="dark" aria-pressed="'+(document.documentElement.getAttribute('data-theme')==='dark')+'"><i style="background:linear-gradient(135deg,#12181B,#7FD1B2)"></i>Gelap</button><button type="button" class="tile" data-act="fxmotion" aria-pressed="'+(document.documentElement.getAttribute('data-motion')==='1')+'"><i style="background:linear-gradient(135deg,#fde68a,#fb7185)"></i>Animasi</button>'; }
   $('set-big').innerHTML=BIGL.map((l,i)=>'<button type="button" data-act="big" data-v="'+i+'" aria-pressed="'+(S.big===i)+'">'+l+'</button>').join('');
   $('set-me').innerHTML=(S.myId?av(S.myId):'')+'<div class="nm"><strong>'+esc(S.myId?nameOf(S.myId):'Tetamu')+'</strong><span>'+(S.isOwner?'Pentadbir':'Ahli keluarga')+'</span></div>'+(window.__signOut?'<button type="button" class="btn sm ghost" data-act="signout">Log keluar</button>':'');
   const city=(S.live&&S.live.city)||S.cityName||S.city||'';
