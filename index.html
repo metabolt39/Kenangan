@@ -2781,7 +2781,7 @@ function postHtml(p,m){
   const stamp=(p.place||p.takenOn)?'<div class="stamp">'+
     (p.place?'<span class="pl">'+icon('pin')+'<span>'+esc(p.place)+'</span></span>':'')+
     (p.takenOn?'<span class="dt">'+esc(fmtDate(p.takenOn))+'</span>':'')+
-    (p.place&&!demo?'<a class="map" href="'+esc(mapUrl(p.place))+'" target="_blank" rel="noopener">Peta</a><a class="map wz" href="'+esc(wazeUrl(p.place,p.lat,p.lon))+'" target="_blank" rel="noopener">Waze</a>':'')+'</div>':'';
+    (p.place&&!demo?'<a class="map" href="'+esc(mapUrl(p.place))+'" target="_blank" rel="noopener">Peta</a>':'')+'</div>':'';
   const nL=likeSet.size;
   const dm='data-act="demo"';
   return '<article class="post" id="post-'+esc(p.id)+'">'+
@@ -3374,7 +3374,7 @@ function petaHtml(){
   else h+='<ul class="places">'+pl.map(x=>'<li class="place"><button type="button" class="place-main" data-act="place" data-v="'+esc(x.key)+'">'+
     (x.thumb?'<img class="pt"'+isrc(x.thumb)+' alt="" loading="lazy">':'<span class="pt">'+icon('pin')+'</span>')+
     '<span class="pi"><strong>'+esc(x.name)+'</strong><span>'+x.count+' kenangan'+(x.last?' · '+esc(fmtMonth(x.last)):'')+'</span></span></button>'+
-    (DEMO?'':'<a class="map" href="'+esc(mapUrl(x.name))+'" target="_blank" rel="noopener">Peta</a><a class="map wz" href="'+esc(wazeUrl(x.name))+'" target="_blank" rel="noopener">Waze</a>')+'</li>').join('')+'</ul>';
+    (DEMO?'':'<a class="map" href="'+esc(mapUrl(x.name))+'" target="_blank" rel="noopener">Peta</a>')+'</li>').join('')+'</ul>';
   if(md.off.length&&!DEMO){
     h+='<div class="note"><p style="margin:0 0 8px">Belum dapat diletakkan pada peta. Tekan untuk tetapkan lokasi:</p><div class="chips">'+md.off.map(o=>'<button type="button" class="chip" data-act="setloc" data-v="'+esc(pk(o.name))+'" aria-pressed="'+(S.locSet===pk(o.name))+'">'+icon('pin')+esc(o.name)+'</button>').join('')+'</div></div>';
     if(S.locSet){
