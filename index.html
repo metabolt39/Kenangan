@@ -1150,6 +1150,32 @@ html{overscroll-behavior-y:contain}
 .ss-b .i{display:block;margin:0;vertical-align:baseline}
 .ss-bot .ss-b.big .i{margin-left:0}
 
+
+/* Carian dalam header: bar bertukar menjadi medan carian */
+.bar .bs{position:absolute;left:8px;right:58px;top:50%;height:44px;margin-top:-22px;display:flex;align-items:center;gap:8px;padding:0 6px 0 14px;border-radius:99px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent);color:var(--ink);opacity:0;clip-path:inset(0 0 0 100% round 99px);pointer-events:none;z-index:2}
+.bar .bs .bs-i{width:19px;height:19px;color:var(--ink-2);flex:none}
+.bar .bs input{flex:1;min-width:0;height:100%;border:0;background:none;color:inherit;font:inherit;font-size:16px;outline:none;-webkit-appearance:none;appearance:none}
+.bar .bs input::-webkit-search-cancel-button{display:none}
+.bar .bs .bs-c{flex:none;width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--surface-2);color:var(--ink-2);padding:0}
+.bar .bs .bs-c .i{width:16px;height:16px;display:block}
+.bar .bs input:placeholder-shown~.bs-c{opacity:0;pointer-events:none}
+.bar.srch .bs{opacity:1;clip-path:inset(0 0 0 0 round 99px);pointer-events:auto}
+.bar.srch .bs:focus-within{box-shadow:0 0 0 2px var(--accent)}
+#srch-b .ic-x{display:none}
+.bar.srch #srch-b .ic-x{display:block}
+.bar.srch #srch-b .ic-s{display:none}
+.bar.srch .bl,.bar.srch .bc,.bar.srch .bell{opacity:0;pointer-events:none}
+:root[data-motion="1"] .bar.bar-hide.srch{transform:none}
+@media (prefers-reduced-motion:no-preference){
+  .bar .bs{transition:opacity .22s var(--ease-out),clip-path .42s var(--ease-drawer)}
+  .bar .bl,.bar .bc,.bar .bell{transition:opacity .22s var(--ease-out),transform .34s var(--ease-out)}
+  .bar.srch .bl{transform:translateX(-14px) scale(.94)}
+  .bar.srch .bc{transform:translateX(-10px) scale(.94);transition-delay:.04s}
+  .bar.srch .bell{transform:scale(.7);transition-delay:.08s}
+  .bar.srch #srch-b .ic-x{animation:kspin .34s var(--ease-out)}
+}
+@keyframes kspin{from{transform:rotate(-90deg) scale(.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){.bar .bs{transition:opacity .15s linear}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1214,8 +1240,9 @@ html{overscroll-behavior-y:contain}
     <div class="bc"><svg class="logo lg" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A3D"/><stop offset="1" stop-color="#F43F5E"/></linearGradient></defs><rect width="40" height="40" rx="13" fill="url(#lgg)"/><path d="M8.500 19.500 20 9.500l11.500 10" fill="none" stroke="#fff" stroke-width="2.800" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.500 18.500V29a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V18.500" fill="#fff" fill-opacity=".22" stroke="#fff" stroke-width="2.200" stroke-linejoin="round"/><path d="M20 27.200c-3.200-2.100-4.600-3.800-4.600-5.500a2.500 2.500 0 0 1 4.600-1.300 2.500 2.500 0 0 1 4.600 1.300c0 1.700-1.400 3.400-4.600 5.500z" fill="#fff"/></svg><h1 class="brand">Kenangan</h1></div>
     <div class="bg br">
     <button type="button" class="icon-btn rnd bell" data-act="nt-open" id="bell-b" aria-label="Notifikasi"><svg class="i" aria-hidden="true"><use href="#i-bell"></use></svg><span class="bdg" id="bell-n" hidden>0</span></button>
-    <button type="button" class="icon-btn rnd" data-act="search" aria-label="Cari kenangan" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-search"></use></svg></button>
+    <button type="button" class="icon-btn rnd" data-act="search" id="srch-b" aria-label="Cari kenangan" aria-expanded="false"><svg class="i ic-s" aria-hidden="true"><use href="#i-search"></use></svg><svg class="i ic-x" aria-hidden="true"><use href="#i-x"></use></svg></button>
     </div>
+    <div class="bs" id="bs" role="search" inert><svg class="i bs-i" aria-hidden="true"><use href="#i-search"></use></svg><input id="q" type="search" placeholder="Cari cerita, tempat, nama, tarikh…" aria-label="Cari kenangan" autocomplete="off" enterkeyhint="search"><button type="button" class="bs-c" data-act="clear-q" aria-label="Kosongkan carian"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
   </div>
   <header class="top" id="top" data-sky="siang">
     <div class="fx" id="fx" aria-hidden="true"></div>
@@ -1223,7 +1250,6 @@ html{overscroll-behavior-y:contain}
     <p class="mood" id="mood"></p>
     <div class="wxrow"><button type="button" class="wx" id="wx" data-act="wx"></button><span class="aq" id="aq" hidden></span><span class="sub" id="sub"></span></div>
   </header>
-  <div class="sbar" id="sbar" hidden role="search"><input id="q" type="search" placeholder="Cari cerita, tempat, nama, tarikh…" aria-label="Cari kenangan" autocomplete="off" enterkeyhint="search"><button type="button" class="btn sm ghost" data-act="clear-q">Kosongkan</button></div>
   <main id="view" aria-live="polite"></main>
 </div>
 
@@ -3787,6 +3813,16 @@ async function doImport(file){
   }catch(e){toast('Import terhenti di '+n+' / '+total+'. Cuba lagi, data yang dah masuk tak akan berganda.');}
 }
 function toast(msg){const t=$('toast');t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},3200);}
+function searchToggle(force){
+  const open=typeof force==='boolean'?force:!S.sOpen;
+  S.sOpen=open;
+  const bar=$('bar'),bs=$('bs'),b=$('srch-b'),q=$('q');
+  if(bs)bs.inert=!open;
+  bar.classList.toggle('srch',open);bar.classList.remove('bar-hide');
+  if(b){b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Tutup carian':'Cari kenangan');}
+  if(open){try{q.focus();}catch(e){}}
+  else{try{q.blur();}catch(e){}if(S.q){S.q='';q.value='';render();}}
+}
 function route(){
   const h=location.hash.replace('#','');
   S.tab=VIEWS.indexOf(h)>=0?h:'utama';
@@ -4418,7 +4454,7 @@ document.addEventListener('click',e=>{
   else if(a==='wx'&&S.live){openSet();}
   else if(a==='wx'){const i=WXS.findIndex(x=>x[0]===S.wx);S.wx=WXS[(i+1)%WXS.length][0];try{localStorage.setItem('kk-wx',S.wx);}catch(x){}paintSky();}
   else if(a==='tab')go(v);
-  else if(a==='search'){S.sOpen=!S.sOpen;$('sbar').hidden=!S.sOpen;t.setAttribute('aria-expanded',String(S.sOpen));if(S.sOpen)$('q').focus();else if(S.q){S.q='';$('q').value='';render();}}
+  else if(a==='search')searchToggle();
   else if(a==='clear-q'){S.q='';$('q').value='';if(!S.sOpen){render();}else{$('q').focus();render();}}
   else if(a==='new')openSheet();
   else if(a==='close-sheet')closeSheet();
@@ -4511,6 +4547,7 @@ document.addEventListener('change',e=>{
   else if(e.target.id==='f-import'){const f=e.target.files[0];e.target.value='';if(f)doImport(f);}
 });
 let qT=0;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.sOpen&&e.target&&e.target.id==='q')searchToggle(false);});
 document.addEventListener('input',e=>{
   if(e.target.id==='f-story')updCount();
   if(e.target.id==='loc-q'){S.locQ=e.target.value;return;}
