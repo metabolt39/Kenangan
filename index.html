@@ -1278,6 +1278,9 @@ html{overscroll-behavior-y:contain}
 .bbl2 li>span:first-child{flex:1}.bbl2 .chip{min-height:30px;padding:0 10px}
 .bbm{margin:10px 0}.bbr{display:flex;gap:8px}.bbr input{flex:1;min-width:0}
 body.bbo .lb{z-index:75}
+.bbgd .chip[aria-pressed="true"]{background:var(--teal,#2A7A63);color:#fff;border-color:transparent}
+.bbh.g-l{background:linear-gradient(135deg,color-mix(in srgb,#60a5fa 20%,var(--surface)),color-mix(in srgb,#60a5fa 6%,var(--surface)))}
+.bbh.g-p{background:linear-gradient(135deg,color-mix(in srgb,#f472b6 20%,var(--surface)),color-mix(in srgb,#f472b6 6%,var(--surface)))}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1862,7 +1865,7 @@ function normPost(id,d){
 }
 const ALEMO=['👶','🎉','🕌','🎂','🌴','⛱️','🍜','🚗','⛺','🎓','💍','🏔️','⚽'];
 function fin(v){return typeof v==='number'&&isFinite(v)&&v>0.5&&v<120?v:null;}
-function normAlbum(id,d){return {id:id,name:str(d.name).trim().slice(0,40),emoji:ALEMO.indexOf(d.emoji)>=0?d.emoji:'🎉',born:validDate(d.born)?d.born:'',createdBy:str(d.createdBy),createdAt:num(d.createdAt)};}
+function normAlbum(id,d){return {id:id,name:str(d.name).trim().slice(0,40),emoji:ALEMO.indexOf(d.emoji)>=0?d.emoji:'🎉',born:validDate(d.born)?d.born:'',g:d.g==='p'?'p':d.g==='l'?'l':'',createdBy:str(d.createdBy),createdAt:num(d.createdAt)};}
 function albumById(id){return id?S.albums.find(a=>a.id===id):null;}
 function isNew(p){return !p.demo&&S.seenBase>0&&!!p.authorId&&p.authorId!==S.myId&&p.createdAt>S.seenBase;}
 function normComment(id,d){return {id:id,postId:str(d.postId),authorId:str(d.authorId),text:str(d.text).slice(0,500),createdAt:num(d.createdAt)};}
@@ -2628,7 +2631,7 @@ function renderBb(){
   let b=bs.find(x=>x.id===S.bbSel)||bs[0]; if(b)S.bbSel=b.id;
   let h='';
   if(S.bbMode==='baby'){
-    h='<div class="trf"><h3>Tambah baby</h3><input id="bb-n" class="w" type="text" maxlength="40" placeholder="Nama baby" aria-label="Nama baby" autocomplete="off"><label class="lbl" for="bb-d">Tarikh lahir</label><input id="bb-d" type="date" max="'+ymd(new Date())+'"><div class="row"><button type="button" class="btn sm ghost" data-act="bb-cancel">Batal</button><button type="button" class="btn sm" data-act="bb-save-baby">Simpan</button></div></div>';
+    h='<div class="trf"><h3>Tambah baby</h3><input id="bb-n" class="w" type="text" maxlength="40" placeholder="Nama baby" aria-label="Nama baby" autocomplete="off"><div class="trg bbgd" role="group" aria-label="Jantina baby"><button type="button" class="chip" data-act="tr-g" data-v="l" aria-pressed="false">👦 Lelaki</button><button type="button" class="chip" data-act="tr-g" data-v="p" aria-pressed="false">👧 Perempuan</button></div><label class="lbl" for="bb-d">Tarikh lahir</label><input id="bb-d" type="date" max="'+ymd(new Date())+'"><div class="row"><button type="button" class="btn sm ghost" data-act="bb-cancel">Batal</button><button type="button" class="btn sm" data-act="bb-save-baby">Simpan</button></div></div>';
     el.innerHTML=h; return;
   }
   if(!b){
@@ -2638,8 +2641,8 @@ function renderBb(){
   const today=ymd(new Date());
   const posts=S.posts.filter(p=>p.album===b.id&&p.photos.length).map(p=>({p:p,d:bbPostDate(p)})).sort((x,y)=>x.d<y.d?-1:x.d>y.d?1:x.p.createdAt-y.p.createdAt);
   const nph=posts.reduce((s,x)=>s+x.p.photos.length,0);
-  if(bs.length>1)h+='<div class="trg bbs" role="group" aria-label="Pilih baby">'+bs.map(x=>'<button type="button" class="chip" data-act="bb-sel" data-id="'+esc(x.id)+'" aria-pressed="'+(x.id===b.id)+'">👶 '+esc(x.name)+'</button>').join('')+'</div>';
-  h+='<div class="bbh"><span class="bbav" aria-hidden="true">👶</span><div><h3>'+esc(b.name)+'</h3><p class="m">Umur '+esc(bbAge(b.born,today))+'<br>Lahir '+esc(fmtDate(b.born))+' · '+nph+' gambar</p></div></div>';
+  if(bs.length>1)h+='<div class="trg bbs" role="group" aria-label="Pilih baby">'+bs.map(x=>'<button type="button" class="chip" data-act="bb-sel" data-id="'+esc(x.id)+'" aria-pressed="'+(x.id===b.id)+'">'+(x.g==='p'?'👧':x.g==='l'?'👦':'👶')+' '+esc(x.name)+'</button>').join('')+'</div>';
+  h+='<div class="bbh g-'+(b.g||'x')+'"><span class="bbav" aria-hidden="true">'+(b.g==='p'?'👧':b.g==='l'?'👦':'👶')+'</span><div><h3>'+esc(b.name)+'</h3><p class="m">'+(b.g==='p'?'Perempuan · ':b.g==='l'?'Lelaki · ':'')+'Umur '+esc(bbAge(b.born,today))+'<br>Lahir '+esc(fmtDate(b.born))+' · '+nph+' gambar</p></div></div>';
   if(!ro)h+='<div class="tra2"><button type="button" class="chip pri" data-act="bb-photo">📷 Tambah gambar</button><button type="button" class="chip" data-act="bb-mode" data-v="meas">⚖️ Catat berat/tinggi</button><button type="button" class="chip" data-act="bb-mode" data-v="baby">＋ Baby lain</button></div>';
   if(S.bbMode==='meas'){
     h+='<div class="trf bbm"><h3>Catat berat dan tinggi</h3><label class="lbl" for="bb-md">Tarikh</label><input id="bb-md" type="date" min="'+esc(b.born)+'" max="'+today+'" value="'+today+'"><div class="bbr"><input id="bb-kg" type="text" inputmode="decimal" placeholder="Berat (kg)" aria-label="Berat dalam kilogram" autocomplete="off"><input id="bb-cm" type="text" inputmode="decimal" placeholder="Tinggi (cm)" aria-label="Tinggi dalam sentimeter" autocomplete="off"></div><div class="row"><button type="button" class="btn sm ghost" data-act="bb-cancel">Batal</button><button type="button" class="btn sm" data-act="bb-save-meas">Simpan</button></div></div>';
@@ -2684,9 +2687,11 @@ function bbFail(){toast('Tak dapat simpan. Cuba lagi sebentar.');}
 async function bbSaveBaby(){
   const n=($('bb-n').value||'').trim().slice(0,40), d=$('bb-d').value;
   if(!n){toast('Isi nama baby dahulu.');return;}
+  const gb=document.querySelector('.bbgd [aria-pressed="true"]'), g=gb?gb.dataset.v:'';
+  if(!g){toast('Pilih jantina baby.');return;}
   if(!validDate(d)||d>ymd(new Date())){toast('Pilih tarikh lahir yang betul.');return;}
   try{
-    const r=await S.db.collection('albums').add({name:n,emoji:'👶',born:d,createdBy:S.myId,createdAt:Date.now()});
+    const r=await S.db.collection('albums').add({name:n,emoji:'👶',born:d,g:g,createdBy:S.myId,createdAt:Date.now()});
     S.bbMode='';S.bbSel=r&&r.id||'';renderBb();toast('Baby ditambah.');
   }catch(e){bbFail();}
 }
