@@ -2389,37 +2389,42 @@ function renderTr(){
 function openTr(){S.trCenter=true;S.trMode='';S.trDel=false;$('tr').hidden=false;document.body.style.overflow='hidden';renderTr();}
 function closeTr(){$('tr').hidden=true;S.trMode='';S.trDel=false;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden)document.body.style.overflow='';}
 function trFail(){toast('Tak dapat simpan. Pastikan peraturan "tree" sudah ditambah di Firebase.');}
+function trRec(p,patch){return Object.assign({name:p.name,g:p.g,born:p.born,dead:!!p.dead,fid:p.fid||'',mid:p.mid||'',sid:p.sid||'',by:p.by||S.myId||'',at:p.at||Date.now()},patch||{});}
+function trPut(p,patch){return S.db.doc('tree/'+p.id).set(trRec(p,patch));}
 async function trSave(){
-  const m=S.trMode, p=S.tree.find(x=>x.id===S.trSel), ni=$('tr-n'), name=(ni&&ni.value||'').trim().slice(0,40);
-  if(!name){toast('Isi nama dahulu.');if(ni)ni.focus();return;}
-  const born=($('tr-y').value||'').trim(); if(born&&!/^\d{4}$/.test(born)){toast('Tahun lahir mesti 4 angka, cth. 1965.');return;}
-  const gb=document.querySelector('.trg [aria-pressed="true"]'), g=gb&&gb.dataset.v==='p'?'p':'l', dead=$('tr-d').getAttribute('aria-pressed')==='true';
-  const col=S.db.collection('tree'), b=S.db.batch();
-  if(m==='edit'&&p){
-    b.update(col.doc(p.id),{name:name,g:g,born:born,dead:dead});
-    S.trMode=''; renderTr();
-    try{await b.commit();}catch(e){trFail();} return;
-  }
-  const ref=col.doc(), d={name:name,g:g,born:born,dead:dead,fid:'',mid:'',sid:'',by:S.myId,at:Date.now()};
-  if(m==='child'&&p){if(p.g==='l'){d.fid=p.id;d.mid=p.sid||'';}else{d.mid=p.id;d.fid=p.sid||'';}
-    const sp=S.tree.find(x=>x.sid===p.id); if(sp&&!p.sid){ if(p.g==='l')d.mid=sp.id; else d.fid=sp.id; }}
-  else if(m==='spouse'&&p){d.sid=p.id;b.update(col.doc(p.id),{sid:ref.id});}
-  else if((m==='father'||m==='mother')&&p){
-    const oth=S.tree.find(x=>x.id===(m==='father'?p.mid:p.fid));
-    if(oth&&!oth.sid){d.sid=oth.id;b.update(col.doc(oth.id),{sid:ref.id});}
-    b.update(col.doc(p.id),m==='father'?{fid:ref.id}:{mid:ref.id});
-  }
-  b.set(ref,d);
-  S.trMode=''; S.trSel=ref.id; renderTr();
-  try{await b.commit();}catch(e){trFail();}
+  try{
+    const m=S.trMode, p=S.tree.find(x=>x.id===S.trSel), ni=$('tr-n'), name=(ni&&ni.value||'').trim().slice(0,40);
+    if(!name){toast('Isi nama dahulu.');if(ni)ni.focus();return;}
+    const born=($('tr-y').value||'').trim(); if(born&&!/^\d{4}$/.test(born)){toast('Tahun lahir mesti 4 angka, cth. 1965.');return;}
+    const gb=document.querySelector('.trg [aria-pressed="true"]'), g=gb&&gb.dataset.v==='p'?'p':'l', dead=$('tr-d').getAttribute('aria-pressed')==='true';
+    if(m==='edit'&&p){
+      S.trMode=''; renderTr();
+      await trPut(p,{name:name,g:g,born:born,dead:dead}); return;
+    }
+    const nid='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    const d={name:name,g:g,born:born,dead:dead,fid:'',mid:'',sid:'',by:S.myId||'',at:Date.now()}, jobs=[];
+    if(m==='child'&&p){
+      const sp=S.tree.find(x=>x.id===p.sid||x.sid===p.id);
+      if(p.g==='l'){d.fid=p.id;d.mid=sp?sp.id:'';}else{d.mid=p.id;d.fid=sp?sp.id:'';}
+    }else if(m==='spouse'&&p){d.sid=p.id;jobs.push(()=>trPut(p,{sid:nid}));}
+    else if((m==='father'||m==='mother')&&p){
+      const oth=S.tree.find(x=>x.id===(m==='father'?p.mid:p.fid));
+      if(oth&&!oth.sid){d.sid=oth.id;jobs.push(()=>trPut(oth,{sid:nid}));}
+      jobs.push(()=>trPut(p,m==='father'?{fid:nid}:{mid:nid}));
+    }
+    S.trMode=''; S.trSel=nid; renderTr();
+    await S.db.doc('tree/'+nid).set(d);
+    for(const j of jobs)await j();
+  }catch(e){trFail();}
 }
 async function trDelete(){
   const p=S.tree.find(x=>x.id===S.trSel); S.trDel=false; if(!p)return;
   if(S.tree.some(c=>c.fid===p.id||c.mid===p.id)){toast('Padam anak-anak dahulu, atau ubah nama sahaja.');renderTr();return;}
-  const col=S.db.collection('tree'), b=S.db.batch();
-  S.tree.forEach(x=>{if(x.sid===p.id)b.update(col.doc(x.id),{sid:''});});
-  b.delete(col.doc(p.id)); S.trSel=''; renderTr();
-  try{await b.commit();}catch(e){trFail();}
+  S.trSel=''; renderTr();
+  try{
+    for(const x of S.tree){if(x.sid===p.id)await trPut(x,{sid:''});}
+    await S.db.doc('tree/'+p.id).delete();
+  }catch(e){trFail();}
 }
 function normCap(id,d){return {id:id,by:str(d.by),to:str(d.to).trim().slice(0,40),title:str(d.title).trim().slice(0,60),text:str(d.text).slice(0,2000),openOn:validDate(d.openOn)?d.openOn:'',at:Number(d.at)||0};}
 function capOpen(c){return c.openOn<=ymd(new Date());}
