@@ -1181,6 +1181,30 @@ html{overscroll-behavior-y:contain}
 .ntl .ntx .nts{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .abr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px 12px 0}
 .abr .abl{font-size:12px;font-weight:700;color:var(--ink-2);margin-right:2px}
+
+.trs{max-width:720px}
+.trbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.trw{overflow:auto;border:1px solid color-mix(in srgb,var(--ink) 12%,transparent);border-radius:16px;background:color-mix(in srgb,var(--ink) 3%,var(--surface));-webkit-overflow-scrolling:touch;max-height:56vh}
+.trsvg{display:block;margin:0 auto}
+.trl line,.trl path{stroke:color-mix(in srgb,var(--ink) 38%,transparent);stroke-width:1.6;fill:none;stroke-linecap:round}
+.trn{cursor:pointer;outline:none}
+.trr{fill:var(--surface);stroke:color-mix(in srgb,var(--ink) 18%,transparent);stroke-width:1.4;transition:stroke .2s,stroke-width .2s}
+.trn:hover .trr,.trn:focus-visible .trr{stroke:var(--teal,#2A7A63)}
+.trn.on .trr{stroke:var(--teal,#2A7A63);stroke-width:2.6}
+.trn.g-l .tra{fill:color-mix(in srgb,#3b82f6 24%,var(--surface))}
+.trn.g-p .tra{fill:color-mix(in srgb,#ec4899 24%,var(--surface))}
+.trn.dead{opacity:.8}
+.trsvg text{text-anchor:middle;fill:var(--ink)}
+.tri{font-size:13px;font-weight:700}
+.trt{font-size:11.5px;font-weight:600}
+.try{font-size:10px;fill:var(--ink-2)!important}
+.trd h3,.trf h3{margin:0 0 4px;font-size:17px}
+.trd small{font-weight:500;font-size:12px;color:var(--ink-2)}
+.trd .m{margin:2px 0;color:var(--ink-2);font-size:13.5px}
+.tra2,.trg{display:flex;flex-wrap:wrap;gap:6px}
+.trf{display:flex;flex-direction:column;gap:10px}
+.trf .row{display:flex;gap:8px;justify-content:flex-end}
+.trg .chip[aria-pressed="true"],#tr-d[aria-pressed="true"]{background:var(--teal,#2A7A63);color:#fff;border-color:transparent}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1326,6 +1350,12 @@ html{overscroll-behavior-y:contain}
       <button type="button" class="btn w" data-act="cal-add">Tambah ke kalendar</button>
     </div>
     <div id="cal-l"></div>
+  </section>
+</div>
+<div class="scrim" id="tr" hidden>
+  <section class="sheet trs" role="dialog" aria-modal="true" aria-labelledby="tr-t">
+    <div class="sheet-h"><h2 id="tr-t">Pokok keluarga</h2><button type="button" class="icon-btn" data-act="tr-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <div id="tr-b"></div>
   </section>
 </div>
 <div class="scrim" id="plc" hidden>
@@ -1601,7 +1631,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',gby:'tempat',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,bd:[],nt:false,locs:[],myPos:null,cal:[],calDel:'',caps:[],capDel:'',statY:0,pcat:'semua',discN:0,plc:-1,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,bd:[],nt:false,locs:[],myPos:null,cal:[],calDel:'',caps:[],capDel:'',tree:[],trSel:'',trMode:'',trDel:false,trZ:1,trCenter:false,statY:0,pcat:'semua',discN:0,plc:-1,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -2258,6 +2288,139 @@ function openCal(){
   $('cal').hidden=false;document.body.style.overflow='hidden';renderCal();
 }
 function closeCal(){$('cal').hidden=true;S.calDel='';if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden)document.body.style.overflow='';}
+/* ---------- pokok keluarga ---------- */
+function normTr(id,d){return {id:id,name:str(d.name).trim().slice(0,40),g:d.g==='p'?'p':'l',born:str(d.born).trim().slice(0,4),dead:!!d.dead,fid:str(d.fid),mid:str(d.mid),sid:str(d.sid),by:str(d.by),at:Number(d.at)||0};}
+function trTile(){
+  const n=S.tree.length;
+  return '<button type="button" class="jt" data-act="tr-open"><span class="jt-i emo" aria-hidden="true">🌳</span><span class="jt-t"><b>Pokok keluarga</b><span>'+(n?n+' orang dalam pokok. Tekan untuk lihat':'Tambah nama supaya anak-anak kenal keluarga')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+}
+const TRW=92,TRH=64,TRG=16,TRS=10,TRY=44,TRP=14;
+function trLayout(){
+  const T=S.tree, by=new Map(T.map(p=>[p.id,p])), sp={};
+  T.forEach(p=>{if(p.sid&&by.has(p.sid)){if(!sp[p.id])sp[p.id]=p.sid;if(!sp[p.sid])sp[p.sid]=p.id;}});
+  const hasPar=p=>!!((p.fid&&by.has(p.fid))||(p.mid&&by.has(p.mid)));
+  const srt=(a,b)=>((a.born||'9999')<(b.born||'9999')?-1:(a.born||'9999')>(b.born||'9999')?1:a.at-b.at);
+  const used=new Set();
+  function unit(p){
+    if(used.has(p.id))return null; used.add(p.id);
+    let s=sp[p.id]&&by.get(sp[p.id]); if(s&&used.has(s.id))s=null; if(s)used.add(s.id);
+    const ppl=s?((p.g==='p'&&s.g!=='p')?[s,p]:[p,s]):[p];
+    const seen=new Set(), ch=[];
+    ppl.forEach(x=>T.forEach(c=>{if((c.fid===x.id||c.mid===x.id)&&!seen.has(c.id)){seen.add(c.id);ch.push(c);}}));
+    ch.sort(srt);
+    return {ppl:ppl,cu:ch.map(unit).filter(Boolean)};
+  }
+  const roots=[];
+  T.slice().sort(srt).forEach(p=>{if(hasPar(p))return;const s=sp[p.id]&&by.get(sp[p.id]);if(s&&hasPar(s))return;const u=unit(p);if(u)roots.push(u);});
+  T.forEach(p=>{if(!used.has(p.id)){const u=unit(p);if(u)roots.push(u);}});
+  function wOf(u){u.cw=u.ppl.length*TRW+(u.ppl.length-1)*TRS;u.kw=u.cu.length?u.cu.reduce((s,c)=>s+wOf(c),0)+(u.cu.length-1)*TRG:0;u.w=Math.max(u.cw,u.kw);return u.w;}
+  function place(u,x,d){u.x=x;u.d=d;u.cx=x+u.w/2;let cx=x+(u.w-u.kw)/2;u.cu.forEach(c=>{place(c,cx,d+1);cx+=c.w+TRG;});}
+  let x=TRP,maxD=0;
+  roots.forEach(u=>{wOf(u);place(u,x,0);x+=u.w+TRG*2;});
+  const lines=[], nodes=[];
+  const walk=function(u){
+    maxD=Math.max(maxD,u.d);
+    const y=TRP+u.d*(TRH+TRY), x0=u.cx-u.cw/2;
+    u.ppl.forEach((p,i)=>nodes.push({p:p,x:x0+i*(TRW+TRS),y:y}));
+    if(u.ppl.length>1)lines.push('<line x1="'+(x0+TRW)+'" y1="'+(y+TRH/2)+'" x2="'+(x0+TRW+TRS)+'" y2="'+(y+TRH/2)+'"/>');
+    if(u.cu.length){
+      const sy=u.ppl.length>1?y+TRH/2:y+TRH, my=y+TRH+TRY/2, xs=u.cu.map(c=>c.cx);
+      lines.push('<path d="M'+u.cx+' '+sy+'V'+my+'"/>');
+      if(xs.length>1)lines.push('<path d="M'+Math.min.apply(null,xs)+' '+my+'H'+Math.max.apply(null,xs)+'"/>');
+      u.cu.forEach(c=>lines.push('<path d="M'+c.cx+' '+my+'V'+(y+TRH+TRY)+'"/>'));
+    }
+    u.cu.forEach(walk);
+  };
+  roots.forEach(walk);
+  return {nodes:nodes,lines:lines,W:Math.max(x-TRG*2+TRP,200),H:(maxD+1)*(TRH+TRY)-TRY+TRP*2,gens:maxD+1};
+}
+function trNode(n){
+  const p=n.p,x=n.x,y=n.y,nm=p.name.length>13?p.name.slice(0,12)+'…':p.name;
+  return '<g class="trn g-'+p.g+(p.dead?' dead':'')+(S.trSel===p.id?' on':'')+'" data-act="tr-sel" data-id="'+esc(p.id)+'" role="button" tabindex="0" aria-label="'+esc(p.name)+'"><title>'+esc(p.name)+'</title>'+
+    '<rect class="trr" x="'+x+'" y="'+y+'" width="'+TRW+'" height="'+TRH+'" rx="14"/>'+
+    '<circle class="tra" cx="'+(x+TRW/2)+'" cy="'+(y+19)+'" r="13"/>'+
+    '<text class="tri" x="'+(x+TRW/2)+'" y="'+(y+23.5)+'">'+esc(p.name.charAt(0).toUpperCase())+'</text>'+
+    '<text class="trt" x="'+(x+TRW/2)+'" y="'+(y+44)+'">'+esc(nm)+'</text>'+
+    '<text class="try" x="'+(x+TRW/2)+'" y="'+(y+57)+'">'+esc((p.dead?'Arwah':'')+(p.dead&&p.born?' · ':'')+(p.born||''))+'</text></g>';
+}
+function trPanel(){
+  const by=id=>S.tree.find(p=>p.id===id), p=by(S.trSel), ro=S.canWrite===false;
+  let h='';
+  if(S.trMode==='root'||(S.trMode&&p)){
+    const m=S.trMode, ed=m==='edit', tg=m==='father'?'l':m==='mother'?'p':ed?p.g:m==='spouse'?(p.g==='l'?'p':'l'):'l';
+    const ttl={root:'Tambah orang pertama',child:'Tambah anak kepada '+(p&&p.name),spouse:'Tambah pasangan kepada '+(p&&p.name),father:'Tambah ayah kepada '+(p&&p.name),mother:'Tambah ibu kepada '+(p&&p.name),edit:'Ubah maklumat'}[m];
+    h+='<div class="trf"><h3>'+esc(ttl)+'</h3><input id="tr-n" class="w" type="text" maxlength="40" placeholder="Nama" aria-label="Nama" autocomplete="off" value="'+esc(ed?p.name:'')+'">'+
+      '<div class="trg" role="group" aria-label="Jantina"><button type="button" class="chip" data-act="tr-g" data-v="l" aria-pressed="'+(tg==='l')+'">Lelaki</button><button type="button" class="chip" data-act="tr-g" data-v="p" aria-pressed="'+(tg==='p')+'">Perempuan</button></div>'+
+      '<input id="tr-y" type="text" inputmode="numeric" maxlength="4" placeholder="Tahun lahir (pilihan, cth. 1965)" aria-label="Tahun lahir" autocomplete="off" value="'+esc(ed?p.born:'')+'">'+
+      '<button type="button" class="chip" id="tr-d" data-act="tr-dead" aria-pressed="'+(ed&&p.dead?'true':'false')+'">🤍 Arwah</button>'+
+      '<div class="row"><button type="button" class="btn sm ghost" data-act="tr-cancel">Batal</button><button type="button" class="btn sm" data-act="tr-save">Simpan</button></div></div>';
+    return h;
+  }
+  if(!p)return '<p class="hint">Tekan satu nama dalam pokok untuk lihat maklumat dan tambah ahli keluarga.</p>';
+  const sp=S.tree.find(x=>x.id===p.sid||x.sid===p.id), fa=by(p.fid), mo=by(p.mid), kids=S.tree.filter(c=>c.fid===p.id||c.mid===p.id);
+  const bits=[]; if(fa||mo)bits.push('Anak kepada '+[fa&&fa.name,mo&&mo.name].filter(Boolean).map(esc).join(' dan ')); if(sp)bits.push('Pasangan: '+esc(sp.name)); if(kids.length)bits.push(kids.length+' anak: '+kids.map(k=>esc(k.name)).join(', '));
+  h+='<div class="trd"><h3>'+esc(p.name)+(p.dead?' <small>Al-Fatihah 🤍</small>':'')+'</h3><p class="m">'+(p.g==='l'?'Lelaki':'Perempuan')+(p.born?' · lahir '+esc(p.born):'')+'</p>'+(bits.length?'<p class="m">'+bits.join('<br>')+'</p>':'')+'</div>';
+  if(ro)return h;
+  const b=(m,l)=>'<button type="button" class="chip" data-act="tr-mode" data-v="'+m+'">'+l+'</button>';
+  h+='<div class="tra2">'+b('child','＋ Anak')+(sp?'':b('spouse','＋ Pasangan'))+(fa?'':b('father','＋ Ayah'))+(mo?'':b('mother','＋ Ibu'))+b('edit','Ubah')+
+    (S.trDel?'<button type="button" class="chip" data-act="tr-del-yes">Ya, padam</button><button type="button" class="chip" data-act="tr-del-no">Batal</button>':'<button type="button" class="chip" data-act="tr-del-ask" aria-label="Padam '+esc(p.name)+'">🗑</button>')+'</div>';
+  return h;
+}
+function renderTr(){
+  const el=$('tr-b'); if(!el)return;
+  const sh=$('tr').querySelector('.sheet'), st=sh?sh.scrollTop:0, ow=el.querySelector('.trw'), sl=ow?ow.scrollLeft:0;
+  let h;
+  if(!S.tree.length&&S.trMode!=='root'){
+    h='<div class="empty"><h2>Mulakan pokok keluarga</h2><p>Mula dengan orang paling tua yang kamu ingat, contohnya Atuk atau Nenek. Lepas itu tambah anak, cucu dan pasangan.</p>'+(S.canWrite===false?'':'<button type="button" class="btn" data-act="tr-mode" data-v="root">Tambah orang pertama</button>')+'</div>';
+  }else{
+    const L=S.tree.length?trLayout():{nodes:[],lines:[],W:200,H:100,gens:0};
+    if(S.trCenter)S.trZ=Math.max(.55,Math.min(1,Math.round(Math.min(window.innerWidth-70,650)/L.W*10)/10));
+    const z=S.trZ;
+    h='<div class="trbar"><span class="hint" style="margin:0">'+S.tree.length+' orang · '+L.gens+' generasi</span><span><button type="button" class="chip" data-act="tr-zoom" data-v="-" aria-label="Kecilkan">−</button> <button type="button" class="chip" data-act="tr-zoom" data-v="+" aria-label="Besarkan">＋</button></span></div>';
+    if(S.tree.length)h+='<div class="trw"><svg class="trsvg" width="'+Math.round(L.W*z)+'" height="'+Math.round(L.H*z)+'" viewBox="0 0 '+L.W+' '+L.H+'" role="group" aria-label="Pokok keluarga"><g class="trl">'+L.lines.join('')+'</g>'+L.nodes.map(trNode).join('')+'</svg></div>';
+    h+=trPanel();
+    if(S.canWrite!==false&&!S.trSel&&S.tree.length&&!S.trMode)h+='<div class="row" style="margin-top:8px"><button type="button" class="btn sm ghost" data-act="tr-mode" data-v="root">＋ Tambah orang lain di peringkat atas</button></div>';
+  }
+  el.innerHTML=h;
+  const w=el.querySelector('.trw');
+  if(w){if(S.trCenter){w.scrollLeft=Math.max(0,(w.scrollWidth-w.clientWidth)/2);S.trCenter=false;}else w.scrollLeft=sl;}
+  if(sh)sh.scrollTop=st;
+}
+function openTr(){S.trCenter=true;S.trMode='';S.trDel=false;$('tr').hidden=false;document.body.style.overflow='hidden';renderTr();}
+function closeTr(){$('tr').hidden=true;S.trMode='';S.trDel=false;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden)document.body.style.overflow='';}
+function trFail(){toast('Tak dapat simpan. Pastikan peraturan "tree" sudah ditambah di Firebase.');}
+async function trSave(){
+  const m=S.trMode, p=S.tree.find(x=>x.id===S.trSel), ni=$('tr-n'), name=(ni&&ni.value||'').trim().slice(0,40);
+  if(!name){toast('Isi nama dahulu.');if(ni)ni.focus();return;}
+  const born=($('tr-y').value||'').trim(); if(born&&!/^\d{4}$/.test(born)){toast('Tahun lahir mesti 4 angka, cth. 1965.');return;}
+  const gb=document.querySelector('.trg [aria-pressed="true"]'), g=gb&&gb.dataset.v==='p'?'p':'l', dead=$('tr-d').getAttribute('aria-pressed')==='true';
+  const col=S.db.collection('tree'), b=S.db.batch();
+  if(m==='edit'&&p){
+    b.update(col.doc(p.id),{name:name,g:g,born:born,dead:dead});
+    S.trMode=''; renderTr();
+    try{await b.commit();}catch(e){trFail();} return;
+  }
+  const ref=col.doc(), d={name:name,g:g,born:born,dead:dead,fid:'',mid:'',sid:'',by:S.myId,at:Date.now()};
+  if(m==='child'&&p){if(p.g==='l'){d.fid=p.id;d.mid=p.sid||'';}else{d.mid=p.id;d.fid=p.sid||'';}
+    const sp=S.tree.find(x=>x.sid===p.id); if(sp&&!p.sid){ if(p.g==='l')d.mid=sp.id; else d.fid=sp.id; }}
+  else if(m==='spouse'&&p){d.sid=p.id;b.update(col.doc(p.id),{sid:ref.id});}
+  else if((m==='father'||m==='mother')&&p){
+    const oth=S.tree.find(x=>x.id===(m==='father'?p.mid:p.fid));
+    if(oth&&!oth.sid){d.sid=oth.id;b.update(col.doc(oth.id),{sid:ref.id});}
+    b.update(col.doc(p.id),m==='father'?{fid:ref.id}:{mid:ref.id});
+  }
+  b.set(ref,d);
+  S.trMode=''; S.trSel=ref.id; renderTr();
+  try{await b.commit();}catch(e){trFail();}
+}
+async function trDelete(){
+  const p=S.tree.find(x=>x.id===S.trSel); S.trDel=false; if(!p)return;
+  if(S.tree.some(c=>c.fid===p.id||c.mid===p.id)){toast('Padam anak-anak dahulu, atau ubah nama sahaja.');renderTr();return;}
+  const col=S.db.collection('tree'), b=S.db.batch();
+  S.tree.forEach(x=>{if(x.sid===p.id)b.update(col.doc(x.id),{sid:''});});
+  b.delete(col.doc(p.id)); S.trSel=''; renderTr();
+  try{await b.commit();}catch(e){trFail();}
+}
 function normCap(id,d){return {id:id,by:str(d.by),to:str(d.to).trim().slice(0,40),title:str(d.title).trim().slice(0,60),text:str(d.text).slice(0,2000),openOn:validDate(d.openOn)?d.openOn:'',at:Number(d.at)||0};}
 function capOpen(c){return c.openOn<=ymd(new Date());}
 function capDays(c){const t=new Date(),t0=new Date(t.getFullYear(),t.getMonth(),t.getDate()),q=c.openOn.split('-').map(Number);return Math.round((new Date(q[0],q[1]-1,q[2])-t0)/864e5);}
@@ -3535,7 +3698,7 @@ function keluargaHtml(){
   if(DEMO)return demoBanner();
   let h=lokasiHtml();
   h+=sec('Kalendar dan hari lahir')+calHtml()+bdHtml();
-  h+=sec('Lagi untuk keluarga')+'<div class="jts">'+capTile()+statTile()+'</div>';
+  h+=sec('Lagi untuk keluarga')+'<div class="jts">'+capTile()+trTile()+statTile()+'</div>';
   h+=sec('Sandaran')+backupBanner();
   h+='<div class="jts"><button type="button" class="jt" data-act="settings"><span class="jt-i emo" aria-hidden="true">'+icon('download')+'</span><span class="jt-t"><b>Tetapan dan sandaran</b><span>Sandarkan kenangan, tema, hari lahir dan akaun</span></span><span class="jt-a" aria-hidden="true">›</span></button></div>';
   return h;
@@ -4365,6 +4528,7 @@ document.addEventListener('click',e=>{
   if(e.target===$('plc')){closePlc();return;}
   if(e.target===$('cal')){closeCal();return;}
   if(e.target===$('cap')){closeCap();return;}
+  if(e.target===$('tr')){closeTr();return;}
   if(e.target===$('stat')){closeStat();return;}
   const t=e.target.closest('[data-act]'); if(!t)return;
   const a=t.dataset.act, id=t.dataset.id, v=t.dataset.v;
@@ -4424,6 +4588,18 @@ document.addEventListener('click',e=>{
   else if(a==='ss-play')ssToggle();
   else if(a==='ss-shuf'){SS.shuf=!SS.shuf;const cur=SS.items[SS.i];SS.items=ssBuild();const k=SS.items.findIndex(x=>cur&&x.id===cur.id);ssUi();if(!SS.shuf&&k>=0)SS.i=k;ssHideLater();}
   else if(a==='cal-open')openCal();
+  else if(a==='tr-open')openTr();
+  else if(a==='tr-close')closeTr();
+  else if(a==='tr-sel'){S.trSel=S.trSel===id?'':id;S.trMode='';S.trDel=false;renderTr();}
+  else if(a==='tr-mode'){S.trMode=v;S.trDel=false;if(v==='root')S.trSel=S.trSel;renderTr();const ni=$('tr-n');if(ni)try{ni.focus();}catch(e){}}
+  else if(a==='tr-g'){t.parentNode.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===t?'true':'false'));}
+  else if(a==='tr-dead')t.setAttribute('aria-pressed',t.getAttribute('aria-pressed')==='true'?'false':'true');
+  else if(a==='tr-save')trSave();
+  else if(a==='tr-cancel'){S.trMode='';renderTr();}
+  else if(a==='tr-del-ask'){S.trDel=true;renderTr();}
+  else if(a==='tr-del-no'){S.trDel=false;renderTr();}
+  else if(a==='tr-del-yes')trDelete();
+  else if(a==='tr-zoom'){S.trZ=Math.max(.5,Math.min(1.6,Math.round((S.trZ+(v==='+'?.2:-.2))*10)/10));renderTr();}
   else if(a==='cap-open')openCap();
   else if(a==='cap-close')closeCap();
   else if(a==='cap-add')capAdd();
@@ -4695,6 +4871,7 @@ async function init(){
   S.db.collection('capsules').onSnapshot(snap=>{S.caps=snap.docs.map(d=>normCap(d.id,d.data()||{})).filter(c=>c.openOn);render();if(!$('cap').hidden)renderCap();},()=>{});
   S.db.collection('cal').onSnapshot(snap=>{S.cal=snap.docs.map(d=>normCal(d.id,d.data()||{})).filter(c=>c.title&&c.date);render();if(!$('cal').hidden)renderCal();if(!snap.metadata.fromCache&&!NT.calOk){NT.calOk=true;calRemind();}},()=>{});
   S.db.collection('locs').onSnapshot(locSnap,()=>{});
+  S.db.collection('tree').onSnapshot(snap=>{S.tree=snap.docs.map(d=>normTr(d.id,d.data()||{})).filter(p=>p.name);if(S.trSel&&!S.tree.some(p=>p.id===S.trSel))S.trSel='';if(!$('tr').hidden&&!S.trMode)renderTr();render();},()=>{});
   S.db.collection('push').onSnapshot(sn=>{PUSHSUBS=sn.docs.map(d=>Object.assign({uid:d.id},d.data()||{}));},()=>{});
   if(ntOn())pushSubscribe();
   S.db.collection('albums').onSnapshot(snap=>{
