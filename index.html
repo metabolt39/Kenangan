@@ -1108,6 +1108,23 @@ html{overscroll-behavior-y:contain}
 .setp .bd-f{grid-template-columns:1fr 1fr}
 .setp .bdc{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink-2)}
 .setp .bdc input{min-height:44px;width:100%}
+
+/* Galeri: kawalan moden */
+.gtb{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-top:16px}
+.gtb .seg{display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:row;margin-top:0;padding:4px;min-height:0;border-radius:18px;background:var(--surface-2)}
+.gtb .seg button,.seg button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:14px}
+.gtb .seg button .i{width:18px;height:18px;margin:0}
+.slidec{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:12px 16px 12px 12px;border:0;border-radius:20px;text-align:left;color:var(--accent-ink,#fff);background:linear-gradient(120deg,var(--accent),color-mix(in srgb,var(--accent) 62%,var(--gold,#E8B84B)));box-shadow:0 12px 26px -14px var(--accent),inset 0 1px 0 rgba(255,255,255,.28)}
+.slidec::before{content:"";position:absolute;right:-30px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.28),transparent)}
+.slidec .sc-p{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.26);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.slidec .sc-p .i{width:20px;height:20px;fill:currentColor;stroke:currentColor;margin-left:2px}
+.slidec .sc-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.slidec .sc-t b{font-size:16px;font-weight:700;letter-spacing:.01em}
+.slidec .sc-t small{font-size:12.5px;opacity:.8}
+.slidec .sc-c{width:20px;height:20px;opacity:.8}
+:root[data-glass="1"] .slidec{background:linear-gradient(120deg,var(--accent),color-mix(in srgb,var(--accent) 62%,var(--gold,#E8B84B)))!important;border:0!important}
+.act .i{width:21px;height:21px}
+@media (prefers-reduced-motion:no-preference){.slidec:active{transform:scale(.985)}.slidec{transition:transform .15s var(--ease-out,ease-out)}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1136,17 +1153,19 @@ html{overscroll-behavior-y:contain}
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.300 20a1.900 1.900 0 0 0 3.400 0"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.500A8.500 8.500 0 0 1 9.500 4 8.500 8.500 0 1 0 20 14.500z"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.600 5.600L7 7M17 17l1.400 1.400M18.400 5.600L17 7M7 17l-1.400 1.400"/></symbol>
-  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-7.8-4.7-9.5-9.6C1.3 7.4 3.5 4 7 4c2 0 3.6 1 5 2.9C13.4 5 15 4 17 4c3.5 0 5.7 3.4 4.5 6.9-1.7 4.9-9.5 9.6-9.5 9.6z"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 11.5a8 8 0 0 1-11.7 7.1L3.5 20l1.4-4.8A8 8 0 1 1 20.5 11.5z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.3 4.6 13C2.4 10.8 2.5 7.3 4.7 5.4a4.7 4.7 0 0 1 6.4.3l.9.9.9-.9a4.7 4.7 0 0 1 6.4-.3c2.2 1.9 2.3 5.4.1 7.6z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5.5 4h13A2.5 2.5 0 0 1 21 6.5v8a2.5 2.5 0 0 1-2.500 2.500H11.500L7 20.800V17H5.500A2.500 2.500 0 0 1 3 14.500v-8A2.500 2.500 0 0 1 5.500 4z"/><path d="M8 9h8M8 12.500h5"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s7-6 7-11.5a7 7 0 1 0-14 0c0 5.5 7 11.5 7 11.5z"/><circle cx="12" cy="10" r="2.5"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6.5 8 6.5M6 10v9.5h4v-5h4v5h4V10"/></symbol>
+  <symbol id="i-rows" viewBox="0 0 24 24"><circle cx="5.500" cy="6" r="1.300"/><circle cx="5.500" cy="12" r="1.300"/><circle cx="5.500" cy="18" r="1.300"/><path d="M10 6h10M10 12h10M10 18h6.500"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
   <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"/></symbol>
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></symbol>
-  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 12v7h14v-7"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M21 3 10.500 13.500M21 3l-6.500 18-4-7.500L3 9.500z"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l.9 12.5h9.2L17.5 7M10 11v5M14 11v5"/></symbol>
   <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="M4 17l5-4.5 3.5 3L16 12l4 4"/></symbol>
@@ -1155,7 +1174,7 @@ html{overscroll-behavior-y:contain}
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
   <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.6 0 2.1-1 1.6-2.1-.5-1.2.3-2.4 1.6-2.4H17a4 4 0 0 0 4-4c0-5-4-9.5-9-9.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></symbol>
   <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 7h3.5c2 0 3.200 1 4.500 3l2 4c1.300 2 2.500 3 4.500 3H21M3 17h3.500c1.500 0 2.600-.600 3.500-1.800M21 7h-3.500c-1.500 0-2.600.600-3.500 1.800M18 4l3 3-3 3M18 14l3 3-3 3"/></symbol>
-  <symbol id="i-note" viewBox="0 0 24 24"><path d="M5 4h14v11l-5 5H5zM14 20v-5h5"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M6.500 3.500h11A2 2 0 0 1 19.500 5.500V14l-5.500 6.500H6.500a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2z"/><path d="M14.500 20.500V16a2 2 0 0 1 2-2h3M8 8.500h8M8 12h4"/></symbol>
 </svg>
 
 <div class="wrap">
@@ -3459,9 +3478,9 @@ function utamaHtml(m){
 }
 function galeriHtml(){
   const f=filt(P).slice().sort(byMemory);
-  let seg=S.q?'':'<div class="seg" role="group" aria-label="Cara paparan"><button type="button" data-act="gmode" data-v="grid" aria-pressed="'+(S.gmode==='grid')+'">Grid</button><button type="button" data-act="gmode" data-v="timeline" aria-pressed="'+(S.gmode==='timeline')+'">Garis masa</button></div>';
+  let seg=S.q?'':'<div class="seg" role="group" aria-label="Cara paparan"><button type="button" data-act="gmode" data-v="grid" aria-pressed="'+(S.gmode==='grid')+'">'+icon('grid')+'Grid</button><button type="button" data-act="gmode" data-v="timeline" aria-pressed="'+(S.gmode==='timeline')+'">'+icon('rows')+'Garis masa</button></div>';
   const hasPh=f.some(p=>p.photos.length);
-  let h='<div class="gtb">'+seg+(hasPh?'<button type="button" class="btn sm" data-act="slide"><svg class="i" aria-hidden="true"><use href="#i-play"></use></svg>Tayangan slaid</button>':'')+'</div>';
+  let h='<div class="gtb">'+seg+(hasPh?'<button type="button" class="slidec" data-act="slide"><span class="sc-p"><svg class="i" aria-hidden="true"><use href="#i-play"></use></svg></span><span class="sc-t"><b>Tayangan slaid</b><small>'+f.reduce((a,p)=>a+p.photos.length,0)+' gambar, main sendiri</small></span><svg class="i sc-c" aria-hidden="true"><use href="#i-chev"></use></svg></button>':'')+'</div>';
   const albumView=!S.q&&S.gmode==='grid'&&S.cat==='semua'&&!S.place&&!S.album;
   if(!albumView)h+='<div class="chips" role="group" aria-label="Tapis album"><button type="button" class="chip" data-act="catf" data-v="semua" aria-pressed="'+(S.cat==='semua')+'">Semua</button>'+
     CATS.filter(c=>P.some(p=>p.cat===c[0])||S.cat===c[0]).map(c=>'<button type="button" class="chip" data-act="catf" data-v="'+c[0]+'" aria-pressed="'+(S.cat===c[0])+'">'+icon(CIC[c[0]]||'pin')+esc(c[1])+'</button>').join('')+
