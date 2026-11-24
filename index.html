@@ -1125,6 +1125,26 @@ html{overscroll-behavior-y:contain}
 :root[data-glass="1"] .slidec{background:linear-gradient(120deg,var(--accent),color-mix(in srgb,var(--accent) 62%,var(--gold,#E8B84B)))!important;border:0!important}
 .act .i{width:21px;height:21px}
 @media (prefers-reduced-motion:no-preference){.slidec:active{transform:scale(.985)}.slidec{transition:transform .15s var(--ease-out,ease-out)}}
+
+/* Tayangan slaid: kawalan minimalis, kapsyen tak bertindih */
+.ss-top{background:linear-gradient(rgba(0,0,0,.45),transparent)}
+.ss-top #ss-n{padding:7px 13px;border-radius:99px;background:rgba(20,20,22,.42);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);font-size:13px;font-weight:600;letter-spacing:.02em;color:#fff}
+.ss-top .ss-b{background:rgba(20,20,22,.42);width:42px;height:42px}
+.ss-bot{left:50%;right:auto;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:auto;padding:6px;gap:4px;border-radius:99px;background:rgba(20,20,22,.46);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 30px -12px rgba(0,0,0,.6)}
+.ss-bot .ss-b{width:46px;height:46px;background:transparent;color:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}
+.ss-bot .ss-b .i{width:22px;height:22px;fill:currentColor;stroke:currentColor;stroke-width:2}
+.ss-bot .ss-b.big{width:54px;height:54px;background:#fff;color:#111}
+.ss-bot .ss-b.big .i{width:22px;height:22px}
+.ss-bot .ss-b:active{background:rgba(255,255,255,.18)}
+.ss-bot .ss-b.big:active{background:#e8e8e8}
+.ss-top .ss-b .i{width:20px;height:20px}
+.ss-cap{bottom:calc(98px + env(safe-area-inset-bottom,0px));padding:0 22px}
+.ss-cap::before{content:"";position:absolute;left:0;right:0;bottom:-30px;top:-70px;z-index:-1;background:linear-gradient(transparent,rgba(0,0,0,.55) 45%,rgba(0,0,0,.65))}
+.ss-cap .cbox{max-height:min(30vh,260px);overflow:hidden;margin:6px auto 0;max-width:640px}
+.ss-cap .cbox.mv{-webkit-mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(transparent,#000 14px,#000 calc(100% - 18px),transparent)}
+.ss-cap .cin p{margin:0 auto;max-width:640px;font-size:17px;line-height:1.5}
+@keyframes ssscroll{from{transform:translateY(0)}to{transform:translateY(var(--ov,0))}}
+@media (max-height:520px){.ss-cap .cbox{max-height:24vh}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1161,6 +1181,9 @@ html{overscroll-behavior-y:contain}
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6.5 8 6.5M6 10v9.5h4v-5h4v5h4V10"/></symbol>
   <symbol id="i-rows" viewBox="0 0 24 24"><circle cx="5.500" cy="6" r="1.300"/><circle cx="5.500" cy="12" r="1.300"/><circle cx="5.500" cy="18" r="1.300"/><path d="M10 6h10M10 12h10M10 18h6.500"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.500" y="5" width="3.800" height="14" rx="1.300"/><rect x="13.700" y="5" width="3.800" height="14" rx="1.300"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M18 6.500v11L9.500 12z"/><path d="M6 6v12"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M6 6.500v11L14.500 12z"/><path d="M18 6v12"/></symbol>
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
   <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"/></symbol>
@@ -1219,7 +1242,7 @@ html{overscroll-behavior-y:contain}
     <button type="button" class="ss-b" data-act="ss-shuf" id="ss-shuf" aria-pressed="false" aria-label="Kocok susunan"><svg class="i" aria-hidden="true"><use href="#i-shuffle"></use></svg></button>
     <button type="button" class="ss-b" data-act="ss-close" aria-label="Tutup tayangan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
   <div class="ss-cap" id="ss-cap"></div>
-  <div class="ss-bot"><button type="button" class="ss-b" data-act="ss-prev" aria-label="Sebelum">⏮</button><button type="button" class="ss-b big" data-act="ss-play" id="ss-play" aria-label="Jeda">⏸</button><button type="button" class="ss-b" data-act="ss-next" aria-label="Seterusnya">⏭</button></div>
+  <div class="ss-bot"><button type="button" class="ss-b" data-act="ss-prev" aria-label="Sebelum"><svg class="i" aria-hidden="true"><use href="#i-prev"></use></svg></button><button type="button" class="ss-b big" data-act="ss-play" id="ss-play" aria-label="Jeda"><svg class="i" aria-hidden="true"><use href="#i-pause"></use></svg></button><button type="button" class="ss-b" data-act="ss-next" aria-label="Seterusnya"><svg class="i" aria-hidden="true"><use href="#i-next"></use></svg></button></div>
   <div class="ss-pg"><i id="ss-pg"></i></div>
 </div>
 <div class="scrim" id="cap" hidden>
@@ -2108,8 +2131,23 @@ function ssOpen(){
   try{if(navigator.wakeLock)navigator.wakeLock.request('screen').then(w=>{SS.wl=w;}).catch(()=>{});}catch(e){}
   ssUi();ssShow(0);ssHideLater();
 }
-function ssUi(){$('ss-play').textContent=SS.playing?'⏸':'▶';$('ss-play').setAttribute('aria-label',SS.playing?'Jeda':'Main');$('ss-shuf').setAttribute('aria-pressed',SS.shuf);}
+function ssUi(){$('ss-play').innerHTML='<svg class="i" aria-hidden="true"><use href="#i-'+(SS.playing?'pause':'play')+'"></use></svg>';$('ss-play').setAttribute('aria-label',SS.playing?'Jeda':'Main');$('ss-shuf').setAttribute('aria-pressed',SS.shuf);}
 function ssHideLater(){clearTimeout(SS.hideT);SS.hideT=setTimeout(()=>{if(SS.playing)$('ss').classList.add('ch');},3500);}
+function ssCap(p,bits){
+  const cap=$('ss-cap'); cap.textContent='';
+  if(bits.length){const d=document.createElement('div');d.className='cp';d.textContent=bits.join(' · ');cap.appendChild(d);}
+  const txt=(p.text||'').trim();
+  const words=txt?txt.split(/\s+/).length:0;
+  const dur=Math.min(45000,Math.max(SS.dur,3500+words*380));
+  let cin=null;
+  if(txt){const box=document.createElement('div');box.className='cbox';cin=document.createElement('div');cin.className='cin';const t=document.createElement('p');t.textContent=txt;cin.appendChild(t);box.appendChild(cin);cap.appendChild(box);}
+  const w=document.createElement('small');w.textContent=nameOf(p.authorId);cap.appendChild(w);
+  if(cin){
+    const box=cin.parentNode, ov=cin.scrollHeight-box.clientHeight;
+    if(ov>4){cin.style.setProperty('--ov',(-ov)+'px');cin.style.animation='ssscroll '+Math.max(1500,dur-2800)+'ms linear 1400ms forwards';cin.style.animationPlayState=SS.playing?'running':'paused';box.classList.add('mv');}
+  }
+  return dur;
+}
 async function ssShow(i){
   const n=SS.items.length; if(!n||$('ss').hidden)return;
   SS.i=((i%n)+n)%n; const tok=++SS.tok; clearTimeout(SS.tm);
@@ -2126,18 +2164,16 @@ async function ssShow(i){
   void img.offsetWidth;img.className='ssm kb'+Math.floor(Math.random()*4);
   el.classList.add('on');prev.classList.remove('on');SS.layer=L;
   const p=it.p, bits=[]; if(p.emoji)bits.push(p.emoji); if(p.place)bits.push(p.place); if(p.takenOn)bits.push(fmtDate(p.takenOn));
-  const cap=$('ss-cap'); cap.textContent='';
-  if(bits.length){const d=document.createElement('div');d.className='cp';d.textContent=bits.join(' · ');cap.appendChild(d);}
-  if(p.text){const t=document.createElement('p');t.textContent=p.text.length>180?p.text.slice(0,180)+'…':p.text;cap.appendChild(t);}
-  const w=document.createElement('small');w.textContent=nameOf(p.authorId);cap.appendChild(w);
+  const dur=ssCap(p,bits);
   $('ss-n').textContent=(SS.i+1)+' / '+n;
-  const pg=$('ss-pg');pg.style.animation='none';void pg.offsetWidth;pg.style.animation='ssprog '+SS.dur+'ms linear forwards';pg.style.animationPlayState=SS.playing?'running':'paused';
+  const pg=$('ss-pg');pg.style.animation='none';void pg.offsetWidth;pg.style.animation='ssprog '+dur+'ms linear forwards';pg.style.animationPlayState=SS.playing?'running':'paused';
   const nx=SS.items[(SS.i+1)%n]; if(nx&&nx.id.slice(0,2)==='d_')fullData(nx.id);
-  if(SS.playing)SS.tm=setTimeout(()=>ssShow(SS.i+1),SS.dur);
+  if(SS.playing)SS.tm=setTimeout(()=>ssShow(SS.i+1),dur);
 }
 function ssToggle(){
   SS.playing=!SS.playing;ssUi();
   $('ss-pg').style.animationPlayState=SS.playing?'running':'paused';
+  { const ci=document.querySelector('#ss-cap .cin'); if(ci)ci.style.animationPlayState=SS.playing?'running':'paused'; }
   if(SS.playing){ssShow(SS.i+1);ssHideLater();}else{clearTimeout(SS.tm);$('ss').classList.remove('ch');}
 }
 function ssClose(){
