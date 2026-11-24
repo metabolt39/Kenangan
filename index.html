@@ -1179,6 +1179,8 @@ html{overscroll-behavior-y:contain}
 
 .nth{flex:none;width:46px;height:46px;border-radius:12px;object-fit:cover;background:var(--surface-2)}
 .ntl .ntx .nts{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.abr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px 12px 0}
+.abr .abl{font-size:12px;font-weight:700;color:var(--ink-2);margin-right:2px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1861,7 +1863,7 @@ function getPos(){
 }
 async function geoLookup(){
   if(geoBusy)return;
-  const todo=[]; P.forEach(p=>{const k=pk(p.place);if(k&&!p.demo&&!(p.lat!=null&&p.lon!=null)&&!geo(p.place)&&!(k in GEO)&&!GTRY.has(k)&&!todo.some(t=>t[0]===k))todo.push([k,p.place]);});
+  const todo=[]; P.forEach(p=>{const k=pk(p.place);if(k&&!p.demo&&!(p.lat!=null&&p.lon!=null)&&!ovsOf(p,true)&&!geo(p.place)&&!(k in GEO)&&!GTRY.has(k)&&!todo.some(t=>t[0]===k))todo.push([k,p.place]);});
   if(!todo.length)return;
   geoBusy=true; let changed=false;
   for(const t of todo.slice(0,3)){
@@ -1914,10 +1916,10 @@ const OVS=[
 [['melbourne'],'mel','Melbourne','🇦🇺',-37.8136,144.9631],
 [['perth'],'perth','Perth','🇦🇺',-31.9505,115.8605]
 ];
-function ovsOf(p){
+function ovsOf(p,kw){
   const s=pk(p.place);
   for(let i=0;i<OVS.length;i++){for(const w of OVS[i][0]){if((' '+s.replace(/[^a-z0-9\u00c0-\u024f]+/g,' ')+' ').indexOf(' '+w.replace(/[^a-z0-9 ]/g,' ')+' ')>=0)return {key:OVS[i][1],label:OVS[i][2],flag:OVS[i][3],lat:OVS[i][4],lng:OVS[i][5]};}}
-  if(p.lat!=null&&p.lon!=null&&isFinite(p.lat)&&isFinite(p.lon)&&!MYB(p.lat,p.lon)&&Math.abs(p.lat)<=90&&Math.abs(p.lon)<=180){
+  if(!kw&&p.lat!=null&&p.lon!=null&&isFinite(p.lat)&&isFinite(p.lon)&&!MYB(p.lat,p.lon)&&Math.abs(p.lat)<=90&&Math.abs(p.lon)<=180){
     const la=Math.round(p.lat),lo=Math.round(p.lon);
     return {key:'xy'+la+'_'+lo,label:String(p.place).split(',')[0].slice(0,24),flag:'📍',lat:p.lat,lng:p.lon};
   }
@@ -1962,7 +1964,8 @@ function mapData(){
   const pins=new Map(), off=new Map(), ab=new Map();
   P.forEach(p=>{
     if(!p.place)return;
-    const g=(p.lat!=null&&p.lon!=null&&MYB(p.lat,p.lon))?[pk(p.place),p.lat,p.lon]:geo(p.place);
+    const inMy=p.lat!=null&&p.lon!=null&&MYB(p.lat,p.lon);
+    const g=inMy?[pk(p.place),p.lat,p.lon]:(ovsOf(p,true)?null:geo(p.place));
     if(!g){
       const o=ovsOf(p);
       if(o){let e=ab.get(o.key);if(!e){e={key:'ab:'+o.key,lat:o.lat,lng:o.lng,flag:o.flag,label:o.label,posts:[],names:new Set()};ab.set(o.key,e);}e.posts.push(p);e.names.add(p.place);return;}
@@ -2984,7 +2987,8 @@ function newBannerHtml(){
 function sec(title,right){return '<div class="sec"><h2>'+esc(title)+'</h2>'+(right||'')+'</div>';}
 function mapCard(){
   const md=mapData();
-  return '<div class="mapc"><div class="mapw">'+mapSvg(md)+'</div><p class="hint">'+(DEMO?'Contoh pin. ':'')+(md.pins.length?'Tekan pin untuk lihat gambar di tempat itu. Garis putus-putus ialah perjalanan mengikut tarikh.':'Pin akan muncul bila awak simpan nama tempat.')+'</p></div>';
+  const abr=(md.ab.length&&!DEMO)?'<div class="abr"><span class="abl">✈️ Luar negara</span>'+md.ab.map(a=>'<button type="button" class="chip" data-act="pin" data-v="'+esc(a.key)+'">'+esc(a.flag+' '+a.label)+' · '+a.posts.length+'</button>').join('')+'</div>':'';
+  return '<div class="mapc"><div class="mapw">'+mapSvg(md)+'</div>'+abr+'<p class="hint">'+(DEMO?'Contoh pin. ':'')+(md.pins.length?'Tekan pin untuk lihat gambar di tempat itu. Garis putus-putus ialah perjalanan mengikut tarikh.':'Pin akan muncul bila awak simpan nama tempat.')+'</p></div>';
 }
 function demoBanner(){
   return '<section class="demo-b"><strong>Mulakan album keluarga awak</strong><p>Yang awak nampak di bawah ialah contoh rupa kenangan. Tambah kenangan pertama dan contoh ini akan hilang sendiri.</p><button type="button" class="btn" data-act="new">Tambah kenangan pertama</button></section>';
@@ -3626,7 +3630,7 @@ function yearHdr(tl,ix){
 function petaHtml(){
   const md=mapData();
   let h=(DEMO?demoBanner():'')+sec('Peta memori')+'<div class="mapc"><div class="mapw">'+mapSvg(md)+popHtml(md)+'</div><p class="hint">'+(DEMO?'Contoh pin. ':'')+(md.pins.length?'Tekan pin untuk lihat gambar di tempat itu. Garis putus-putus ialah perjalanan mengikut tarikh.':'Pin akan muncul bila awak simpan nama tempat.')+'</p></div>';
-  if(md.ab.length&&!DEMO)h+=sec('Luar negara')+'<div class="mapc"><div class="mapw">'+abroadSvg(md)+'</div><p class="hint">Tekan pin untuk lihat gambar. Garis putus-putus ialah perjalanan dari Malaysia.</p></div>';
+  if(md.ab.length&&!DEMO)h+=sec('Luar negara · '+md.ab.map(x=>x.flag+' '+x.label).join(', '))+'<div class="mapc"><div class="mapw">'+abroadSvg(md)+'</div><p class="hint">Tekan pin untuk lihat gambar. Garis putus-putus ialah perjalanan dari Malaysia.</p></div>';
   const pn=md.pins.find(x=>x.key===S.pin)||md.ab.find(x=>x.key===S.pin);
   PL=[];
   if(pn){
