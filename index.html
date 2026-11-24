@@ -1244,6 +1244,40 @@ html{overscroll-behavior-y:contain}
   body.trp .trn{animation:none!important;opacity:1!important}
   body.trp .trk{display:none}
 }
+
+.bbs{margin-bottom:10px}
+.bbh{display:flex;align-items:center;gap:14px;padding:14px;border-radius:20px;background:linear-gradient(135deg,color-mix(in srgb,#f472b6 14%,var(--surface)),color-mix(in srgb,#60a5fa 14%,var(--surface)));margin-bottom:10px}
+.bbav{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:30px;background:var(--surface);box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.bbh h3{margin:0;font-size:20px}.bbh .m{margin:2px 0 0;color:var(--ink-2);font-size:13.5px;line-height:1.5}
+.chip.pri{background:var(--teal,#2A7A63);color:#fff;border-color:transparent}
+.bbt{margin:20px 0 8px;font-size:15px}
+.bbba{display:flex;align-items:center;gap:8px}
+.bba{position:relative;flex:1;aspect-ratio:3/4;border:0;padding:0;border-radius:18px;overflow:hidden;background:var(--surface);box-shadow:0 4px 12px rgba(0,0,0,.12);cursor:pointer}
+.bba img{width:100%;height:100%;object-fit:cover;display:block}
+.bba span{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 9px;color:#fff;font-size:11.5px;background:linear-gradient(transparent,rgba(0,0,0,.62));text-align:left;line-height:1.35}
+.bba b{display:block;font-size:14px}
+.bbar{font-size:22px;color:var(--ink-2)}
+.bbm2{margin-bottom:14px}
+.bbmh{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.bbmh b{font-size:15px}.bbmh span{font-size:12px;color:var(--ink-2)}
+.bbgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.bbgrid button{position:relative;border:0;padding:0;aspect-ratio:1;border-radius:12px;overflow:hidden;background:color-mix(in srgb,var(--ink) 8%,var(--surface));cursor:pointer}
+.bbgrid img{width:100%;height:100%;object-fit:cover;display:block}
+.bbmore{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.5);color:#fff;font-weight:700;font-size:18px}
+.bbtx{margin:6px 2px 0;color:var(--ink-2);font-size:13px;line-height:1.5}
+.bbst{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.bbst>div{padding:12px;border-radius:16px;background:color-mix(in srgb,var(--teal,#2A7A63) 7%,var(--surface))}
+.bbst span{display:block;font-size:12px;color:var(--ink-2)}.bbst b{font-size:20px}.bbst small{font-size:12px;color:var(--ink-2)}.bbst small.up{color:#2a7a63}
+.bbcc{margin-bottom:8px;padding:10px 10px 4px;border-radius:16px;background:color-mix(in srgb,var(--ink) 3%,var(--surface))}
+.bbcc>span{font-size:12.5px;font-weight:600}
+.bbc{display:block;width:100%;height:auto}
+.bbg{stroke:color-mix(in srgb,var(--ink) 14%,transparent);stroke-width:1}
+.bbl{font-size:9.5px;fill:var(--ink-2)}
+.bbl2{list-style:none;margin:8px 0 0;padding:0}
+.bbl2 li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 2px;border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent);font-size:13.5px}
+.bbl2 li>span:first-child{flex:1}.bbl2 .chip{min-height:30px;padding:0 10px}
+.bbm{margin:10px 0}.bbr{display:flex;gap:8px}.bbr input{flex:1;min-width:0}
+body.bbo .lb{z-index:75}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1395,6 +1429,12 @@ html{overscroll-behavior-y:contain}
   <section class="sheet trs" role="dialog" aria-modal="true" aria-labelledby="tr-t">
     <div class="sheet-h"><h2 id="tr-t">Pokok keluarga</h2><button type="button" class="icon-btn" data-act="tr-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
     <div id="tr-b"></div>
+  </section>
+</div>
+<div class="scrim" id="bb" hidden>
+  <section class="sheet trs" role="dialog" aria-modal="true" aria-labelledby="bb-t">
+    <div class="sheet-h"><h2 id="bb-t">Pertumbuhan baby</h2><button type="button" class="icon-btn" data-act="bb-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <div id="bb-b"></div>
   </section>
 </div>
 <div class="scrim" id="plc" hidden>
@@ -1670,7 +1710,7 @@ const S={
   tab:'utama',cat:'semua',place:'',gmode:'grid',gby:'tempat',asc:false,sort:'tambah',pin:'',
   open:new Set(),noteOpen:new Set(),drafts:{},confirmDel:'',busy:new Set(),
   db:null,user:null,assets:null,myId:'',isOwner:false,canEdit:false,canWrite:null,
-  albums:[],albumsOk:false,bd:[],nt:false,locs:[],myPos:null,cal:[],calDel:'',caps:[],capDel:'',tree:[],trSel:'',trMode:'',trDel:false,trZ:1,trCenter:false,statY:0,pcat:'semua',discN:0,plc:-1,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
+  albums:[],albumsOk:false,bd:[],nt:false,locs:[],myPos:null,cal:[],calDel:'',caps:[],capDel:'',grow:[],bbSel:'',bbMode:'',bbDel:false,tree:[],trSel:'',trMode:'',trDel:false,trZ:1,trCenter:false,statY:0,pcat:'semua',discN:0,plc:-1,whoOpen:'',album:'',alOpen:false,alName:'',alEmoji:'🎉',alDel:false,seenBase:0,seenSet:false,onlyNew:false,gpsOn:true,gpsAt:0,q:'',sOpen:false,cmDel:'',big:0,members:[],rxOpen:'',more:new Set(),locSet:'',locQ:'',tipGone:false,popKey:'',wx:'cerah',live:null,skin:'kampung',memN:0,city:'Kuala Lumpur',lk:'',wxMsg:'',mcp:null
 };
 let PS={}, P=[], DEMO=false, GL=[], PL=[];
 let renderTok=0, toastTimer=0;
@@ -1820,9 +1860,9 @@ function normPost(id,d){
     takenOn:validDate(d.takenOn)?d.takenOn:'',cat:cat,emoji:EMOJIS.indexOf(d.emoji)>=0?d.emoji:'',
     photos:Array.isArray(d.photos)?d.photos.filter(isId).slice(0,12):[],album:str(d.album).slice(0,40),lat:fin(d.lat),lon:fin(d.lon),tags:Array.isArray(d.tags)?d.tags.filter(x=>typeof x==='string'&&x.length>0&&x.length<=64).slice(0,10):[],voice:/^v_[a-z0-9]{8,24}$/.test(d.voice||'')?d.voice:'',vdur:Math.min(30,num(d.vdur)),createdAt:num(d.createdAt)};
 }
-const ALEMO=['🎉','🕌','🎂','🌴','⛱️','🍜','🚗','⛺','🎓','💍','🏔️','⚽'];
+const ALEMO=['👶','🎉','🕌','🎂','🌴','⛱️','🍜','🚗','⛺','🎓','💍','🏔️','⚽'];
 function fin(v){return typeof v==='number'&&isFinite(v)&&v>0.5&&v<120?v:null;}
-function normAlbum(id,d){return {id:id,name:str(d.name).trim().slice(0,40),emoji:ALEMO.indexOf(d.emoji)>=0?d.emoji:'🎉',createdBy:str(d.createdBy),createdAt:num(d.createdAt)};}
+function normAlbum(id,d){return {id:id,name:str(d.name).trim().slice(0,40),emoji:ALEMO.indexOf(d.emoji)>=0?d.emoji:'🎉',born:validDate(d.born)?d.born:'',createdBy:str(d.createdBy),createdAt:num(d.createdAt)};}
 function albumById(id){return id?S.albums.find(a=>a.id===id):null;}
 function isNew(p){return !p.demo&&S.seenBase>0&&!!p.authorId&&p.authorId!==S.myId&&p.createdAt>S.seenBase;}
 function normComment(id,d){return {id:id,postId:str(d.postId),authorId:str(d.authorId),text:str(d.text).slice(0,500),createdAt:num(d.createdAt)};}
@@ -2538,6 +2578,128 @@ async function trDelete(){
     for(const x of S.tree){if(x.sp.indexOf(p.id)>=0)await trPut(x,{sp:x.sp.filter(i=>i!==p.id)});}
     await S.db.doc('tree/'+p.id).delete();
   }catch(e){trFail();}
+}
+/* ---------- pertumbuhan baby ---------- */
+function normGr(id,d){const f=v=>typeof v==='number'&&isFinite(v)&&v>0?v:null;return {id:id,baby:str(d.baby),on:validDate(d.on)?d.on:'',kg:f(d.kg),cm:f(d.cm),by:str(d.by),at:num(d.at)};}
+function bbTile(){
+  const n=S.albums.filter(a=>a.born).length;
+  return '<button type="button" class="jt" data-act="bb-open"><span class="jt-i emo" aria-hidden="true">🍼</span><span class="jt-t"><b>Pertumbuhan baby</b><span>'+(n?'Lihat gambar ikut bulan, berat dan tinggi':'Simpan gambar dan catat berat tinggi baby')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+}
+function bbMonths(born,on){
+  const a=born.split('-').map(Number), b=on.split('-').map(Number);
+  let m=(b[0]-a[0])*12+(b[1]-a[1]); if(b[2]<a[2])m--;
+  return m;
+}
+function bbDays(born,on,m){
+  const a=born.split('-').map(Number), d=new Date(a[0],a[1]-1+m,a[2]), e=new Date(on.split('-')[0],on.split('-')[1]-1,on.split('-')[2]);
+  return Math.max(0,Math.round((e-d)/864e5));
+}
+function bbAge(born,on){
+  if(on<born)return 'Sebelum lahir';
+  const m=bbMonths(born,on), d=bbDays(born,on,m);
+  if(m<=0)return d<=0?'Baru lahir':d+' hari';
+  const y=Math.floor(m/12), r=m%12;
+  return (y?y+' tahun':'')+(y&&r?' ':'')+(r?r+' bulan':'')+(!y&&d?' '+d+' hari':'');
+}
+function bbLabel(m){
+  if(m<0)return 'Sebelum lahir'; if(m===0)return 'Baru lahir (bulan pertama)';
+  if(m<24)return m+' bulan'; const y=Math.floor(m/12),r=m%12; return y+' tahun'+(r?' '+r+' bulan':'');
+}
+function bbPostDate(p){return validDate(p.takenOn)?p.takenOn:ymd(new Date(p.createdAt||Date.now()));}
+function bbChart(pts,key,unit,col){
+  const d=pts.filter(p=>p[key]!=null); if(d.length<2)return '';
+  const W=320,H=150,L=34,R=12,T=14,B=26;
+  const xs=d.map(p=>p.m), ys=d.map(p=>p[key]);
+  let x0=Math.min.apply(null,xs), x1=Math.max.apply(null,xs), y0=Math.min.apply(null,ys), y1=Math.max.apply(null,ys);
+  if(x1-x0<1)x1=x0+1; const pad=(y1-y0)*0.15||1; y0=Math.max(0,y0-pad); y1+=pad;
+  const X=v=>L+(v-x0)/(x1-x0)*(W-L-R), Y=v=>T+(1-(v-y0)/(y1-y0))*(H-T-B);
+  const path=d.map((p,i)=>(i?'L':'M')+X(p.m).toFixed(1)+' '+Y(p[key]).toFixed(1)).join('');
+  let g='';
+  for(let i=0;i<=3;i++){const v=y0+(y1-y0)*i/3,y=Y(v);g+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" class="bbg"/><text x="'+(L-5)+'" y="'+(y+3.5)+'" class="bbl" text-anchor="end">'+(Math.round(v*10)/10)+'</text>';}
+  const ticks=[x0,(x0+x1)/2,x1].map(v=>Math.round(v*10)/10);
+  g+=ticks.map((v,i)=>'<text x="'+X(v)+'" y="'+(H-8)+'" class="bbl" text-anchor="'+(i===0?'start':i===2?'end':'middle')+'">'+(v<1?'lahir':v+' bln')+'</text>').join('');
+  return '<svg class="bbc" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Carta '+unit+'">'+g+'<path d="'+path+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+d.map(p=>'<circle cx="'+X(p.m).toFixed(1)+'" cy="'+Y(p[key]).toFixed(1)+'" r="3.6" fill="var(--surface)" stroke="'+col+'" stroke-width="2"/>').join('')+'</svg>';
+}
+function bbBabies(){return S.albums.filter(a=>a.born).sort((a,b)=>a.createdAt-b.createdAt);}
+function renderBb(){
+  const el=$('bb-b'); if(!el)return;
+  const sh=$('bb').querySelector('.sheet'), st=sh?sh.scrollTop:0;
+  const bs=bbBabies(), ro=S.canWrite===false;
+  let b=bs.find(x=>x.id===S.bbSel)||bs[0]; if(b)S.bbSel=b.id;
+  let h='';
+  if(S.bbMode==='baby'){
+    h='<div class="trf"><h3>Tambah baby</h3><input id="bb-n" class="w" type="text" maxlength="40" placeholder="Nama baby" aria-label="Nama baby" autocomplete="off"><label class="lbl" for="bb-d">Tarikh lahir</label><input id="bb-d" type="date" max="'+ymd(new Date())+'"><div class="row"><button type="button" class="btn sm ghost" data-act="bb-cancel">Batal</button><button type="button" class="btn sm" data-act="bb-save-baby">Simpan</button></div></div>';
+    el.innerHTML=h; return;
+  }
+  if(!b){
+    el.innerHTML='<div class="empty"><h2>Mulakan album pertumbuhan</h2><p>Masukkan nama dan tarikh lahir baby. Gambar akan disusun ikut umur: baru lahir, 1 bulan, 2 bulan dan seterusnya. Kamu juga boleh catat berat dan tinggi.</p>'+(ro?'':'<button type="button" class="btn" data-act="bb-mode" data-v="baby">Tambah baby</button>')+'</div>';
+    return;
+  }
+  const today=ymd(new Date());
+  const posts=S.posts.filter(p=>p.album===b.id&&p.photos.length).map(p=>({p:p,d:bbPostDate(p)})).sort((x,y)=>x.d<y.d?-1:x.d>y.d?1:x.p.createdAt-y.p.createdAt);
+  const nph=posts.reduce((s,x)=>s+x.p.photos.length,0);
+  if(bs.length>1)h+='<div class="trg bbs" role="group" aria-label="Pilih baby">'+bs.map(x=>'<button type="button" class="chip" data-act="bb-sel" data-id="'+esc(x.id)+'" aria-pressed="'+(x.id===b.id)+'">👶 '+esc(x.name)+'</button>').join('')+'</div>';
+  h+='<div class="bbh"><span class="bbav" aria-hidden="true">👶</span><div><h3>'+esc(b.name)+'</h3><p class="m">Umur '+esc(bbAge(b.born,today))+'<br>Lahir '+esc(fmtDate(b.born))+' · '+nph+' gambar</p></div></div>';
+  if(!ro)h+='<div class="tra2"><button type="button" class="chip pri" data-act="bb-photo">📷 Tambah gambar</button><button type="button" class="chip" data-act="bb-mode" data-v="meas">⚖️ Catat berat/tinggi</button><button type="button" class="chip" data-act="bb-mode" data-v="baby">＋ Baby lain</button></div>';
+  if(S.bbMode==='meas'){
+    h+='<div class="trf bbm"><h3>Catat berat dan tinggi</h3><label class="lbl" for="bb-md">Tarikh</label><input id="bb-md" type="date" min="'+esc(b.born)+'" max="'+today+'" value="'+today+'"><div class="bbr"><input id="bb-kg" type="text" inputmode="decimal" placeholder="Berat (kg)" aria-label="Berat dalam kilogram" autocomplete="off"><input id="bb-cm" type="text" inputmode="decimal" placeholder="Tinggi (cm)" aria-label="Tinggi dalam sentimeter" autocomplete="off"></div><div class="row"><button type="button" class="btn sm ghost" data-act="bb-cancel">Batal</button><button type="button" class="btn sm" data-act="bb-save-meas">Simpan</button></div></div>';
+  }
+  /* sebelum dan sekarang */
+  if(posts.length>=2){
+    const f=posts[0], l=posts[posts.length-1];
+    const card=(x,tag)=>'<button type="button" class="bba" data-act="photo" data-id="'+esc(x.p.id)+'" data-idx="'+(tag==='f'?0:x.p.photos.length-1)+'"><img'+isrc(tag==='f'?x.p.photos[0]:x.p.photos[x.p.photos.length-1])+' alt=""><span><b>'+esc(bbAge(b.born,x.d))+'</b>'+esc(fmtDate(x.d))+'</span></button>';
+    h+='<h4 class="bbt">Dulu dan sekarang</h4><div class="bbba">'+card(f,'f')+'<span class="bbar" aria-hidden="true">→</span>'+card(l,'l')+'</div>';
+  }
+  /* garis masa */
+  h+='<h4 class="bbt">Garis masa</h4>';
+  if(!posts.length)h+='<p class="hint">Belum ada gambar. Tekan <b>Tambah gambar</b>, gambar akan terus masuk ke sini dan ke Galeri keluarga.</p>';
+  else{
+    const gm=new Map();
+    posts.forEach(x=>{let m=bbMonths(b.born,x.d); if(m>24)m=24+Math.floor((m-24)/6)*6; if(m<0)m=-1; if(!gm.has(m))gm.set(m,[]); gm.get(m).push(x);});
+    Array.from(gm.keys()).sort((a,c)=>c-a).forEach(m=>{
+      const arr=gm.get(m), tiles=[]; arr.forEach(x=>x.p.photos.forEach((pid,i)=>tiles.push({p:x.p,pid:pid,i:i})));
+      const shown=tiles.slice(0,6), more=tiles.length-shown.length, txt=(arr.find(x=>x.p.text)||{p:{}}).p.text;
+      h+='<section class="bbm2"><div class="bbmh"><b>'+esc(bbLabel(m))+'</b><span>'+tiles.length+' gambar</span></div><div class="bbgrid">'+shown.map((t,i)=>'<button type="button" data-act="photo" data-id="'+esc(t.p.id)+'" data-idx="'+t.i+'" aria-label="Buka gambar"><img'+isrc(t.pid)+' alt="" loading="lazy">'+(more>0&&i===shown.length-1?'<span class="bbmore">+'+more+'</span>':'')+'</button>').join('')+'</div>'+(txt?'<p class="bbtx">'+esc(String(txt).slice(0,110))+(txt.length>110?'…':'')+'</p>':'')+'</section>';
+    });
+  }
+  /* berat dan tinggi */
+  const gr=S.grow.filter(g=>g.baby===b.id&&g.on).sort((x,y)=>x.on<y.on?-1:1).map(g=>Object.assign({m:Math.max(0,bbMonths(b.born,g.on)+bbDays(b.born,g.on,Math.max(0,bbMonths(b.born,g.on)))/30)},g));
+  h+='<h4 class="bbt">Berat dan tinggi</h4>';
+  if(!gr.length)h+='<p class="hint">Belum ada catatan. Tekan <b>Catat berat/tinggi</b> selepas timbang di klinik atau di rumah.</p>';
+  else{
+    const lt=gr[gr.length-1], kgs=gr.filter(g=>g.kg!=null), cms=gr.filter(g=>g.cm!=null);
+    const dif=(a,u)=>a.length>1?(function(){const d=Math.round((a[a.length-1]-a[a.length-2])*10)/10;return d>0?' <small class="up">▲ '+d+' '+u+'</small>':d<0?' <small>▼ '+Math.abs(d)+' '+u+'</small>':'';})():'';
+    h+='<div class="bbst"><div><span>Berat terkini</span><b>'+(kgs.length?kgs[kgs.length-1].kg+' kg':'–')+'</b>'+dif(kgs.map(g=>g.kg),'kg')+'</div><div><span>Tinggi terkini</span><b>'+(cms.length?cms[cms.length-1].cm+' cm':'–')+'</b>'+dif(cms.map(g=>g.cm),'cm')+'</div></div>';
+    const c1=bbChart(gr,'kg','berat (kg)','#e0752b'), c2=bbChart(gr,'cm','tinggi (cm)','#2a7a63');
+    if(c1)h+='<div class="bbcc"><span>Berat (kg)</span>'+c1+'</div>'; if(c2)h+='<div class="bbcc"><span>Tinggi (cm)</span>'+c2+'</div>';
+    h+='<ul class="bbl2">'+gr.slice().reverse().map(g=>'<li><span><b>'+esc(fmtDate(g.on))+'</b> · '+esc(bbAge(b.born,g.on))+'</span><span>'+(g.kg!=null?g.kg+' kg':'')+(g.kg!=null&&g.cm!=null?' · ':'')+(g.cm!=null?g.cm+' cm':'')+'</span>'+(ro?'':'<button type="button" class="chip" data-act="bb-del-m" data-id="'+esc(g.id)+'" aria-label="Padam catatan">🗑</button>')+'</li>').join('')+'</ul>';
+  }
+  if(!ro)h+='<div class="tra2" style="margin-top:14px">'+(S.bbDel?'<button type="button" class="chip" data-act="bb-del-yes">Ya, padam '+esc(b.name)+'</button><button type="button" class="chip" data-act="bb-del-no">Batal</button>':'<button type="button" class="chip" data-act="bb-del-ask">🗑 Padam baby ini</button>')+'</div>';
+  el.innerHTML=h;
+  if(sh)sh.scrollTop=st;
+}
+function openBb(){document.body.classList.add('bbo');S.bbMode='';S.bbDel=false;$('bb').hidden=false;document.body.style.overflow='hidden';renderBb();}
+function closeBb(){document.body.classList.remove('bbo');$('bb').hidden=true;S.bbMode='';S.bbDel=false;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden&&$('tr').hidden)document.body.style.overflow='';}
+function bbFail(){toast('Tak dapat simpan. Cuba lagi sebentar.');}
+async function bbSaveBaby(){
+  const n=($('bb-n').value||'').trim().slice(0,40), d=$('bb-d').value;
+  if(!n){toast('Isi nama baby dahulu.');return;}
+  if(!validDate(d)||d>ymd(new Date())){toast('Pilih tarikh lahir yang betul.');return;}
+  try{
+    const r=await S.db.collection('albums').add({name:n,emoji:'👶',born:d,createdBy:S.myId,createdAt:Date.now()});
+    S.bbMode='';S.bbSel=r&&r.id||'';renderBb();toast('Baby ditambah.');
+  }catch(e){bbFail();}
+}
+async function bbSaveMeas(){
+  const b=bbBabies().find(x=>x.id===S.bbSel); if(!b)return;
+  const on=$('bb-md').value, num2=v=>{v=String(v||'').trim().replace(',','.');if(!v)return null;const n=parseFloat(v);return isFinite(n)?Math.round(n*100)/100:NaN;};
+  const kg=num2($('bb-kg').value), cm=num2($('bb-cm').value);
+  if(!validDate(on)||on<b.born||on>ymd(new Date())){toast('Tarikh tidak betul.');return;}
+  if(kg===null&&cm===null){toast('Isi berat atau tinggi.');return;}
+  if((kg!==null&&(isNaN(kg)||kg<0.3||kg>40))||(cm!==null&&(isNaN(cm)||cm<20||cm>140))){toast('Semak semula angka berat (kg) dan tinggi (cm).');return;}
+  const id='g'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  S.bbMode=''; renderBb();
+  try{await S.db.doc('tree/'+id).set({kind:'grow',baby:b.id,on:on,kg:kg===null?0:kg,cm:cm===null?0:cm,by:S.myId||'',at:Date.now()});}catch(e){bbFail();}
 }
 function normCap(id,d){return {id:id,by:str(d.by),to:str(d.to).trim().slice(0,40),title:str(d.title).trim().slice(0,60),text:str(d.text).slice(0,2000),openOn:validDate(d.openOn)?d.openOn:'',at:Number(d.at)||0};}
 function capOpen(c){return c.openOn<=ymd(new Date());}
@@ -3816,7 +3978,7 @@ function keluargaHtml(){
   if(DEMO)return demoBanner();
   let h=lokasiHtml();
   h+=sec('Kalendar dan hari lahir')+calHtml()+bdHtml();
-  h+=sec('Lagi untuk keluarga')+'<div class="jts">'+capTile()+trTile()+statTile()+'</div>';
+  h+=sec('Lagi untuk keluarga')+'<div class="jts">'+capTile()+trTile()+bbTile()+statTile()+'</div>';
   h+=sec('Sandaran')+backupBanner();
   h+='<div class="jts"><button type="button" class="jt" data-act="settings"><span class="jt-i emo" aria-hidden="true">'+icon('download')+'</span><span class="jt-t"><b>Tetapan dan sandaran</b><span>Sandarkan kenangan, tema, hari lahir dan akaun</span></span><span class="jt-a" aria-hidden="true">›</span></button></div>';
   return h;
@@ -4647,6 +4809,7 @@ document.addEventListener('click',e=>{
   if(e.target===$('cal')){closeCal();return;}
   if(e.target===$('cap')){closeCap();return;}
   if(e.target===$('tr')){closeTr();return;}
+  if(e.target===$('bb')){closeBb();return;}
   if(e.target===$('stat')){closeStat();return;}
   const t=e.target.closest('[data-act]'); if(!t)return;
   const a=t.dataset.act, id=t.dataset.id, v=t.dataset.v;
@@ -4706,6 +4869,18 @@ document.addEventListener('click',e=>{
   else if(a==='ss-play')ssToggle();
   else if(a==='ss-shuf'){SS.shuf=!SS.shuf;const cur=SS.items[SS.i];SS.items=ssBuild();const k=SS.items.findIndex(x=>cur&&x.id===cur.id);ssUi();if(!SS.shuf&&k>=0)SS.i=k;ssHideLater();}
   else if(a==='cal-open')openCal();
+  else if(a==='bb-open')openBb();
+  else if(a==='bb-close')closeBb();
+  else if(a==='bb-sel'){S.bbSel=id;S.bbDel=false;S.bbMode='';renderBb();}
+  else if(a==='bb-mode'){S.bbMode=v;S.bbDel=false;renderBb();const q=$(v==='baby'?'bb-n':'bb-kg');if(q)try{q.focus();}catch(e){}}
+  else if(a==='bb-cancel'){S.bbMode='';renderBb();}
+  else if(a==='bb-save-baby')bbSaveBaby();
+  else if(a==='bb-save-meas')bbSaveMeas();
+  else if(a==='bb-photo'){openSheet();if(!$('sheet').hidden){const as=$('f-album');if(as&&S.bbSel){as.value=S.bbSel;$('f-album-w').hidden=false;}$('f-cat').value='keluarga';}}
+  else if(a==='bb-del-m'){S.db.doc('tree/'+id).delete().catch(bbFail);}
+  else if(a==='bb-del-ask'){S.bbDel=true;renderBb();}
+  else if(a==='bb-del-no'){S.bbDel=false;renderBb();}
+  else if(a==='bb-del-yes'){const bid=S.bbSel;S.bbDel=false;S.bbSel='';S.grow.filter(g=>g.baby===bid).forEach(g=>S.db.doc('tree/'+g.id).delete().catch(()=>{}));S.db.doc('albums/'+bid).delete().then(()=>toast('Baby dipadam. Gambar kekal dalam Galeri.')).catch(bbFail);renderBb();}
   else if(a==='tr-open')openTr();
   else if(a==='tr-close')closeTr();
   else if(a==='tr-sel'){S.trSel=S.trSel===id?'':id;S.trMode='';S.trDel=false;renderTr();}
@@ -4977,7 +5152,7 @@ async function init(){
   const live=snap=>{if(!snap.metadata.fromCache){clearTimeout(timer);S.slow=false;}};
   const fail=e=>{S.err=(e&&e.code)||'ralat';S.ready=true;render();};
   S.db.collection('posts').onSnapshot(snap=>{
-    S.posts=snap.docs.map(d=>normPost(d.id,d.data()||{}));ntScan('posts',snap);
+    S.posts=snap.docs.map(d=>normPost(d.id,d.data()||{}));ntScan('posts',snap);if($('bb')&&!$('bb').hidden&&!S.bbMode)renderBb();
     if(!snap.metadata.fromCache||snap.size>0)S.ready=true;
     live(snap);render();runShortcut();
   },fail);
@@ -4991,7 +5166,7 @@ async function init(){
   S.db.collection('capsules').onSnapshot(snap=>{S.caps=snap.docs.map(d=>normCap(d.id,d.data()||{})).filter(c=>c.openOn);render();if(!$('cap').hidden)renderCap();},()=>{});
   S.db.collection('cal').onSnapshot(snap=>{S.cal=snap.docs.map(d=>normCal(d.id,d.data()||{})).filter(c=>c.title&&c.date);render();if(!$('cal').hidden)renderCal();if(!snap.metadata.fromCache&&!NT.calOk){NT.calOk=true;calRemind();}},()=>{});
   S.db.collection('locs').onSnapshot(locSnap,()=>{});
-  S.db.collection('tree').onSnapshot(snap=>{S.tree=snap.docs.map(d=>normTr(d.id,d.data()||{})).filter(p=>p.name);if(S.trSel&&!S.tree.some(p=>p.id===S.trSel))S.trSel='';if(!$('tr').hidden&&!S.trMode)renderTr();render();},()=>{});
+  S.db.collection('tree').onSnapshot(snap=>{const dd=snap.docs.map(d=>({id:d.id,v:d.data()||{}}));S.tree=dd.filter(x=>!x.v.kind).map(x=>normTr(x.id,x.v)).filter(p=>p.name);S.grow=dd.filter(x=>x.v.kind==='grow').map(x=>normGr(x.id,x.v));if(!$('bb').hidden&&!S.bbMode)renderBb();if(S.trSel&&!S.tree.some(p=>p.id===S.trSel))S.trSel='';if(!$('tr').hidden&&!S.trMode)renderTr();render();},()=>{});
   S.db.collection('push').onSnapshot(sn=>{PUSHSUBS=sn.docs.map(d=>Object.assign({uid:d.id},d.data()||{}));},()=>{});
   if(ntOn())pushSubscribe();
   S.db.collection('albums').onSnapshot(snap=>{
