@@ -2143,16 +2143,16 @@ function ssCap(p,bits){
   if(bits.length){const d=document.createElement('div');d.className='cp';d.textContent=bits.join(' · ');cap.appendChild(d);}
   const txt=(p.text||'').trim();
   const words=txt?txt.split(/\s+/).length:0;
-  let dur=Math.min(45000,Math.max(SS.dur,3000+words*300));
+  let dur=Math.min(45000,Math.max(SS.dur,3000+words*200));
   let cin=null;
   if(txt){const box=document.createElement('div');box.className='cbox';cin=document.createElement('div');cin.className='cin';const t=document.createElement('p');t.textContent=txt;cin.appendChild(t);box.appendChild(cin);cap.appendChild(box);}
   const w=document.createElement('small');w.textContent=nameOf(p.authorId);cap.appendChild(w);
   if(cin){
     const box=cin.parentNode, ov=cin.scrollHeight-box.clientHeight;
     if(ov>4){
-      const mv=Math.max(1800,Math.round(ov*20)); /* ~50px sesaat */
-      dur=Math.min(45000,Math.max(dur,1000+mv+2500));
-      cin.style.setProperty('--ov',(-ov)+'px');cin.style.animation='ssscroll '+mv+'ms linear 1000ms forwards';cin.style.animationPlayState=SS.playing?'running':'paused';box.classList.add('mv');
+      const dl=2600, mv=Math.max(3000,Math.round(ov*60)); /* ~17px sesaat, 2.6s baca bahagian atas dulu */
+      dur=Math.min(45000,Math.max(dur,dl+mv+2600));
+      cin.style.setProperty('--ov',(-ov)+'px');cin.style.animation='ssscroll '+mv+'ms linear '+dl+'ms forwards';cin.style.animationPlayState=SS.playing?'running':'paused';box.classList.add('mv');
     }
   }
   return dur;
