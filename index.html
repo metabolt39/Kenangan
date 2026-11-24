@@ -1149,6 +1149,17 @@ html{overscroll-behavior-y:contain}
 .ss-b{display:inline-grid;place-items:center;padding:0;line-height:0}
 .ss-b .i{display:block;margin:0;vertical-align:baseline}
 .ss-bot .ss-b.big .i{margin-left:0}
+
+.ss-tv{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ss-tvc{width:100%;max-width:380px;max-height:86vh;overflow:auto;padding:22px 20px 18px;border-radius:24px;background:rgba(28,30,32,.94);color:#fff;border:1px solid rgba(255,255,255,.12);box-shadow:0 24px 60px -20px rgba(0,0,0,.8)}
+.ss-tvc h3{margin:0 0 6px;font-size:19px}
+.ss-tvc p{margin:0 0 12px;font-size:14.5px;line-height:1.5;opacity:.85}
+.ss-tvs{margin:10px 0;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.07)}
+.ss-tvs b{font-size:13px;letter-spacing:.04em;text-transform:uppercase;opacity:.8}
+.ss-tvs ol{margin:6px 0 0;padding-left:20px;font-size:14px;line-height:1.55}
+.ss-tvs em{font-style:normal;font-weight:700;color:#FFE3A0}
+.ss-tvc small{display:block;margin:8px 0 14px;font-size:12.5px;opacity:.7}
+.ss-tvc button{width:100%;min-height:48px;border:0;border-radius:99px;background:#fff;color:#111;font-weight:700;font-size:15px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1188,6 +1199,7 @@ html{overscroll-behavior-y:contain}
   <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.500" y="5" width="3.800" height="14" rx="1.300"/><rect x="13.700" y="5" width="3.800" height="14" rx="1.300"/></symbol>
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M18 6.500v11L9.500 12z"/><path d="M6 6v12"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="M6 6.500v11L14.500 12z"/><path d="M18 6v12"/></symbol>
+  <symbol id="i-cast" viewBox="0 0 24 24"><path d="M3 8.500V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5.500"/><path d="M3 12.500a6.500 6.500 0 0 1 6.500 6.500M3 16.500A2.500 2.500 0 0 1 5.500 19"/><circle cx="3.600" cy="19.200" r=".6"/></symbol>
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
   <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"/></symbol>
@@ -1244,6 +1256,7 @@ html{overscroll-behavior-y:contain}
   <div class="ssl" id="ssl1"><div class="ssb"></div><img class="ssm" alt=""></div>
   <div class="ss-top"><span id="ss-n" aria-live="polite"></span><span class="grow"></span>
     <button type="button" class="ss-b" data-act="ss-shuf" id="ss-shuf" aria-pressed="false" aria-label="Kocok susunan"><svg class="i" aria-hidden="true"><use href="#i-shuffle"></use></svg></button>
+    <button type="button" class="ss-b" data-act="ss-cast" aria-label="Paparkan ke TV"><svg class="i" aria-hidden="true"><use href="#i-cast"></use></svg></button>
     <button type="button" class="ss-b" data-act="ss-close" aria-label="Tutup tayangan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
   <div class="ss-cap" id="ss-cap"></div>
   <div class="ss-bot"><button type="button" class="ss-b" data-act="ss-prev" aria-label="Sebelum"><svg class="i" aria-hidden="true"><use href="#i-prev"></use></svg></button><button type="button" class="ss-b big" data-act="ss-play" id="ss-play" aria-label="Jeda"><svg class="i" aria-hidden="true"><use href="#i-pause"></use></svg></button><button type="button" class="ss-b" data-act="ss-next" aria-label="Seterusnya"><svg class="i" aria-hidden="true"><use href="#i-next"></use></svg></button></div>
@@ -2137,18 +2150,34 @@ function ssOpen(){
 }
 function ssUi(){$('ss-play').innerHTML='<svg class="i" aria-hidden="true"><use href="#i-'+(SS.playing?'pause':'play')+'"></use></svg>';$('ss-play').setAttribute('aria-label',SS.playing?'Jeda':'Main');$('ss-shuf').setAttribute('aria-pressed',SS.shuf);}
 function ssHideLater(){clearTimeout(SS.hideT);SS.hideT=setTimeout(()=>{if(SS.playing)$('ss').classList.add('ch');},3500);}
+function ssCast(){
+  const ss=$('ss'); if(!ss||ss.querySelector('.ss-tv'))return;
+  clearTimeout(SS.hideT);ss.classList.remove('ch');
+  const w=document.createElement('div');w.className='ss-tv';w.setAttribute('role','dialog');w.setAttribute('aria-label','Paparkan ke TV');
+  w.innerHTML='<div class="ss-tvc"><h3>Paparkan ke TV</h3><p>Tayangan slaid boleh dicerminkan ke TV Android, Chromecast atau Smart TV tanpa wayar.</p>'+
+    '<div class="ss-tvs"><b>Android</b><ol><li>Telefon dan TV mesti pada Wi‑Fi yang sama.</li><li>Leret dari atas skrin dan tekan <em>Cast</em>, <em>Smart View</em> atau <em>Hantar skrin</em>.</li><li>Pilih TV anda, kemudian mulakan tayangan.</li></ol></div>'+
+    '<div class="ss-tvs"><b>iPhone</b><ol><li>Leret ke bawah dari sudut kanan atas (Pusat Kawalan).</li><li>Tekan <em>Pencerminan Skrin</em> dan pilih TV yang menyokong AirPlay.</li></ol></div>'+
+    '<small>Skrin telefon akan dipaparkan sama di TV, termasuk kapsyen.</small>'+
+    '<button type="button" data-tv="x">Faham</button></div>';
+  w.addEventListener('click',e=>{if(e.target===w||e.target.closest('[data-tv]')){w.remove();ssHideLater();}});
+  ss.appendChild(w);
+}
 function ssCap(p,bits){
   const cap=$('ss-cap'); cap.textContent='';
   if(bits.length){const d=document.createElement('div');d.className='cp';d.textContent=bits.join(' · ');cap.appendChild(d);}
   const txt=(p.text||'').trim();
   const words=txt?txt.split(/\s+/).length:0;
-  const dur=Math.min(45000,Math.max(SS.dur,3500+words*380));
+  let dur=Math.min(45000,Math.max(SS.dur,3000+words*300));
   let cin=null;
   if(txt){const box=document.createElement('div');box.className='cbox';cin=document.createElement('div');cin.className='cin';const t=document.createElement('p');t.textContent=txt;cin.appendChild(t);box.appendChild(cin);cap.appendChild(box);}
   const w=document.createElement('small');w.textContent=nameOf(p.authorId);cap.appendChild(w);
   if(cin){
     const box=cin.parentNode, ov=cin.scrollHeight-box.clientHeight;
-    if(ov>4){cin.style.setProperty('--ov',(-ov)+'px');cin.style.animation='ssscroll '+Math.max(1500,dur-2800)+'ms linear 1400ms forwards';cin.style.animationPlayState=SS.playing?'running':'paused';box.classList.add('mv');}
+    if(ov>4){
+      const mv=Math.max(1800,Math.round(ov*20)); /* ~50px sesaat */
+      dur=Math.min(45000,Math.max(dur,1000+mv+2500));
+      cin.style.setProperty('--ov',(-ov)+'px');cin.style.animation='ssscroll '+mv+'ms linear 1000ms forwards';cin.style.animationPlayState=SS.playing?'running':'paused';box.classList.add('mv');
+    }
   }
   return dur;
 }
@@ -4365,6 +4394,7 @@ document.addEventListener('click',e=>{
   else if(a==='ss-prev'){ssShow(SS.i-1);ssHideLater();}
   else if(a==='ss-next'){ssShow(SS.i+1);ssHideLater();}
   else if(a==='ss-play')ssToggle();
+  else if(a==='ss-cast')ssCast();
   else if(a==='ss-shuf'){SS.shuf=!SS.shuf;const cur=SS.items[SS.i];SS.items=ssBuild();const k=SS.items.findIndex(x=>cur&&x.id===cur.id);ssUi();if(!SS.shuf&&k>=0)SS.i=k;ssHideLater();}
   else if(a==='cal-open')openCal();
   else if(a==='cap-open')openCap();
