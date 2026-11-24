@@ -1079,6 +1079,35 @@ html{overscroll-behavior-y:contain}
 
 .stor-b{height:10px;border-radius:99px;background:var(--surface-2,rgba(0,0,0,.08));overflow:hidden;border:1px solid var(--line)}
 .stor-b i{display:block;height:100%;border-radius:99px;background:var(--accent,var(--teal))}
+
+/* Tetapan: kumpulan boleh dilipat, padat */
+.setp .sg{margin-top:10px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.setp .sg>summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:58px;padding:10px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.setp .sg>summary::-webkit-details-marker{display:none}
+.setp .sg>summary::after{content:"";width:9px;height:9px;margin-left:auto;border-right:2px solid var(--ink-2);border-bottom:2px solid var(--ink-2);transform:rotate(45deg);transition:transform .22s var(--ease-out,ease-out);flex:none}
+.setp .sg[open]>summary::after{transform:rotate(225deg)}
+.setp .sg-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.setp .sg-t b{font-size:16px;font-weight:700}
+.setp .sg-t small{font-size:13px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.setp .sg-b{padding:2px 14px 14px}
+.setp .set-sub{margin:12px 0 8px;font:700 12px/1.2 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.setp .tiles{gap:8px}
+.setp #set-mode{grid-template-columns:repeat(3,minmax(0,1fr))}
+.setp .tile{flex-direction:column;flex-wrap:nowrap;align-content:normal;align-items:center;justify-content:center;gap:3px;padding:8px 6px;min-height:72px;border-radius:14px;font-size:13.5px;text-align:center}
+.setp .tile i{width:22px;height:22px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
+.setp .tile .tl{margin:0;font-size:10.5px;line-height:1.1}
+.setp .tile[aria-pressed="true"]::after{top:5px;right:5px;width:16px;height:16px;background-size:11px}
+.setp .set-sub{margin-top:14px}
+.setp #set-theme-now{margin-top:10px!important}
+.setp .segc button{min-height:40px}
+.setp .set-p{font-size:14px}
+.setp #set-theme-now{font-size:12.5px;color:var(--ink-2)}
+.setp .set-me{padding:8px 0 0}
+.setp .bd-l>div{padding:2px}
+.setp .bd-l .icon-btn,.setp .bd-l button{min-width:36px;min-height:36px;width:36px;height:36px}
+.setp .bd-f{grid-template-columns:1fr 1fr}
+.setp .bdc{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink-2)}
+.setp .bdc input{min-height:44px;width:100%}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1231,20 +1260,24 @@ html{overscroll-behavior-y:contain}
   <section class="sheet setp" role="dialog" aria-modal="true" aria-labelledby="set-t">
     <div class="sheet-h"><h2 id="set-t">Tetapan</h2><button type="button" class="icon-btn" data-act="set-close" aria-label="Tutup tetapan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
     <div class="set-me" id="set-me"></div>
-    <h3 class="set-h">Tema warna</h3>
+    <details class="sg"><summary><span class="sg-t"><b>Paparan</b><small id="sg-ui">Tema, mod dan saiz tulisan</small></span></summary>
+      <div class="sg-b">
     <div class="tiles" id="set-skins" role="group" aria-label="Tema warna"></div>
-    <h3 class="set-h">Mod paparan</h3>
+    <div class="set-sub">Mod paparan</div>
     <div class="tiles" id="set-mode" role="group" aria-label="Mod paparan"></div>
     <p class="set-p" id="set-theme-now"></p>
-    <h3 class="set-h">Saiz tulisan</h3>
+    <p class="set-p" id="set-theme-now" style="margin:8px 0 12px"></p>
+    <div class="set-sub">Saiz tulisan</div>
     <div class="segc" id="set-big" role="group" aria-label="Saiz tulisan"></div>
-    <h3 class="set-h">Ruang simpanan</h3>
-    <div class="stor" id="set-store" aria-live="polite"></div>
-    <h3 class="set-h">Cuaca dan lokasi</h3>
+      </div></details>
+    <details class="sg"><summary><span class="sg-t"><b>Cuaca dan lokasi</b><small id="sg-loc">Bandar untuk cuaca dan waktu solat</small></span></summary>
+      <div class="sg-b">
     <p class="set-p" id="set-loc"></p>
     <div class="set-row"><button type="button" class="btn sm" data-act="gps"><svg class="i" aria-hidden="true"><use href="#i-pin"></use></svg> Guna lokasi automatik</button><button type="button" class="btn sm ghost" data-act="city">Tukar bandar</button></div>
     <form class="cityf" id="cityf" hidden><input id="cityi" type="text" maxlength="60" placeholder="cth. Ipoh, Kuching, Johor Bahru" aria-label="Nama bandar" autocomplete="off"><button class="btn" type="submit">Cari</button><button class="btn ghost" type="button" data-act="gps"><svg class="i" aria-hidden="true"><use href="#i-pin"></use></svg> Guna lokasi</button></form>
-    <h3 class="set-h">Notifikasi</h3>
+      </div></details>
+    <details class="sg"><summary><span class="sg-t"><b>Notifikasi dan waktu solat</b><small>Peringatan walaupun app ditutup</small></span></summary>
+      <div class="sg-b">
     <p class="set-p" id="set-nt"></p>
     <div class="set-row"><button type="button" class="btn sm" data-act="nt" id="nt-b">Hidupkan notifikasi</button> <button type="button" class="btn sm ghost" data-act="nt-test" id="nt-test" hidden>Hantar ujian</button></div>
     <p class="set-p" id="nt-st"></p>
@@ -1253,20 +1286,30 @@ html{overscroll-behavior-y:contain}
       <div class="set-row"><button type="button" class="btn sm" data-act="pray-tg" id="pray-b">Hidupkan peringatan waktu solat</button></div>
       <p class="set-p" id="pray-st"></p>
     </div>
-    <h3 class="set-h">Muzik</h3>
+      </div></details>
+    <details class="sg"><summary><span class="sg-t"><b>Muzik</b><small>Pautan muzik pada peranti ini</small></span></summary>
+      <div class="sg-b">
     <p class="set-p">Tampal pautan YouTube (video atau playlist), Spotify atau fail .mp3. Di halaman Utama hanya jalur kecil dengan tajuk dan butang main akan keluar. Pautan disimpan pada peranti ini sahaja.</p>
     <div class="set-row"><input id="mz-in" type="url" class="mz-in" placeholder="https://youtu.be/…" autocomplete="off" inputmode="url" aria-label="Pautan muzik"></div>
     <div class="set-row"><button type="button" class="btn sm" data-act="mz-save">Simpan muzik</button><button type="button" class="btn sm ghost" data-act="mz-clear">Padam</button></div>
-    <h3 class="set-h">Hari lahir keluarga</h3>
+      </div></details>
+    <details class="sg"><summary><span class="sg-t"><b>Hari lahir keluarga</b><small>Tambah dan urus</small></span></summary>
+      <div class="sg-b">
     <div class="bd-l" id="set-bdl"></div>
-    <div class="bd-f"><input id="bd-n" type="text" maxlength="40" placeholder="Nama (cth. Atok)" aria-label="Nama" autocomplete="off"><input id="bd-d" type="date" aria-label="Tarikh lahir" max="2100-12-31"><button type="button" class="btn sm" data-act="bd-add">Tambah hari lahir</button></div>
+    <div class="bd-f"><label class="bdc"><span>Nama</span><input id="bd-n" type="text" maxlength="40" placeholder="cth. Atok" aria-label="Nama" autocomplete="off"></label><label class="bdc"><span>Tarikh lahir</span><input id="bd-d" type="date" aria-label="Tarikh lahir" max="2100-12-31"></label><button type="button" class="btn sm" data-act="bd-add">Tambah hari lahir</button></div>
+      </div></details>
+    <details class="sg"><summary><span class="sg-t"><b>Ruang simpanan</b><small id="sg-st">Anggaran ruang gambar</small></span></summary>
+      <div class="sg-b">
+    <div class="stor" id="set-store" aria-live="polite"></div>
+      </div></details>
     <div id="set-admin" hidden>
-      <h3 class="set-h">Pentadbir</h3>
+      <details class="sg"><summary><span class="sg-t"><b>Pentadbir</b><small>Jemput, sandar dan import</small></span></summary><div class="sg-b">
       <div class="set-list">
         <button type="button" class="set-item" data-act="invite">Jemput ahli keluarga</button>
         <button type="button" class="set-item" data-act="backup">Sandarkan semua kenangan</button>
         <button type="button" class="set-item" data-act="import">Import kenangan lama</button>
       </div>
+      </div></details>
     </div>
   </section>
 </div>
@@ -1383,6 +1426,7 @@ function prayUi(){
   const b=$('pray-b');if(b){b.textContent=S.prayOn?'Matikan peringatan waktu solat':'Hidupkan peringatan waktu solat';b.classList.toggle('ghost',!!S.prayOn);}
   const st=$('pray-st');if(st)st.textContent=S.prayOn?(S.praySt||'✓ Hidup. Waktu dikemas kini setiap kali anda buka app.'):'';
 }
+(function(){const st=document.getElementById('set');if(st)st.addEventListener('toggle',e=>{const t=e.target;if(t&&t.open&&t.classList&&t.classList.contains('sg'))st.querySelectorAll('.sg[open]').forEach(d=>{if(d!==t)d.open=false;});},true);})();
 function renderSet(){
   try{prayUi();}catch(e){}
   { const mi=document.getElementById('mz-in'); if(mi&&document.activeElement!==mi&&typeof MZ!=='undefined')mi.value=MZ.url||''; }
@@ -1398,7 +1442,13 @@ function renderSet(){
     const ids=new Set();(S.posts||[]).forEach(p=>(p.photos||[]).forEach(a=>{if(typeof a==='string'&&a.slice(0,2)==='d_')ids.add(a);}));
     const n=ids.size, LIM=1073741824, typ=n*190000, mx=n*280000, fm=b=>b>=1048576?(b/1048576).toFixed(b>=10485760?0:1)+' MB':Math.max(1,Math.round(b/1024))+' KB';
     const pc=Math.min(100,typ/LIM*100), el=$('set-store');
+    const sv=$('sg-st');if(sv)sv.textContent=n+' gambar · kira-kira '+fm(typ);
     if(el)el.innerHTML='<div class="stor-b" role="img" aria-label="Anggaran '+pc.toFixed(1)+' peratus daripada 1 GB"><i style="width:'+Math.max(pc,n?1.5:0).toFixed(1)+'%"></i></div><p class="set-p" style="margin:8px 0 0"><b>'+n+' gambar</b> · kira-kira <b>'+fm(typ)+'</b> daripada 1 GB'+(n?' (paling banyak '+fm(mx)+')':'')+'.</p><p class="set-p" style="margin:4px 0 0;opacity:.75;font-size:12.5px">Anggaran kasar untuk gambar sahaja, bukan angka rasmi Firebase.</p>';
+  }catch(e){}
+  try{
+    const sk3=SKINS.find(x=>x[0]===S.skin),dk=document.documentElement.getAttribute('data-theme')==='dark';
+    const a=$('sg-ui');if(a)a.textContent=(sk3?sk3[1]:'')+' · '+(dk?'Gelap':'Terang');
+    const b2=$('sg-loc');if(b2)b2.textContent=city?city:'Bandar untuk cuaca dan waktu solat';
   }catch(e){}
   $('set-admin').hidden=!S.isOwner;
   const nt=ntOn(); $('nt-b').textContent=nt?'Matikan notifikasi':'Hidupkan notifikasi';
