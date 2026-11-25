@@ -1338,6 +1338,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .ss-bot [hidden]{display:none!important}
 @keyframes ssx{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.ss.ex-p .ss-bot .xp,.ss.ex-m .ss-bot .xm{animation:none}}
+.ss-top .ss-b .mzi{width:20px;height:20px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1433,7 +1434,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   <div class="ssl" id="ssl1"><div class="ssb"></div><img class="ssm" alt=""></div>
   <div class="ss-top"><span id="ss-n" aria-live="polite"></span><span class="grow"></span>
     <button type="button" class="ss-b" data-act="ss-shuf" id="ss-shuf" aria-pressed="false" aria-label="Kocok susunan"><svg class="i" aria-hidden="true"><use href="#i-shuffle"></use></svg></button>
-    <button type="button" class="ss-b" data-act="ss-close" aria-label="Tutup tayangan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <button type="button" class="ss-b" data-act="ss-fs" aria-label="Layar penuh"><svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="ss-b" data-act="ss-close" aria-label="Tutup tayangan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
   <div class="ss-cap" id="ss-cap"></div>
   <div class="ss-bot"><button type="button" class="ss-b xp" data-act="ss-prev" aria-label="Gambar sebelum"><svg class="i" aria-hidden="true"><use href="#i-prev"></use></svg></button><button type="button" class="ss-b big" data-act="ss-play" id="ss-play" aria-label="Jeda"><svg class="i" aria-hidden="true"><use href="#i-pause"></use></svg></button><button type="button" class="ss-b xp" data-act="ss-next" aria-label="Gambar seterusnya"><svg class="i" aria-hidden="true"><use href="#i-next"></use></svg></button><button type="button" class="ss-b ss-mzp xm" data-act="ss-mzpv" id="ss-mzpv" aria-label="Lagu sebelum" hidden></button><button type="button" class="ss-b ss-mzb" data-act="ss-mz" id="ss-mz" aria-label="Pilih muzik" aria-pressed="false"></button><button type="button" class="ss-b ss-mzn xm" data-act="ss-mzn" id="ss-mzn" aria-label="Lagu seterusnya" hidden></button><button type="button" class="ss-b ss-mzl xm" data-act="ss-mzl" aria-label="Tukar lagu"><svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M4 7h12M4 12h12M4 17h7M19 14v6M16 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
   <div class="ss-pg"><i id="ss-pg"></i></div>
@@ -2333,7 +2334,6 @@ function ssOpen(){
   SS.items=it;SS.playing=true;SS.miss=0;SS.layer=1;
   $('ssl0').classList.remove('on');$('ssl1').classList.remove('on');
   $('ss').classList.remove('ch');$('ss').hidden=false;document.body.style.overflow='hidden';
-  try{const r=$('ss').requestFullscreen&&$('ss').requestFullscreen();if(r&&r.catch)r.catch(()=>{});}catch(e){}
   try{if(navigator.wakeLock)navigator.wakeLock.request('screen').then(w=>{SS.wl=w;}).catch(()=>{});}catch(e){}
   ssMz(true);ssUi();ssShow(0);ssHideLater();
 }
@@ -4974,6 +4974,7 @@ document.addEventListener('click',e=>{
   else if(a==='ss-close')ssClose();
   else if(a==='ss-prev'){ssShow(SS.i-1);ssHideLater();ssExpand('p');}
   else if(a==='ss-next'){ssShow(SS.i+1);ssHideLater();ssExpand('p');}
+  else if(a==='ss-fs'){try{if(document.fullscreenElement)document.exitFullscreen();else{const q=$('ss').requestFullscreen&&$('ss').requestFullscreen();if(q&&q.catch)q.catch(()=>{});}}catch(e){}}
   else if(a==='ss-play'){ssToggle();ssExpand('p');}
   else if(a==='ss-shuf'){SS.shuf=!SS.shuf;const cur=SS.items[SS.i];SS.items=ssBuild();const k=SS.items.findIndex(x=>cur&&x.id===cur.id);ssUi();if(!SS.shuf&&k>=0)SS.i=k;ssHideLater();}
   else if(a==='cal-open')openCal();
