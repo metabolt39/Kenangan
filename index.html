@@ -1349,6 +1349,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .trs .trbt{flex:1 1 100%;justify-content:flex-start}
 .trs .trbt .chip:nth-child(3){margin-left:auto}
 @media (min-width:900px) and (min-height:480px){.trs .trbar{flex-wrap:nowrap}.trs .trcnt{flex:1 1 auto}.trs .trbt{flex:none}}
+
+.trs .trbt{display:flex;align-items:center;gap:8px;flex:1 1 100%;flex-wrap:nowrap}
+.trb{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px 0 12px;border-radius:99px;border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);background:color-mix(in srgb,var(--ink) 5%,var(--surface));color:var(--ink);font:600 13.5px/1 var(--font-body,inherit);cursor:pointer;transition:transform .15s var(--ease-out,ease),background .2s}
+.trb:active{transform:scale(.96)}
+.trbi{width:17px;height:17px;flex:none}
+.trz{margin-left:auto;display:inline-flex;align-items:center;height:38px;border-radius:99px;border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);background:color-mix(in srgb,var(--ink) 5%,var(--surface));overflow:hidden}
+.trz button{width:42px;height:100%;border:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.trz button+button{border-left:1px solid color-mix(in srgb,var(--ink) 14%,transparent)}
+.trz button:active{background:color-mix(in srgb,var(--ink) 10%,transparent)}
+.trz .trbi{width:16px;height:16px}
+@media (min-width:900px) and (min-height:480px){.trs .trbt{flex:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2597,7 +2608,7 @@ function renderTr(){
       S.trZ=Math.max(.55,Math.min(1,Math.round(Math.min(zw,zh)*10)/10));
     }
     const z=S.trZ;
-    h='<div class="trbar"><span class="hint trcnt"><b>'+S.tree.length+' orang · '+L.gens+' generasi</b><small>Geser untuk lihat semua. Cubit untuk zum.</small></span><span class="trbt"><button type="button" class="chip" data-act="tr-share">📤 Kongsi</button> <button type="button" class="chip" data-act="tr-print">🖨 Cetak</button> <button type="button" class="chip" data-act="tr-zoom" data-v="-" aria-label="Kecilkan">−</button> <button type="button" class="chip" data-act="tr-zoom" data-v="+" aria-label="Besarkan">＋</button></span></div>';
+    h='<div class="trbar"><span class="hint trcnt"><b>'+S.tree.length+' orang · '+L.gens+' generasi</b><small>Geser untuk lihat semua. Cubit untuk zum.</small></span><span class="trbt"><button type="button" class="trb" data-act="tr-share"><svg viewBox="0 0 24 24" class="trbi" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 12v6a2 2 0 002 2h10a2 2 0 002-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Kongsi</button><button type="button" class="trb" data-act="tr-print"><svg viewBox="0 0 24 24" class="trbi" aria-hidden="true"><path d="M7 9V4h10v5M7 17H5a1 1 0 01-1-1v-5a2 2 0 012-2h12a2 2 0 012 2v5a1 1 0 01-1 1h-2M7 14h10v6H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Cetak</button><span class="trz" role="group" aria-label="Zum"><button type="button" data-act="tr-zoom" data-v="-" aria-label="Kecilkan"><svg viewBox="0 0 24 24" class="trbi" aria-hidden="true"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button><button type="button" data-act="tr-zoom" data-v="+" aria-label="Besarkan"><svg viewBox="0 0 24 24" class="trbi" aria-hidden="true"><path d="M5 12h14M12 5v14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></span></span></div>';
     if(S.tree.length)h+='<div class="trw"><svg class="trsvg" width="'+Math.round(L.W*z)+'" height="'+Math.round(L.H*z)+'" viewBox="0 0 '+L.W+' '+L.H+'" role="group" aria-label="Salasilah Keluarga"><g class="trl">'+L.lines.join('')+'</g>'+L.nodes.map((n,i)=>trNode(n,i)).join('')+L.hearts.map(h=>'<g class="trhh"><circle cx="'+h[0]+'" cy="'+h[1]+'" r="8"/><text x="'+h[0]+'" y="'+(h[1]+3.6)+'">♥</text></g>').join('')+'</svg></div>';
     h+='<div class="trside">'+trPanel();
     if(S.canWrite!==false&&!S.trSel&&S.tree.length&&!S.trMode)h+='<div class="row" style="margin-top:8px"><button type="button" class="btn sm ghost" data-act="tr-mode" data-v="root">＋ Tambah orang lain di peringkat atas</button></div>';
