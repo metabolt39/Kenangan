@@ -1383,7 +1383,7 @@ body.bbo .lb{z-index:75}
 </div>
 <div class="scrim" id="cap" hidden>
   <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cap-t">
-    <div class="sheet-h"><h2 id="cap-t">Kapsul masa</h2><button type="button" class="icon-btn" data-act="cap-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <div class="sheet-h"><h2 id="cap-t">Warkah Masa</h2><button type="button" class="icon-btn" data-act="cap-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
     <p class="note" style="margin:0 0 10px">Tulis pesanan hari ini. Ia terkunci dan hanya boleh dibaca pada tarikh yang awak pilih.</p>
     <div class="cal-f">
       <input id="cap-to" class="w" type="text" maxlength="40" placeholder="Untuk siapa? (cth. Faqeeh)" aria-label="Untuk siapa" autocomplete="off">
@@ -1391,7 +1391,7 @@ body.bbo .lb{z-index:75}
       <textarea id="cap-tx" class="w" rows="5" maxlength="2000" placeholder="Tulis pesanan anda…" aria-label="Pesanan"></textarea>
       <label class="cap-l" for="cap-d">Buka pada</label>
       <input id="cap-d" type="date" aria-label="Tarikh dibuka">
-      <button type="button" class="btn w" data-act="cap-add">Kunci kapsul</button>
+      <button type="button" class="btn w" data-act="cap-add">Kunci warkah</button>
     </div>
     <div id="cap-l"></div>
   </section>
@@ -1411,7 +1411,7 @@ body.bbo .lb{z-index:75}
 </div>
 <div class="scrim" id="stat" hidden>
   <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="stat-t">
-    <div class="sheet-h"><h2 id="stat-t">Rumusan tahunan</h2><button type="button" class="icon-btn" data-act="stat-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <div class="sheet-h"><h2 id="stat-t">Imbasan Tahunan</h2><button type="button" class="icon-btn" data-act="stat-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
     <div id="stat-b"></div>
   </section>
 </div>
@@ -1430,13 +1430,13 @@ body.bbo .lb{z-index:75}
 </div>
 <div class="scrim" id="tr" hidden>
   <section class="sheet trs" role="dialog" aria-modal="true" aria-labelledby="tr-t">
-    <div class="sheet-h"><h2 id="tr-t">Pokok keluarga</h2><button type="button" class="icon-btn" data-act="tr-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <div class="sheet-h"><h2 id="tr-t">Salasilah Keluarga</h2><button type="button" class="icon-btn" data-act="tr-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
     <div id="tr-b"></div>
   </section>
 </div>
 <div class="scrim" id="bb" hidden>
   <section class="sheet trs" role="dialog" aria-modal="true" aria-labelledby="bb-t">
-    <div class="sheet-h"><h2 id="bb-t">Pertumbuhan baby</h2><button type="button" class="icon-btn" data-act="bb-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+    <div class="sheet-h"><h2 id="bb-t">Tumbesaran Si Kecil</h2><button type="button" class="icon-btn" data-act="bb-close" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
     <div id="bb-b"></div>
   </section>
 </div>
@@ -2370,11 +2370,11 @@ function openCal(){
   $('cal').hidden=false;document.body.style.overflow='hidden';renderCal();
 }
 function closeCal(){$('cal').hidden=true;S.calDel='';if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden)document.body.style.overflow='';}
-/* ---------- pokok keluarga ---------- */
+/* ---------- salasilah keluarga ---------- */
 function normTr(id,d){const sp=Array.isArray(d.sp)?d.sp.filter(x=>typeof x==='string'&&x):[];if(typeof d.sid==='string'&&d.sid&&sp.indexOf(d.sid)<0)sp.push(d.sid);return {id:id,name:str(d.name).trim().slice(0,40),g:d.g==='p'?'p':'l',born:str(d.born).trim().slice(0,4),dead:!!d.dead,fid:str(d.fid),mid:str(d.mid),sp:sp.slice(0,8),by:str(d.by),at:Number(d.at)||0};}
 function trTile(){
   const n=S.tree.length;
-  return '<button type="button" class="jt" data-act="tr-open"><span class="jt-i emo" aria-hidden="true">🌳</span><span class="jt-t"><b>Pokok keluarga</b><span>'+(n?n+' orang dalam pokok. Tekan untuk lihat':'Tambah nama supaya anak-anak kenal keluarga')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+  return '<button type="button" class="jt" data-act="tr-open"><span class="jt-i emo" aria-hidden="true">🌳</span><span class="jt-t"><b>Salasilah Keluarga</b><span>'+(n?n+' insan tercatat dalam salasilah':'Supaya generasi akan datang mengenal asal-usulnya')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
 }
 const TRW=96,TRH=68,TRG=18,TRS=22,TRY=54,TRP=16;
 function trSpMap(T){
@@ -2473,13 +2473,13 @@ function trPanel(){
     const ttl={root:'Tambah orang pertama',child:'Tambah anak kepada '+(p&&p.name),spouse:'Tambah pasangan kepada '+(p&&p.name),father:'Tambah ayah kepada '+(p&&p.name),mother:'Tambah ibu kepada '+(p&&p.name),edit:'Ubah maklumat'}[m];
     h+='<div class="trf"><h3>'+esc(ttl)+'</h3><input id="tr-n" class="w" type="text" maxlength="40" placeholder="Nama" aria-label="Nama" autocomplete="off" value="'+esc(ed?p.name:'')+'">'+
       '<div class="trg" role="group" aria-label="Jantina"><button type="button" class="chip" data-act="tr-g" data-v="l" aria-pressed="'+(tg==='l')+'">Lelaki</button><button type="button" class="chip" data-act="tr-g" data-v="p" aria-pressed="'+(tg==='p')+'">Perempuan</button></div>'+
-      (m==='child'&&spl.length?'<label class="lbl">Ibu atau bapa yang satu lagi</label><div class="trh" role="group" aria-label="Ibu atau bapa yang satu lagi">'+spl.map((s,i)=>'<button type="button" class="chip" data-act="tr-g" data-v="'+esc(s.id)+'" aria-pressed="'+(i===0)+'">'+esc(s.name)+'</button>').join('')+'<button type="button" class="chip" data-act="tr-g" data-v="" aria-pressed="false">Tiada dalam pokok</button></div>':'')+
+      (m==='child'&&spl.length?'<label class="lbl">Ibu atau bapa yang satu lagi</label><div class="trh" role="group" aria-label="Ibu atau bapa yang satu lagi">'+spl.map((s,i)=>'<button type="button" class="chip" data-act="tr-g" data-v="'+esc(s.id)+'" aria-pressed="'+(i===0)+'">'+esc(s.name)+'</button>').join('')+'<button type="button" class="chip" data-act="tr-g" data-v="" aria-pressed="false">Tiada dalam salasilah</button></div>':'')+
       '<input id="tr-y" type="text" inputmode="numeric" maxlength="4" placeholder="Tahun lahir (pilihan, cth. 1965)" aria-label="Tahun lahir" autocomplete="off" value="'+esc(ed?p.born:'')+'">'+
       '<button type="button" class="chip" id="tr-d" data-act="tr-dead" aria-pressed="'+(ed&&p.dead?'true':'false')+'">🤍 Arwah</button>'+
       '<div class="row"><button type="button" class="btn sm ghost" data-act="tr-cancel">Batal</button><button type="button" class="btn sm" data-act="tr-save">Simpan</button></div></div>';
     return h;
   }
-  if(!p)return '<p class="hint">Tekan satu nama dalam pokok untuk lihat maklumat dan tambah ahli keluarga.</p>';
+  if(!p)return '<p class="hint">Tekan satu nama dalam salasilah untuk lihat maklumat dan tambah ahli keluarga.</p>';
   const spl=trSpouses(p), fa=by(p.fid), mo=by(p.mid), kids=S.tree.filter(c=>c.fid===p.id||c.mid===p.id);
   const bits=[]; if(fa||mo)bits.push('Anak kepada '+[fa&&fa.name,mo&&mo.name].filter(Boolean).map(esc).join(' dan ')); if(spl.length)bits.push((spl.length>1?'Pasangan: ':'Pasangan: ')+spl.map(s=>esc(s.name)).join(', ')); if(kids.length)bits.push(kids.length+' anak: '+kids.map(k=>esc(k.name)).join(', '));
   h+='<div class="trd"><span class="trav g-'+p.g+'" aria-hidden="true">'+esc(p.name.charAt(0).toUpperCase())+'</span><div><h3>'+esc(p.name)+(p.dead?' <small>Al-Fatihah 🤍</small>':'')+'</h3><p class="m">'+(p.g==='l'?'Lelaki':'Perempuan')+(p.born?' · lahir '+esc(p.born):'')+'</p>'+(bits.length?'<p class="m">'+bits.join('<br>')+'</p>':'')+'</div></div>';
@@ -2494,13 +2494,13 @@ function renderTr(){
   const sh=$('tr').querySelector('.sheet'), st=sh?sh.scrollTop:0, ow=el.querySelector('.trw'), sl=ow?ow.scrollLeft:0;
   let h;
   if(!S.tree.length&&S.trMode!=='root'){
-    h='<div class="empty"><h2>Mulakan pokok keluarga</h2><p>Mula dengan orang paling tua yang kamu ingat, contohnya Atuk atau Nenek. Lepas itu tambah anak, cucu dan pasangan.</p>'+(S.canWrite===false?'':'<button type="button" class="btn" data-act="tr-mode" data-v="root">Tambah orang pertama</button>')+'</div>';
+    h='<div class="empty"><h2>Mulakan salasilah keluarga</h2><p>Mula dengan orang paling tua yang kamu ingat, contohnya Atuk atau Nenek. Lepas itu tambah anak, cucu dan pasangan.</p>'+(S.canWrite===false?'':'<button type="button" class="btn" data-act="tr-mode" data-v="root">Tambah orang pertama</button>')+'</div>';
   }else{
     const L=S.tree.length?trLayout():{nodes:[],lines:[],hearts:[],W:200,H:100,gens:0};
     if(S.trCenter)S.trZ=Math.max(.55,Math.min(1,Math.round(Math.min(window.innerWidth-70,650)/L.W*10)/10));
     const z=S.trZ;
     h='<div class="trbar"><span class="hint" style="margin:0">'+S.tree.length+' orang · '+L.gens+' generasi</span><span class="trbt"><button type="button" class="chip" data-act="tr-share">📤 Kongsi</button> <button type="button" class="chip" data-act="tr-print">🖨 Cetak</button> <button type="button" class="chip" data-act="tr-zoom" data-v="-" aria-label="Kecilkan">−</button> <button type="button" class="chip" data-act="tr-zoom" data-v="+" aria-label="Besarkan">＋</button></span></div>';
-    if(S.tree.length)h+='<div class="trw"><svg class="trsvg" width="'+Math.round(L.W*z)+'" height="'+Math.round(L.H*z)+'" viewBox="0 0 '+L.W+' '+L.H+'" role="group" aria-label="Pokok keluarga"><g class="trl">'+L.lines.join('')+'</g>'+L.nodes.map((n,i)=>trNode(n,i)).join('')+L.hearts.map(h=>'<g class="trhh"><circle cx="'+h[0]+'" cy="'+h[1]+'" r="8"/><text x="'+h[0]+'" y="'+(h[1]+3.6)+'">♥</text></g>').join('')+'</svg></div>';
+    if(S.tree.length)h+='<div class="trw"><svg class="trsvg" width="'+Math.round(L.W*z)+'" height="'+Math.round(L.H*z)+'" viewBox="0 0 '+L.W+' '+L.H+'" role="group" aria-label="Salasilah Keluarga"><g class="trl">'+L.lines.join('')+'</g>'+L.nodes.map((n,i)=>trNode(n,i)).join('')+L.hearts.map(h=>'<g class="trhh"><circle cx="'+h[0]+'" cy="'+h[1]+'" r="8"/><text x="'+h[0]+'" y="'+(h[1]+3.6)+'">♥</text></g>').join('')+'</svg></div>';
     h+=trPanel();
     if(S.canWrite!==false&&!S.trSel&&S.tree.length&&!S.trMode)h+='<div class="row" style="margin-top:8px"><button type="button" class="btn sm ghost" data-act="tr-mode" data-v="root">＋ Tambah orang lain di peringkat atas</button></div>';
   }
@@ -2524,7 +2524,7 @@ function trPng(){
     const bs=getComputedStyle(document.body), bg=getComputedStyle(document.querySelector('#tr .sheet')).backgroundColor||'#fff', ink=bs.color;
     cl.setAttribute('xmlns','http://www.w3.org/2000/svg'); cl.setAttribute('width',W); cl.setAttribute('height',H);
     const inner=new XMLSerializer().serializeToString(cl);
-    const full='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+(H+HD+FT)+'"><rect width="100%" height="100%" fill="'+bg+'"/><text x="'+W/2+'" y="40" text-anchor="middle" font-size="24" font-weight="700" fill="'+ink+'" font-family="serif">Pokok Keluarga</text><g transform="translate(0,'+HD+')">'+inner+'</g><text x="'+W/2+'" y="'+(H+HD+22)+'" text-anchor="middle" font-size="12" fill="'+ink+'" opacity=".55" font-family="sans-serif">Kenangan Keluarga</text></svg>';
+    const full='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+(H+HD+FT)+'"><rect width="100%" height="100%" fill="'+bg+'"/><text x="'+W/2+'" y="40" text-anchor="middle" font-size="24" font-weight="700" fill="'+ink+'" font-family="serif">Salasilah Keluarga</text><g transform="translate(0,'+HD+')">'+inner+'</g><text x="'+W/2+'" y="'+(H+HD+22)+'" text-anchor="middle" font-size="12" fill="'+ink+'" opacity=".55" font-family="sans-serif">Kenangan Keluarga</text></svg>';
     const img=new Image(), k=Math.min(2,4096/Math.max(W,H+HD+FT));
     img.onload=()=>{const c=document.createElement('canvas');c.width=Math.round(W*k);c.height=Math.round((H+HD+FT)*k);const x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);c.toBlob(bl=>bl?res(bl):rej(),'image/png');};
     img.onerror=()=>rej();
@@ -2534,11 +2534,11 @@ function trPng(){
 async function trShare(){
   try{
     if(!S.tree.length){toast('Tambah nama dahulu.');return;}
-    const bl=await trPng(), file=new File([bl],'pokok-keluarga.png',{type:'image/png'});
+    const bl=await trPng(), file=new File([bl],'salasilah-keluarga.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file],title:'Pokok keluarga'});return;}catch(e){if(e&&e.name==='AbortError')return;}
+      try{await navigator.share({files:[file],title:'Salasilah Keluarga'});return;}catch(e){if(e&&e.name==='AbortError')return;}
     }
-    const u=URL.createObjectURL(bl), a=document.createElement('a');a.href=u;a.download='pokok-keluarga.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);toast('Gambar pokok disimpan.');
+    const u=URL.createObjectURL(bl), a=document.createElement('a');a.href=u;a.download='salasilah-keluarga.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);toast('Gambar pokok disimpan.');
   }catch(e){toast('Tak dapat buat gambar. Cuba butang Cetak.');}
 }
 function trPrint(){
@@ -2586,7 +2586,7 @@ async function trDelete(){
 function normGr(id,d){const f=v=>typeof v==='number'&&isFinite(v)&&v>0?v:null;return {id:id,baby:str(d.baby),on:validDate(d.on)?d.on:'',kg:f(d.kg),cm:f(d.cm),by:str(d.by),at:num(d.at)};}
 function bbTile(){
   const n=S.albums.filter(a=>a.born).length;
-  return '<button type="button" class="jt" data-act="bb-open"><span class="jt-i emo" aria-hidden="true">🍼</span><span class="jt-t"><b>Pertumbuhan baby</b><span>'+(n?'Lihat gambar ikut bulan, berat dan tinggi':'Simpan gambar dan catat berat tinggi baby')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+  return '<button type="button" class="jt" data-act="bb-open"><span class="jt-i emo" aria-hidden="true">🍼</span><span class="jt-t"><b>Tumbesaran Si Kecil</b><span>'+(n?'Gambar, berat dan tinggi dari bulan ke bulan':'Himpunan gambar serta catatan berat dan tinggi')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
 }
 function bbMonths(born,on){
   const a=born.split('-').map(Number), b=on.split('-').map(Number);
@@ -2635,7 +2635,7 @@ function renderBb(){
     el.innerHTML=h; return;
   }
   if(!b){
-    el.innerHTML='<div class="empty"><h2>Mulakan album pertumbuhan</h2><p>Masukkan nama dan tarikh lahir baby. Gambar akan disusun ikut umur: baru lahir, 1 bulan, 2 bulan dan seterusnya. Kamu juga boleh catat berat dan tinggi.</p>'+(ro?'':'<button type="button" class="btn" data-act="bb-mode" data-v="baby">Tambah baby</button>')+'</div>';
+    el.innerHTML='<div class="empty"><h2>Mulakan lembaran tumbesaran</h2><p>Masukkan nama dan tarikh lahir baby. Gambar akan disusun ikut umur: baru lahir, 1 bulan, 2 bulan dan seterusnya. Kamu juga boleh catat berat dan tinggi.</p>'+(ro?'':'<button type="button" class="btn" data-act="bb-mode" data-v="baby">Tambah baby</button>')+'</div>';
     return;
   }
   const today=ymd(new Date());
@@ -2713,8 +2713,8 @@ function capWait(n){if(n<=0)return 'Sudah boleh dibuka';if(n<31)return n+' hari 
 function capTile(){
   const open=S.caps.filter(c=>capOpen(c)&&Date.now()-new Date(c.openOn+'T00:00:00').getTime()<14*864e5).length;
   const wait=S.caps.filter(c=>!capOpen(c)).length;
-  const sub=open?open+' kapsul sudah boleh dibuka!':wait?wait+' kapsul sedang menunggu':'Tulis pesanan untuk dibuka pada tarikh akan datang';
-  return '<button type="button" class="jt" data-act="cap-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-lock"></use></svg>'+'</span><span class="jt-t"><b>Kapsul masa</b><span>'+esc(sub)+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+  const sub=open?open+' warkah sudah boleh dibuka!':wait?wait+' warkah sedang menunggu':'Titipkan pesanan untuk dibuka pada hari yang dijanjikan';
+  return '<button type="button" class="jt" data-act="cap-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-lock"></use></svg>'+'</span><span class="jt-t"><b>Warkah Masa</b><span>'+esc(sub)+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
 }
 function openCap(){
   const d=$('cap-d'); if(d&&!d.value){const t=new Date();t.setFullYear(t.getFullYear()+1);d.value=ymd(t);}
@@ -2726,12 +2726,12 @@ function renderCap(){
   const el=$('cap-l');if(!el)return;
   const row=c=>{
     const op=capOpen(c),may=!!S.myId&&(c.by===S.myId||S.canEdit);
-    return '<div class="cap-r'+(op?' open':'')+'"><div class="cap-h">'+icon(op?'heart':'lock')+'<span class="cap-t"><strong>'+esc(c.title||'Kapsul masa')+'</strong><span>'+(c.to?'Untuk '+esc(c.to)+' · ':'')+'dari '+esc(nameOf(c.by))+'</span></span></div>'+
+    return '<div class="cap-r'+(op?' open':'')+'"><div class="cap-h">'+icon(op?'heart':'lock')+'<span class="cap-t"><strong>'+esc(c.title||'Warkah Masa')+'</strong><span>'+(c.to?'Untuk '+esc(c.to)+' · ':'')+'dari '+esc(nameOf(c.by))+'</span></span></div>'+
       (op?'<p class="cap-x">'+esc(c.text)+'</p><span class="cap-d">Ditulis '+esc(ago(c.at))+', dibuka '+esc(fmtDate(c.openOn))+'</span>':'<span class="cap-d">Terkunci sehingga '+esc(fmtDate(c.openOn))+' · '+esc(capWait(capDays(c)))+'</span>')+
-      (may?(S.capDel===c.id?'<div class="cm-q" role="alert">Padam kapsul ini?<button type="button" class="btn sm ghost" data-act="cap-del-no">Batal</button><button type="button" class="btn sm" data-act="cap-del-yes" data-id="'+esc(c.id)+'">Ya, padam</button></div>':'<button type="button" class="chip" data-act="cap-del-ask" data-id="'+esc(c.id)+'">'+icon('trash')+'Padam</button>'):'')+'</div>';
+      (may?(S.capDel===c.id?'<div class="cm-q" role="alert">Padam warkah ini?<button type="button" class="btn sm ghost" data-act="cap-del-no">Batal</button><button type="button" class="btn sm" data-act="cap-del-yes" data-id="'+esc(c.id)+'">Ya, padam</button></div>':'<button type="button" class="chip" data-act="cap-del-ask" data-id="'+esc(c.id)+'">'+icon('trash')+'Padam</button>'):'')+'</div>';
   };
   const o=S.caps.filter(capOpen).sort((a,b)=>b.openOn.localeCompare(a.openOn)),w=S.caps.filter(c=>!capOpen(c)).sort((a,b)=>a.openOn.localeCompare(b.openOn));
-  el.innerHTML=(o.length?'<h3 class="cal-h">Sudah dibuka</h3>'+o.map(row).join(''):'')+(w.length?'<h3 class="cal-h">Menunggu</h3>'+w.map(row).join(''):'')+((!o.length&&!w.length)?'<p class="note">Belum ada kapsul masa.</p>':'')+'<p class="hint" style="margin:10px 2px">Kunci ini di dalam app sahaja. Pesanan masih tersimpan dalam pangkalan data keluarga.</p>';
+  el.innerHTML=(o.length?'<h3 class="cal-h">Sudah dibuka</h3>'+o.map(row).join(''):'')+(w.length?'<h3 class="cal-h">Menunggu</h3>'+w.map(row).join(''):'')+((!o.length&&!w.length)?'<p class="note">Belum ada warkah masa.</p>':'')+'<p class="hint" style="margin:10px 2px">Kunci ini di dalam app sahaja. Pesanan masih tersimpan dalam pangkalan data keluarga.</p>';
 }
 async function capAdd(){
   if(!canAct())return;
@@ -2739,7 +2739,7 @@ async function capAdd(){
   if(!tx||!validDate(d)){toast('Isi pesanan dan tarikh dibuka.');return;}
   if(d<=ymd(new Date())){toast('Pilih tarikh pada masa depan.');return;}
   const id='k_'+Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>(b%36).toString(36)).join('');
-  try{await S.db.doc('capsules/'+id).set({by:S.myId,to:to,title:ti,text:tx,openOn:d,at:Date.now()});$('cap-to').value='';$('cap-ti').value='';$('cap-tx').value='';toast('Kapsul dikunci sehingga '+fmtDate(d)+'.');}
+  try{await S.db.doc('capsules/'+id).set({by:S.myId,to:to,title:ti,text:tx,openOn:d,at:Date.now()});$('cap-to').value='';$('cap-ti').value='';$('cap-tx').value='';toast('Warkah dikunci sehingga '+fmtDate(d)+'.');}
   catch(e){toast('Tak dapat simpan. Pastikan rules terbaharu sudah di-Publish.');}
 }
 /* ---------- rumusan tahunan ---------- */
@@ -2753,7 +2753,7 @@ function statData(y){
     rx:S.likes.filter(l=>ids.has(l.postId)).length,cm:S.comments.filter(c=>ids.has(c.postId)).length};
 }
 function statYears(){const a=Array.from(new Set(P.map(p=>+String(dateOf(p)).slice(0,4)).filter(Boolean))).sort((a,b)=>b-a);return a.length?a:[new Date().getFullYear()];}
-function statTile(){if(DEMO||!P.length)return '';const y=statYears()[0];return '<button type="button" class="jt" data-act="stat-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-chart"></use></svg>'+'</span><span class="jt-t"><b>Rumusan '+y+'</b><span>Kenangan, gambar dan tempat tahun ini</span></span><span class="jt-a" aria-hidden="true">›</span></button>';}
+function statTile(){if(DEMO||!P.length)return '';const y=statYears()[0];return '<button type="button" class="jt" data-act="stat-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-chart"></use></svg>'+'</span><span class="jt-t"><b>Imbas '+y+'</b><span>Kenangan, gambar dan destinasi sepanjang tahun</span></span><span class="jt-a" aria-hidden="true">›</span></button>';}
 function openStat(){if(!S.statY)S.statY=statYears()[0];$('stat').hidden=false;document.body.style.overflow='hidden';renderStat();}
 function closeStat(){$('stat').hidden=true;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden)document.body.style.overflow='';}
 function renderStat(){
@@ -2781,7 +2781,7 @@ async function statShare(){
   x.font='italic 40px Georgia,serif';x.globalAlpha=.8;x.fillText('Disimpan bersama keluarga',W/2,H-90);
   const blob=await new Promise(r=>c.toBlob(r,'image/png'));if(!blob){toast('Tak dapat buat gambar.');return;}
   const name='rumusan-'+d.y+'.png',file=new File([blob],name,{type:'image/png'});
-  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Rumusan '+d.y});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Imbas '+d.y});return;}}catch(e){if(e&&e.name==='AbortError')return;}
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),8000);toast('Gambar disimpan.');
 }
 /* ---------- peringatan sandaran ---------- */
@@ -3965,7 +3965,7 @@ function todayStrip(){
   S.bd.filter(b=>b.date).forEach(b=>{const i=bdInfo(b);if(i.days<=7)bc.push({d:i.days,n:b.name,i:i});});
   bc.sort((a,b)=>a.d-b.d);
   const co=S.caps.filter(c=>capOpen(c)&&Date.now()-new Date(c.openOn+'T00:00:00').getTime()<7*864e5).length;
-  if(co)it.push({d:-1,ic:'lock',t:co+' kapsul masa sudah boleh dibuka',a:'cap-open'});
+  if(co)it.push({d:-1,ic:'lock',t:co+' warkah masa sudah boleh dibuka',a:'cap-open'});
   const me=locMine();if(me)it.push({d:-1,ic:'pin',t:'Anda sedang berkongsi lokasi',a:'tab',v:'keluarga'});
   const o=S.locs.filter(l=>l.id!==S.myId&&l.until>Date.now()).length;if(o)it.push({d:-1,ic:'users',t:o+' ahli sedang berkongsi lokasi',a:'tab',v:'keluarga'});
   if(backupBanner())it.push({d:9,ic:'download',t:'Masa untuk sandaran',a:'tab',v:'keluarga'});
@@ -3983,9 +3983,9 @@ function keluargaHtml(){
   if(DEMO)return demoBanner();
   let h=lokasiHtml();
   h+=sec('Kalendar dan hari lahir')+calHtml()+bdHtml();
-  h+=sec('Lagi untuk keluarga')+'<div class="jts">'+capTile()+trTile()+bbTile()+statTile()+'</div>';
-  h+=sec('Sandaran')+backupBanner();
-  h+='<div class="jts"><button type="button" class="jt" data-act="settings"><span class="jt-i emo" aria-hidden="true">'+icon('download')+'</span><span class="jt-t"><b>Tetapan dan sandaran</b><span>Sandarkan kenangan, tema, hari lahir dan akaun</span></span><span class="jt-a" aria-hidden="true">›</span></button></div>';
+  h+=sec('Ruang Keluarga')+'<div class="jts">'+capTile()+trTile()+bbTile()+statTile()+'</div>';
+  h+=sec('Simpanan Selamat')+backupBanner();
+  h+='<div class="jts"><button type="button" class="jt" data-act="settings"><span class="jt-i emo" aria-hidden="true">'+icon('download')+'</span><span class="jt-t"><b>Tetapan &amp; Simpanan</b><span>Salinan kenangan, tema, hari lahir dan akaun</span></span><span class="jt-a" aria-hidden="true">›</span></button></div>';
   return h;
 }
 function utamaHtml(m){
@@ -4905,7 +4905,7 @@ document.addEventListener('click',e=>{
   else if(a==='cap-add')capAdd();
   else if(a==='cap-del-ask'){S.capDel=id;renderCap();}
   else if(a==='cap-del-no'){S.capDel='';renderCap();}
-  else if(a==='cap-del-yes'){S.capDel='';S.db.doc('capsules/'+id).delete().then(()=>toast('Kapsul dipadam.')).catch(()=>toast('Tak dapat dipadam.'));renderCap();}
+  else if(a==='cap-del-yes'){S.capDel='';S.db.doc('capsules/'+id).delete().then(()=>toast('Warkah dipadam.')).catch(()=>toast('Tak dapat dipadam.'));renderCap();}
   else if(a==='bk-share')bkShare();
   else if(a==='bk-open')bkOpen();
   else if(a==='bk-close')closeBk();
