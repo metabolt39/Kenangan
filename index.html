@@ -1308,6 +1308,24 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .scrim{align-items:center;padding:8px}
   .sheet{max-height:98%;border-radius:20px}
 }
+
+/* slaid: kawalan kecil ketika berjalan + muzik */
+.ss-bot{transition:opacity .35s,transform .4s var(--ease-out,ease),padding .3s,gap .3s}
+.ss-bot .ss-mzb{position:relative;color:#fff}
+.ss-bot .ss-mzb .mzi{width:21px;height:21px}
+.ss-bot .ss-mzb[aria-pressed="true"]{color:#ffe3a0}
+.ss.ch .ss-top{opacity:0;pointer-events:none}
+.ss.ch .ss-bot{opacity:.5;pointer-events:auto;padding:3px;gap:0;transform:translateX(-50%) scale(.84);transform-origin:50% 100%}
+.ss.ch .ss-bot [data-act="ss-prev"],.ss.ch .ss-bot [data-act="ss-next"]{display:none}
+.ss.ch .ss-bot .ss-b.big{width:42px;height:42px}
+.ss.ch .ss-bot .ss-b{width:42px;height:42px}
+.ss.ch .ss-bot:active,.ss.ch .ss-bot:focus-within{opacity:.9}
+#ss .mzs{z-index:20;bottom:calc(92px + env(safe-area-inset-bottom,0px));max-height:70vh}
+.mzs-now{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 14px;border-radius:16px;background:var(--accent-soft);color:var(--accent)}
+.mzs-now[hidden]{display:none}
+.mzs-nt{flex:1;min-width:0;display:flex;flex-direction:column}
+.mzs-nt small{font-size:11.5px;opacity:.75}
+.mzs-nt b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1405,7 +1423,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <button type="button" class="ss-b" data-act="ss-shuf" id="ss-shuf" aria-pressed="false" aria-label="Kocok susunan"><svg class="i" aria-hidden="true"><use href="#i-shuffle"></use></svg></button>
     <button type="button" class="ss-b" data-act="ss-close" aria-label="Tutup tayangan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
   <div class="ss-cap" id="ss-cap"></div>
-  <div class="ss-bot"><button type="button" class="ss-b" data-act="ss-prev" aria-label="Sebelum"><svg class="i" aria-hidden="true"><use href="#i-prev"></use></svg></button><button type="button" class="ss-b big" data-act="ss-play" id="ss-play" aria-label="Jeda"><svg class="i" aria-hidden="true"><use href="#i-pause"></use></svg></button><button type="button" class="ss-b" data-act="ss-next" aria-label="Seterusnya"><svg class="i" aria-hidden="true"><use href="#i-next"></use></svg></button></div>
+  <div class="ss-bot"><button type="button" class="ss-b" data-act="ss-prev" aria-label="Sebelum"><svg class="i" aria-hidden="true"><use href="#i-prev"></use></svg></button><button type="button" class="ss-b big" data-act="ss-play" id="ss-play" aria-label="Jeda"><svg class="i" aria-hidden="true"><use href="#i-pause"></use></svg></button><button type="button" class="ss-b" data-act="ss-next" aria-label="Seterusnya"><svg class="i" aria-hidden="true"><use href="#i-next"></use></svg></button><button type="button" class="ss-b ss-mzb" data-act="ss-mz" id="ss-mz" aria-label="Pilih muzik" aria-pressed="false"></button></div>
   <div class="ss-pg"><i id="ss-pg"></i></div>
 </div>
 <div class="scrim" id="cap" hidden>
@@ -2305,9 +2323,11 @@ function ssOpen(){
   $('ss').classList.remove('ch');$('ss').hidden=false;document.body.style.overflow='hidden';
   try{const r=$('ss').requestFullscreen&&$('ss').requestFullscreen();if(r&&r.catch)r.catch(()=>{});}catch(e){}
   try{if(navigator.wakeLock)navigator.wakeLock.request('screen').then(w=>{SS.wl=w;}).catch(()=>{});}catch(e){}
-  ssUi();ssShow(0);ssHideLater();
+  ssMz(true);ssUi();ssShow(0);ssHideLater();
 }
-function ssUi(){$('ss-play').innerHTML='<svg class="i" aria-hidden="true"><use href="#i-'+(SS.playing?'pause':'play')+'"></use></svg>';$('ss-play').setAttribute('aria-label',SS.playing?'Jeda':'Main');$('ss-shuf').setAttribute('aria-pressed',SS.shuf);}
+function ssUi(){$('ss-play').innerHTML='<svg class="i" aria-hidden="true"><use href="#i-'+(SS.playing?'pause':'play')+'"></use></svg>';$('ss-play').setAttribute('aria-label',SS.playing?'Jeda':'Main');$('ss-shuf').setAttribute('aria-pressed',SS.shuf);ssMzUi();}
+function ssMzUi(){const b=$('ss-mz');if(!b||typeof MZI==='undefined')return;const pl=MZ.st==='playing';b.innerHTML=pl?'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>':MZI.note;b.setAttribute('aria-pressed',pl?'true':'false');b.setAttribute('aria-label',MZ.url?'Tukar muzik':'Pilih muzik');}
+function ssMz(on){const d=document.getElementById('mzs'),p=on?$('ss'):document.body;if(d&&d.parentNode!==p)p.appendChild(d);}
 function ssHideLater(){clearTimeout(SS.hideT);SS.hideT=setTimeout(()=>{if(SS.playing)$('ss').classList.add('ch');},3500);}
 function ssCap(p,bits){
   const cap=$('ss-cap'); cap.textContent='';
@@ -2358,6 +2378,7 @@ function ssToggle(){
 }
 function ssClose(){
   clearTimeout(SS.tm);clearTimeout(SS.hideT);SS.tok++;
+  try{mzSheet(false);}catch(e){}ssMz(false);
   $('ss').hidden=true;
   try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});}catch(e){}
   try{if(SS.wl){SS.wl.release();SS.wl=null;}}catch(e){}
@@ -3848,7 +3869,16 @@ function mzPillHtml(){
     (sp?'<button type="button" class="mzp-b" data-act="mz-sp" aria-label="Buka atau tutup pemain">'+(MZ.sp?MZI.up:MZI.dn)+'</button>'
        :'<button type="button" class="mzp-b" data-act="mz-pp" aria-label="'+(pl?'Jeda':'Main')+'">'+(pl?MZI.pause:MZI.play)+'</button><button type="button" class="mzp-b" data-act="mz-stop" aria-label="Henti">'+MZI.stop+'</button>')+'</div>';
 }
-function mzRefresh(){const el=document.getElementById('mzp');if(el)el.outerHTML=mzPillHtml();}
+function mzNow(){
+  const e=document.getElementById('mzs-now');if(!e)return;
+  if(!MZ.url||!MZ.em){e.hidden=true;e.innerHTML='';return;}
+  const pl=MZ.st==='playing',sp=MZ.em.t==='frame';
+  e.hidden=false;
+  e.innerHTML='<span class="mzs-nt"><small>'+(pl?'Sedang dimainkan':'Dipilih')+'</small><b>'+esc(MZ.title||'Muzik keluarga')+'</b></span>'+
+    (sp?'<button type="button" class="mzp-b" data-act="mz-sp" aria-label="Buka atau tutup pemain">'+(MZ.sp?MZI.up:MZI.dn)+'</button>'
+      :'<button type="button" class="mzp-b" data-act="mz-pp" aria-label="'+(pl?'Jeda':'Main')+'">'+(pl?MZI.pause:MZI.play)+'</button><button type="button" class="mzp-b" data-act="mz-stop" aria-label="Henti">'+MZI.stop+'</button>');
+}
+function mzRefresh(){const el=document.getElementById('mzp');if(el)el.outerHTML=mzPillHtml();ssMzUi();mzNow();}
 function mzYtLoad(cb){
   if(window.YT&&window.YT.Player)return cb();
   const prev=window.onYouTubeIframeAPIReady;
@@ -3915,7 +3945,7 @@ function mzHistHtml(){
 function mzSheet(open){
   const d=document.getElementById('mzs');if(!d)return;
   if(open){document.getElementById('mzp-hist').innerHTML=mzHistHtml();mzTab(mzHist().length&&MZ.tab==='hist'?'hist':(MZ.tab||'link'));}
-  d.classList.toggle('open',!!open);
+  d.classList.toggle('open',!!open);if(open)mzNow();
 }
 let RBL=[];
 const RBH=['https://de1.api.radio-browser.info','https://de2.api.radio-browser.info','https://nl1.api.radio-browser.info','https://at1.api.radio-browser.info'];
@@ -3954,7 +3984,7 @@ async function mzPaste(){
 function mzInit(){
   if(!document.getElementById('mzs')){
     const d=document.createElement('div');d.id='mzs';d.className='mzs';d.setAttribute('role','dialog');d.setAttribute('aria-label','Pilih muzik');
-    d.innerHTML='<div class="mzs-top"><b>Muzik</b><button type="button" class="icon-btn" data-act="mz-x" aria-label="Tutup">'+icon('x')+'</button></div>'+
+    d.innerHTML='<div class="mzs-top"><b>Muzik</b><button type="button" class="icon-btn" data-act="mz-x" aria-label="Tutup">'+icon('x')+'</button></div><div class="mzs-now" id="mzs-now" hidden></div>'+
       '<div class="mzs-tabs" role="tablist"><button type="button" data-act="mz-tab" data-v="link" class="on">Pautan</button><button type="button" data-act="mz-tab" data-v="radio">Radio</button><button type="button" data-act="mz-tab" data-v="hist">Terkini</button></div>'+
       '<div class="mzs-pn" id="mzp-link"><button type="button" class="btn mzs-w" data-act="mz-paste">Tampal pautan yang disalin</button>'+
         '<div class="mz-f"><input type="url" id="mz-in2" placeholder="atau tampal pautan di sini" autocomplete="off" inputmode="url" aria-label="Pautan muzik"><button type="button" class="btn" data-act="mz-use2">Main</button></div>'+
@@ -4848,8 +4878,8 @@ async function deleteAlbum(){
 }
 /* ---------- acara ---------- */
 (function(){const ss=$('ss');let x0=null;
-  ss.addEventListener('click',e=>{if(e.target.closest('button'))return;ss.classList.toggle('ch');if(!ss.classList.contains('ch'))ssHideLater();});
-  ss.addEventListener('touchstart',e=>{x0=e.touches.length===1?e.touches[0].clientX:null;},{passive:true});
+  ss.addEventListener('click',e=>{if(e.target.closest('button')||e.target.closest('#mzs'))return;ss.classList.toggle('ch');if(!ss.classList.contains('ch'))ssHideLater();});
+  ss.addEventListener('touchstart',e=>{if(e.target.closest&&e.target.closest('#mzs')){x0=null;return;}x0=e.touches.length===1?e.touches[0].clientX:null;},{passive:true});
   ss.addEventListener('touchend',e=>{if(x0==null)return;const dx=(e.changedTouches[0]||{}).clientX-x0;x0=null;if(Math.abs(dx)>60){ssShow(SS.i+(dx<0?1:-1));ssHideLater();}},{passive:true});
   document.addEventListener('visibilitychange',()=>{if(ss.hidden)return;if(document.hidden)clearTimeout(SS.tm);else if(SS.playing)SS.tm=setTimeout(()=>ssShow(SS.i+1),1200);});
 })();
@@ -4881,7 +4911,7 @@ document.addEventListener('click',e=>{
   else if(a==='mz-pp')mzPP();
   else if(a==='mz-stop')mzStop();
   else if(a==='mz-sp'){MZ.sp=!MZ.sp;const h=document.getElementById('mz-host');if(h)h.classList.toggle('show',MZ.sp);mzRefresh();}
-  else if(a==='mz-pick')mzSheet(true);
+  else if(a==='mz-pick'||a==='ss-mz')mzSheet(true);
   else if(a==='mz-x')mzSheet(false);
   else if(a==='mz-paste')mzPaste();
   else if(a==='mz-use2'){const i=document.getElementById('mz-in2');if(i)mzUse(i.value);}
