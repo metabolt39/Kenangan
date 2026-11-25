@@ -1869,8 +1869,8 @@ function normAlbum(id,d){return {id:id,name:str(d.name).trim().slice(0,40),emoji
 function albumById(id){return id?S.albums.find(a=>a.id===id):null;}
 function isNew(p){return !p.demo&&S.seenBase>0&&!!p.authorId&&p.authorId!==S.myId&&p.createdAt>S.seenBase;}
 function normComment(id,d){return {id:id,postId:str(d.postId),authorId:str(d.authorId),text:str(d.text).slice(0,500),createdAt:num(d.createdAt)};}
-const RX=['❤️','😂','😮','😢','🙏','👏'];
-function normLike(id,d){return {id:id,postId:str(d.postId),uid:str(d.uid),r:RX.indexOf(d.r)>=0?d.r:'❤️'};}
+const RX=['❤️','👍','😊','😍','😢','🤲'], RXOLD=['😂','😮','🙏','👏'], RXALL=RX.concat(RXOLD);
+function normLike(id,d){return {id:id,postId:str(d.postId),uid:str(d.uid),r:RXALL.indexOf(d.r)>=0?d.r:'❤️'};}
 
 const EX=[
   {who:'Mak',cat:'keluarga',emoji:'👨‍👩‍👦',text:'Kenduri kahwin sepupu di kampung. Semua balik, nenek masak rendang tok sampai licin periuk.',place:'Kampung Nenek, Kuala Kangsar',date:'2025-12-20',photos:['ex_sunset','ex_hills','ex_river']},
@@ -3479,7 +3479,7 @@ function rxHtml(p){
   const ls=S.likes.filter(l=>l.postId===p.id), mine=ls.find(l=>l.uid===S.myId);
   const cnt={}; ls.forEach(l=>{cnt[l.r]=(cnt[l.r]||0)+1;});
   const open=S.rxOpen===p.id, ro=S.canWrite===false;
-  const list=open?RX:RX.filter(e=>cnt[e]);
+  const list=open?RX.concat(RXOLD.filter(e=>cnt[e])):RXALL.filter(e=>cnt[e]);
   if(!list.length&&ro)return '';
   return '<div class="rxs" role="group" aria-label="Reaksi">'+list.map(e=>'<button type="button" class="rx" data-act="rx" data-id="'+esc(p.id)+'" data-v="'+e+'" aria-pressed="'+(!!mine&&mine.r===e)+'"'+(ro?' disabled':'')+'><span aria-hidden="true">'+e+'</span>'+(cnt[e]?'<b>'+cnt[e]+'</b>':'')+'</button>').join('')+
     (ls.length?'<button type="button" class="rx more" data-act="rx-who" data-id="'+esc(p.id)+'" aria-expanded="'+(S.whoOpen===p.id)+'"><svg class="i" aria-hidden="true"><use href="#i-users"></use></svg>Siapa</button>':'')+
