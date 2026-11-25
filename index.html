@@ -2371,7 +2371,7 @@ function openCal(){
 }
 function closeCal(){$('cal').hidden=true;S.calDel='';if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden)document.body.style.overflow='';}
 /* ---------- salasilah keluarga ---------- */
-function normTr(id,d){const sp=Array.isArray(d.sp)?d.sp.filter(x=>typeof x==='string'&&x):[];if(typeof d.sid==='string'&&d.sid&&sp.indexOf(d.sid)<0)sp.push(d.sid);return {id:id,name:str(d.name).trim().slice(0,40),g:d.g==='p'?'p':'l',born:str(d.born).trim().slice(0,4),dead:!!d.dead,fid:str(d.fid),mid:str(d.mid),sp:sp.slice(0,8),by:str(d.by),at:Number(d.at)||0};}
+function normTr(id,d){const sp=Array.isArray(d.sp)?d.sp.filter(x=>typeof x==='string'&&x):[];if(typeof d.sid==='string'&&d.sid&&sp.indexOf(d.sid)<0)sp.push(d.sid);return {id:id,name:str(d.name).trim().slice(0,40),g:d.g==='p'?'p':'l',born:str(d.born).trim().slice(0,4),dead:!!d.dead,died:str(d.died).trim().slice(0,4),fid:str(d.fid),mid:str(d.mid),sp:sp.slice(0,8),by:str(d.by),at:Number(d.at)||0};}
 function trTile(){
   const n=S.tree.length;
   return '<button type="button" class="jt" data-act="tr-open"><span class="jt-i emo" aria-hidden="true">🌳</span><span class="jt-t"><b>Salasilah Keluarga</b><span>'+(n?n+' insan tercatat dalam salasilah':'Supaya generasi akan datang mengenal asal-usulnya')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
@@ -2454,6 +2454,11 @@ function trLayout(){
   roots.forEach(walk);
   return {nodes:nodes,lines:lines,hearts:hearts,W:Math.max(x-TRG*2+TRP,200),H:(maxD+1)*(TRH+TRY)-TRY+TRP*2+14,gens:maxD+1};
 }
+function trSub(p){
+  const a=trAgeN(p);
+  if(p.dead)return 'Arwah'+(a!=null?' · '+trAgeS(a):'');
+  return (p.born||'')+(p.born&&a!=null?' · '+trAgeS(a):'');
+}
 function trNode(n,i){
   const p=n.p,x=n.x,y=n.y,nm=p.name.length>13?p.name.slice(0,12)+'…':p.name, c=x+TRW/2;
   return '<g class="trn g-'+p.g+(p.dead?' dead':'')+(S.trSel===p.id?' on':'')+(S.trCenter?' ani':'')+'" style="--i:'+Math.min(i,14)+'" data-act="tr-sel" data-id="'+esc(p.id)+'" role="button" tabindex="0" aria-label="'+esc(p.name)+'"><title>'+esc(p.name)+'</title>'+
@@ -2462,8 +2467,14 @@ function trNode(n,i){
     '<circle class="trc" cx="'+c+'" cy="'+(y+21)+'" r="15"/>'+
     '<text class="tri" x="'+c+'" y="'+(y+26)+'">'+esc(p.name.charAt(0).toUpperCase())+'</text>'+
     '<text class="trt" x="'+c+'" y="'+(y+49)+'">'+esc(nm)+'</text>'+
-    '<text class="try" x="'+c+'" y="'+(y+62)+'">'+esc((p.dead?'Arwah 🤍':'')+(p.dead&&p.born?' · ':'')+(p.born||''))+'</text></g>';
+    '<text class="try" x="'+c+'" y="'+(y+62)+'">'+esc(trSub(p))+'</text></g>';
 }
+function trAgeN(p){
+  if(!/^\d{4}$/.test(p.born))return null;
+  const e=p.dead?(/^\d{4}$/.test(p.died)?+p.died:null):new Date().getFullYear();
+  if(e==null)return null; const a=e-(+p.born); return a<0?null:a;
+}
+function trAgeS(a){return a<1?'<1 thn':a+' thn';}
 function trSpouses(p){return S.tree.filter(x=>p.sp.indexOf(x.id)>=0||x.sp.indexOf(p.id)>=0);}
 function trPanel(){
   const by=id=>S.tree.find(p=>p.id===id), p=by(S.trSel), ro=S.canWrite===false;
@@ -2476,13 +2487,14 @@ function trPanel(){
       (m==='child'&&spl.length?'<label class="lbl">Ibu atau bapa yang satu lagi</label><div class="trh" role="group" aria-label="Ibu atau bapa yang satu lagi">'+spl.map((s,i)=>'<button type="button" class="chip" data-act="tr-g" data-v="'+esc(s.id)+'" aria-pressed="'+(i===0)+'">'+esc(s.name)+'</button>').join('')+'<button type="button" class="chip" data-act="tr-g" data-v="" aria-pressed="false">Tiada dalam salasilah</button></div>':'')+
       '<input id="tr-y" type="text" inputmode="numeric" maxlength="4" placeholder="Tahun lahir (pilihan, cth. 1965)" aria-label="Tahun lahir" autocomplete="off" value="'+esc(ed?p.born:'')+'">'+
       '<button type="button" class="chip" id="tr-d" data-act="tr-dead" aria-pressed="'+(ed&&p.dead?'true':'false')+'">🤍 Arwah</button>'+
+      '<input id="tr-yd" type="text" inputmode="numeric" maxlength="4" placeholder="Tahun meninggal (pilihan, cth. 2019)" aria-label="Tahun meninggal" autocomplete="off" value="'+esc(ed?p.died:'')+'"'+(ed&&p.dead?'':' hidden')+'>'+
       '<div class="row"><button type="button" class="btn sm ghost" data-act="tr-cancel">Batal</button><button type="button" class="btn sm" data-act="tr-save">Simpan</button></div></div>';
     return h;
   }
   if(!p)return '<p class="hint">Tekan satu nama dalam salasilah untuk lihat maklumat dan tambah ahli keluarga.</p>';
   const spl=trSpouses(p), fa=by(p.fid), mo=by(p.mid), kids=S.tree.filter(c=>c.fid===p.id||c.mid===p.id);
   const bits=[]; if(fa||mo)bits.push('Anak kepada '+[fa&&fa.name,mo&&mo.name].filter(Boolean).map(esc).join(' dan ')); if(spl.length)bits.push((spl.length>1?'Pasangan: ':'Pasangan: ')+spl.map(s=>esc(s.name)).join(', ')); if(kids.length)bits.push(kids.length+' anak: '+kids.map(k=>esc(k.name)).join(', '));
-  h+='<div class="trd"><span class="trav g-'+p.g+'" aria-hidden="true">'+esc(p.name.charAt(0).toUpperCase())+'</span><div><h3>'+esc(p.name)+(p.dead?' <small>Al-Fatihah 🤍</small>':'')+'</h3><p class="m">'+(p.g==='l'?'Lelaki':'Perempuan')+(p.born?' · lahir '+esc(p.born):'')+'</p>'+(bits.length?'<p class="m">'+bits.join('<br>')+'</p>':'')+'</div></div>';
+  h+='<div class="trd"><span class="trav g-'+p.g+'" aria-hidden="true">'+esc(p.name.charAt(0).toUpperCase())+'</span><div><h3>'+esc(p.name)+(p.dead?' <small>Al-Fatihah 🤍</small>':'')+'</h3><p class="m">'+(p.g==='l'?'Lelaki':'Perempuan')+(p.born?' · lahir '+esc(p.born):'')+(p.dead&&p.died?' · meninggal '+esc(p.died):'')+'</p>'+(function(){const a=trAgeN(p);if(a==null)return '';return '<p class="m"><b>'+(p.dead?'Meninggal pada umur ':'Umur kini ')+(p.dead?'':'kira-kira ')+(a<1?'kurang setahun':a+' tahun')+'</b></p>';})()+(bits.length?'<p class="m">'+bits.join('<br>')+'</p>':'')+'</div></div>';
   if(ro)return h;
   const b=(m,l)=>'<button type="button" class="chip" data-act="tr-mode" data-v="'+m+'">'+l+'</button>';
   h+='<div class="tra2">'+b('child','＋ Anak')+b('spouse','＋ Pasangan')+(fa?'':b('father','＋ Ayah'))+(mo?'':b('mother','＋ Ibu'))+b('edit','Ubah')+
@@ -2548,7 +2560,7 @@ function trPrint(){
   window.addEventListener('afterprint',done);
   setTimeout(()=>{try{window.print();}catch(e){done();}},60);
 }
-function trRec(p,patch){return Object.assign({name:p.name,g:p.g,born:p.born,dead:!!p.dead,fid:p.fid||'',mid:p.mid||'',sp:(p.sp||[]).slice(),by:p.by||S.myId||'',at:p.at||Date.now()},patch||{});}
+function trRec(p,patch){return Object.assign({name:p.name,g:p.g,born:p.born,dead:!!p.dead,died:p.died||'',fid:p.fid||'',mid:p.mid||'',sp:(p.sp||[]).slice(),by:p.by||S.myId||'',at:p.at||Date.now()},patch||{});}
 function trPut(p,patch){return S.db.doc('tree/'+p.id).set(trRec(p,patch));}
 async function trSave(){
   try{
@@ -2556,9 +2568,12 @@ async function trSave(){
     if(!name){toast('Isi nama dahulu.');if(ni)ni.focus();return;}
     const born=($('tr-y').value||'').trim(); if(born&&!/^\d{4}$/.test(born)){toast('Tahun lahir mesti 4 angka, cth. 1965.');return;}
     const gb=document.querySelector('.trg [aria-pressed="true"]'), g=gb&&gb.dataset.v==='p'?'p':'l', dead=$('tr-d').getAttribute('aria-pressed')==='true';
-    if(m==='edit'&&p){S.trMode='';renderTr();await trPut(p,{name:name,g:g,born:born,dead:dead});return;}
+    let died=dead?($('tr-yd').value||'').trim():''; const cy=new Date().getFullYear();
+    if(died&&(!/^\d{4}$/.test(died)||+died>cy||(born&&+died<+born))){toast('Semak tahun meninggal. Ia mesti selepas tahun lahir.');return;}
+    if(born&&+born>cy){toast('Tahun lahir tidak betul.');return;}
+    if(m==='edit'&&p){S.trMode='';renderTr();await trPut(p,{name:name,g:g,born:born,dead:dead,died:died});return;}
     const nid='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-    const d={name:name,g:g,born:born,dead:dead,fid:'',mid:'',sp:[],by:S.myId||'',at:Date.now()}, jobs=[];
+    const d={name:name,g:g,born:born,dead:dead,died:died,fid:'',mid:'',sp:[],by:S.myId||'',at:Date.now()}, jobs=[];
     if(m==='child'&&p){
       const ob=document.querySelector('.trh [aria-pressed="true"]'), oid=ob?ob.dataset.v:'';
       if(p.g==='l'){d.fid=p.id;d.mid=oid;}else{d.mid=p.id;d.fid=oid;}
@@ -4891,7 +4906,7 @@ document.addEventListener('click',e=>{
   else if(a==='tr-sel'){S.trSel=S.trSel===id?'':id;S.trMode='';S.trDel=false;renderTr();}
   else if(a==='tr-mode'){S.trMode=v;S.trDel=false;if(v==='root')S.trSel=S.trSel;renderTr();const ni=$('tr-n');if(ni)try{ni.focus();}catch(e){}}
   else if(a==='tr-g'){t.parentNode.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===t?'true':'false'));}
-  else if(a==='tr-dead')t.setAttribute('aria-pressed',t.getAttribute('aria-pressed')==='true'?'false':'true');
+  else if(a==='tr-dead'){const on=t.getAttribute('aria-pressed')!=='true';t.setAttribute('aria-pressed',on?'true':'false');const yd=$('tr-yd');if(yd){yd.hidden=!on;if(on)try{yd.focus();}catch(e){}}}
   else if(a==='tr-save')trSave();
   else if(a==='tr-share')trShare();
   else if(a==='tr-print')trPrint();
