@@ -24,7 +24,7 @@
 <title>Kenangan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,600&family=Lora:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&family=Share+Tech+Mono&family=Outfit:wght@500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Fraunces:ital,wght@0,600;0,700;1,600&family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&family=Share+Tech+Mono&family=Outfit:wght@500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Fraunces:ital,wght@0,600;0,700;1,600&family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap">
 </head>
 <body>
 <div class="gate" id="gate">
@@ -60,7 +60,7 @@ window.__setUse=r;})();
   --lb-bg:#0B0D12;
   --lb-ink:#F4F0E8;
   --shadow:0 1px 2px rgba(60,45,20,.06),0 10px 28px -16px rgba(60,45,20,.28);
-  --font-display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --font-display:'Lora',Georgia,'Times New Roman',serif;
   --font-serif:'Plus Jakarta Sans','Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
   --font-script:'Pinyon Script','Snell Roundhand','Apple Chancery',cursive;
   --font-body:'Plus Jakarta Sans','Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -626,10 +626,10 @@ button{cursor:pointer}
 @media (min-width:1000px){.pcs.full{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
 /* ===== tema baharu: warna dan fon ===== */
-:root[data-skin="kampung"]{--bg:#FAF8F5;--surface:#FFFFFF;--surface-2:#F1E7D2;--ink:#2B2620;--ink-2:#6B6253;--line:#E6D9BF;--gold:#EDA82E;--gold-ink:#8A5A00;--teal:#2F7D68;--teal-soft:#D6EBDD;--coral:#E2653A;--coral-soft:#FBDFD2;--accent:#2A7A63;--accent-ink:#FFFFFF;--accent-soft:#D6EBDD;--heart:#E0472F;--font-display:'Playfair Display',Georgia,serif;--font-body:'Plus Jakarta Sans','Figtree',system-ui,sans-serif}
+:root[data-skin="kampung"]{--bg:#FAF8F5;--surface:#FFFFFF;--surface-2:#F1E7D2;--ink:#2B2620;--ink-2:#6B6253;--line:#E6D9BF;--gold:#EDA82E;--gold-ink:#8A5A00;--teal:#2F7D68;--teal-soft:#D6EBDD;--coral:#E2653A;--coral-soft:#FBDFD2;--accent:#2A7A63;--accent-ink:#FFFFFF;--accent-soft:#D6EBDD;--heart:#E0472F;--font-display:'Lora',Georgia,serif;--font-body:'Plus Jakarta Sans','Figtree',system-ui,sans-serif}
 @media (prefers-color-scheme: dark){:root[data-skin="kampung"]:not([data-theme="light"]){--bg:#12181B;--surface:#1A2226;--surface-2:#252F34;--ink:#F3EEDF;--ink-2:#A9BAB0;--line:#2C443A;--gold:#F2BE5A;--gold-ink:#F2BE5A;--teal:#7FD1B2;--teal-soft:#1F3D33;--coral:#FF9370;--coral-soft:#3B2A26;--accent:#7FD1B2;--accent-ink:#0B2A20;--accent-soft:#1F3D33;--heart:#FF8A72;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}}
 :root[data-skin="kampung"][data-theme="dark"]{--bg:#12181B;--surface:#1A2226;--surface-2:#252F34;--ink:#F3EEDF;--ink-2:#A9BAB0;--line:#2C443A;--gold:#F2BE5A;--gold-ink:#F2BE5A;--teal:#7FD1B2;--teal-soft:#1F3D33;--coral:#FF9370;--coral-soft:#3B2A26;--accent:#7FD1B2;--accent-ink:#0B2A20;--accent-soft:#1F3D33;--heart:#FF8A72;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
-:root[data-skin="senja"]{--bg:#FBEFF5;--surface:#FFFBFD;--surface-2:#F1DDEA;--ink:#2B1B3D;--ink-2:#6E5A80;--line:#E7C9DB;--gold:#FFA94D;--gold-ink:#8A4300;--teal:#7A55D9;--teal-soft:#E6DBFA;--coral:#FF5C8A;--coral-soft:#FFD9E4;--accent:#6B3FD1;--accent-ink:#FFFFFF;--accent-soft:#E6DBFA;--heart:#F03E75;--font-display:'Fraunces',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif}
+:root[data-skin="senja"]{--bg:#FBEFF5;--surface:#FFFBFD;--surface-2:#F1DDEA;--ink:#2B1B3D;--ink-2:#6E5A80;--line:#E7C9DB;--gold:#FFA94D;--gold-ink:#8A4300;--teal:#7A55D9;--teal-soft:#E6DBFA;--coral:#FF5C8A;--coral-soft:#FFD9E4;--accent:#6B3FD1;--accent-ink:#FFFFFF;--accent-soft:#E6DBFA;--heart:#F03E75;--font-display:'Lora',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif}
 @media (prefers-color-scheme: dark){:root[data-skin="senja"]:not([data-theme="light"]){--bg:#150F2B;--surface:#201845;--surface-2:#2D2360;--ink:#F6EEFF;--ink-2:#B7A8D6;--line:#3A2D78;--gold:#FFB867;--gold-ink:#FFB867;--teal:#B79CFF;--teal-soft:#31266B;--coral:#FF7FA6;--coral-soft:#4A2447;--accent:#B79CFF;--accent-ink:#1B0F45;--accent-soft:#31266B;--heart:#FF7FA6;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}}
 :root[data-skin="senja"][data-theme="dark"]{--bg:#150F2B;--surface:#201845;--surface-2:#2D2360;--ink:#F6EEFF;--ink-2:#B7A8D6;--line:#3A2D78;--gold:#FFB867;--gold-ink:#FFB867;--teal:#B79CFF;--teal-soft:#31266B;--coral:#FF7FA6;--coral-soft:#4A2447;--accent:#B79CFF;--accent-ink:#1B0F45;--accent-soft:#31266B;--heart:#FF7FA6;--scrim:rgba(0,0,0,.66);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 .top{background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.30)),linear-gradient(135deg,color-mix(in srgb,var(--sk1,#2f8f9d) 72%,var(--accent)),color-mix(in srgb,var(--sk2,#1f6a7a) 72%,var(--accent)))}
