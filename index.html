@@ -1339,6 +1339,16 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @keyframes ssx{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.ss.ex-p .ss-bot .xp,.ss.ex-m .ss-bot .xm{animation:none}}
 .ss-top .ss-b .mzi{width:20px;height:20px}
+
+.trw{touch-action:pan-x pan-y}
+.trw.drag{cursor:grabbing;user-select:none}
+.trcnt{margin:0!important;display:flex;flex-direction:column;gap:2px;flex:1 1 100%}
+.trcnt b{font-weight:600;color:var(--ink);font-size:14px}
+.trcnt small{font-size:12px;color:var(--ink-2)}
+.trs .trbar{flex-wrap:wrap}
+.trs .trbt{flex:1 1 100%;justify-content:flex-start}
+.trs .trbt .chip:nth-child(3){margin-left:auto}
+@media (min-width:900px) and (min-height:480px){.trs .trbar{flex-wrap:nowrap}.trs .trcnt{flex:1 1 auto}.trs .trbt{flex:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2356,7 +2366,18 @@ function ssCap(p,bits){
     if(ov>4){
       const dl=2600, mv=Math.max(3000,Math.round(ov*60)); /* ~17px sesaat, 2.6s baca bahagian atas dulu */
       dur=Math.min(45000,Math.max(dur,dl+mv+2600));
-      cin.style.setProperty('--ov',(-ov)+'px');cin.style.animation='ssscroll '+mv+'ms linear '+dl+'ms forwards';cin.style.animationPlayState=SS.playing?'running':'paused';box.classList.add('mv');
+      box.classList.add('mv');
+      const C=dl+mv+2200, tf=v=>Math.min(1,v/C), rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const a=tf(dl), b=tf(dl+mv), c=tf(dl+mv+1200), d=tf(dl+mv+1600), d2=Math.min(.9995,d+.0005);
+      const y=v=>'translateY('+v+'px)';
+      try{
+        const an=cin.animate(rm?[{transform:y(0)},{transform:y(-ov),offset:b},{transform:y(-ov)}]:[
+          {transform:y(0),opacity:1,offset:0},{transform:y(0),opacity:1,offset:a},
+          {transform:y(-ov),opacity:1,offset:b},{transform:y(-ov),opacity:1,offset:c},
+          {transform:y(-ov),opacity:0,offset:d},{transform:y(0),opacity:0,offset:d2},
+          {transform:y(0),opacity:1,offset:1}],{duration:C,iterations:rm?1:Infinity,easing:'linear',fill:'both'});
+        if(!SS.playing)an.pause();
+      }catch(e){cin.style.setProperty('--ov',(-ov)+'px');cin.style.animation='ssscroll '+mv+'ms linear '+dl+'ms forwards';}
     }
   }
   return dur;
@@ -2386,7 +2407,7 @@ async function ssShow(i){
 function ssToggle(){
   SS.playing=!SS.playing;ssUi();
   $('ss-pg').style.animationPlayState=SS.playing?'running':'paused';
-  { const ci=document.querySelector('#ss-cap .cin'); if(ci)ci.style.animationPlayState=SS.playing?'running':'paused'; }
+  { const ci=document.querySelector('#ss-cap .cin'); if(ci){ci.style.animationPlayState=SS.playing?'running':'paused';try{ci.getAnimations().forEach(x=>SS.playing?x.play():x.pause());}catch(e){}} }
   if(SS.playing){ssShow(SS.i+1);ssHideLater();}else{clearTimeout(SS.tm);$('ss').classList.remove('ch');}
 }
 function ssClose(){
@@ -2576,7 +2597,7 @@ function renderTr(){
       S.trZ=Math.max(.55,Math.min(1,Math.round(Math.min(zw,zh)*10)/10));
     }
     const z=S.trZ;
-    h='<div class="trbar"><span class="hint" style="margin:0">'+S.tree.length+' orang · '+L.gens+' generasi</span><span class="trbt"><button type="button" class="chip" data-act="tr-share">📤 Kongsi</button> <button type="button" class="chip" data-act="tr-print">🖨 Cetak</button> <button type="button" class="chip" data-act="tr-zoom" data-v="-" aria-label="Kecilkan">−</button> <button type="button" class="chip" data-act="tr-zoom" data-v="+" aria-label="Besarkan">＋</button></span></div>';
+    h='<div class="trbar"><span class="hint trcnt"><b>'+S.tree.length+' orang · '+L.gens+' generasi</b><small>Geser untuk lihat semua. Cubit untuk zum.</small></span><span class="trbt"><button type="button" class="chip" data-act="tr-share">📤 Kongsi</button> <button type="button" class="chip" data-act="tr-print">🖨 Cetak</button> <button type="button" class="chip" data-act="tr-zoom" data-v="-" aria-label="Kecilkan">−</button> <button type="button" class="chip" data-act="tr-zoom" data-v="+" aria-label="Besarkan">＋</button></span></div>';
     if(S.tree.length)h+='<div class="trw"><svg class="trsvg" width="'+Math.round(L.W*z)+'" height="'+Math.round(L.H*z)+'" viewBox="0 0 '+L.W+' '+L.H+'" role="group" aria-label="Salasilah Keluarga"><g class="trl">'+L.lines.join('')+'</g>'+L.nodes.map((n,i)=>trNode(n,i)).join('')+L.hearts.map(h=>'<g class="trhh"><circle cx="'+h[0]+'" cy="'+h[1]+'" r="8"/><text x="'+h[0]+'" y="'+(h[1]+3.6)+'">♥</text></g>').join('')+'</svg></div>';
     h+='<div class="trside">'+trPanel();
     if(S.canWrite!==false&&!S.trSel&&S.tree.length&&!S.trMode)h+='<div class="row" style="margin-top:8px"><button type="button" class="btn sm ghost" data-act="tr-mode" data-v="root">＋ Tambah orang lain di peringkat atas</button></div>';
@@ -2585,7 +2606,7 @@ function renderTr(){
   el.innerHTML=h;
   const w=el.querySelector('.trw');
   if(w){if(S.trCenter){w.scrollLeft=Math.max(0,(w.scrollWidth-w.clientWidth)/2);}else w.scrollLeft=sl;}
-  if(S.trCenter)S.trCenter=false;
+  if(S.trCenter){S.trCenter=false;if(w&&w.scrollWidth>w.clientWidth+8){let seen=false;try{seen=localStorage.getItem('kk-trhint')==='1';localStorage.setItem('kk-trhint','1');}catch(e){}if(!seen)setTimeout(()=>toast('Geser dengan jari untuk lihat seluruh salasilah. Cubit untuk zum.'),600);}}
   if(sh)sh.scrollTop=st;
 }
 function openTr(){S.trCenter=true;S.trMode='';S.trDel=false;$('tr').hidden=false;document.body.style.overflow='hidden';renderTr();}
@@ -2626,6 +2647,43 @@ function trPrint(){
   window.addEventListener('afterprint',done);
   setTimeout(()=>{try{window.print();}catch(e){done();}},60);
 }
+
+/* salasilah: cubit untuk zum dan seret dengan tetikus */
+(function(){
+  let g=null,m=null;
+  const clamp=z=>Math.max(.3,Math.min(2,z)), dist=(a,b)=>Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+  function apply(w,z,px,py){
+    const svg=w.querySelector('.trsvg');if(!svg)return;
+    const vb=svg.viewBox.baseVal, old=S.trZ, fx=(w.scrollLeft+px)/old, fy=(w.scrollTop+py)/old;
+    S.trZ=z;svg.setAttribute('width',Math.round(vb.width*z));svg.setAttribute('height',Math.round(vb.height*z));
+    w.scrollLeft=fx*z-px;w.scrollTop=fy*z-py;
+  }
+  document.addEventListener('touchstart',e=>{
+    const w=e.target.closest&&e.target.closest('.trw');
+    if(!w||e.touches.length!==2){return;}
+    g={w:w,d:dist(e.touches[0],e.touches[1]),z:S.trZ};
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!g||e.touches.length!==2)return;
+    e.preventDefault();
+    const a=e.touches[0],b=e.touches[1],r=g.w.getBoundingClientRect();
+    apply(g.w,clamp(g.z*dist(a,b)/g.d),(a.clientX+b.clientX)/2-r.left,(a.clientY+b.clientY)/2-r.top);
+  },{passive:false});
+  document.addEventListener('touchend',e=>{if(e.touches.length<2)g=null;},{passive:true});
+  document.addEventListener('pointerdown',e=>{
+    if(e.pointerType!=='mouse'||e.button!==0)return;
+    const w=e.target.closest&&e.target.closest('.trw');if(!w)return;
+    m={w:w,x:e.clientX,y:e.clientY,sl:w.scrollLeft,st:w.scrollTop,moved:false};
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!m)return;const dx=e.clientX-m.x,dy=e.clientY-m.y;
+    if(!m.moved&&Math.hypot(dx,dy)>5){m.moved=true;m.w.classList.add('drag');}
+    if(m.moved){m.w.scrollLeft=m.sl-dx;m.w.scrollTop=m.st-dy;}
+  });
+  const end=()=>{if(m){const mv=m.moved,w=m.w;m=null;w.classList.remove('drag');if(mv)setTimeout(()=>{},0);window.__trDrag=mv;setTimeout(()=>{window.__trDrag=false;},50);}};
+  document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
+  document.addEventListener('click',e=>{if(window.__trDrag&&e.target.closest&&e.target.closest('.trw')){e.stopPropagation();e.preventDefault();}},true);
+})();
 function trRec(p,patch){return Object.assign({name:p.name,g:p.g,born:p.born,dead:!!p.dead,died:p.died||'',fid:p.fid||'',mid:p.mid||'',sp:(p.sp||[]).slice(),by:p.by||S.myId||'',at:p.at||Date.now()},patch||{});}
 function trPut(p,patch){return S.db.doc('tree/'+p.id).set(trRec(p,patch));}
 async function trSave(){
@@ -5003,7 +5061,7 @@ document.addEventListener('click',e=>{
   else if(a==='tr-del-ask'){S.trDel=true;renderTr();}
   else if(a==='tr-del-no'){S.trDel=false;renderTr();}
   else if(a==='tr-del-yes')trDelete();
-  else if(a==='tr-zoom'){S.trZ=Math.max(.5,Math.min(1.6,Math.round((S.trZ+(v==='+'?.2:-.2))*10)/10));renderTr();}
+  else if(a==='tr-zoom'){S.trZ=Math.max(.3,Math.min(2,Math.round(S.trZ*(v==='+'?1.25:.8)*100)/100));renderTr();}
   else if(a==='cap-open')openCap();
   else if(a==='cap-close')closeCap();
   else if(a==='cap-add')capAdd();
