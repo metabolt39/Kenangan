@@ -1316,7 +1316,6 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .ss-bot .ss-mzb[aria-pressed="true"]{color:#ffe3a0}
 .ss.ch .ss-top{opacity:0;pointer-events:none}
 .ss.ch .ss-bot{opacity:.5;pointer-events:auto;padding:3px;gap:0;transform:translateX(-50%) scale(.84);transform-origin:50% 100%}
-.ss.ch .ss-bot [data-act="ss-prev"]{display:none}
 .ss.ch .ss-bot .ss-b{width:38px;height:38px}
 .ss.ch .ss-bot .ss-b.big{width:42px;height:42px}
 .ss.ch .ss-bot .ss-b.big{width:42px;height:42px}
@@ -1330,6 +1329,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .mzs-nt b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ss-bot .ss-mzl .mzi{width:20px;height:20px}
 .ss-bot .ss-mzl{opacity:.85}
+.ss-b[hidden]{display:none!important}
+.ss-bot .ss-mzn .mzi{width:20px;height:20px;color:#ffe3a0}
+
+.ss-bot .xp,.ss-bot .xm{display:none}
+.ss.ex-p .ss-bot .xp,.ss.ex-m .ss-bot .xm{display:revert;animation:ssx .28s var(--ease-out,ease) both}
+.ss-bot .ss-mzp .mzi{width:20px;height:20px;color:#ffe3a0}
+.ss-bot [hidden]{display:none!important}
+@keyframes ssx{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ss.ex-p .ss-bot .xp,.ss.ex-m .ss-bot .xm{animation:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1427,7 +1435,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <button type="button" class="ss-b" data-act="ss-shuf" id="ss-shuf" aria-pressed="false" aria-label="Kocok susunan"><svg class="i" aria-hidden="true"><use href="#i-shuffle"></use></svg></button>
     <button type="button" class="ss-b" data-act="ss-close" aria-label="Tutup tayangan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
   <div class="ss-cap" id="ss-cap"></div>
-  <div class="ss-bot"><button type="button" class="ss-b" data-act="ss-prev" aria-label="Sebelum"><svg class="i" aria-hidden="true"><use href="#i-prev"></use></svg></button><button type="button" class="ss-b big" data-act="ss-play" id="ss-play" aria-label="Jeda"><svg class="i" aria-hidden="true"><use href="#i-pause"></use></svg></button><button type="button" class="ss-b" data-act="ss-next" aria-label="Seterusnya"><svg class="i" aria-hidden="true"><use href="#i-next"></use></svg></button><button type="button" class="ss-b ss-mzb" data-act="ss-mz" id="ss-mz" aria-label="Pilih muzik" aria-pressed="false"></button><button type="button" class="ss-b ss-mzl" data-act="ss-mzl" aria-label="Tukar lagu"><svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M4 7h12M4 12h12M4 17h7M19 14v6M16 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+  <div class="ss-bot"><button type="button" class="ss-b xp" data-act="ss-prev" aria-label="Gambar sebelum"><svg class="i" aria-hidden="true"><use href="#i-prev"></use></svg></button><button type="button" class="ss-b big" data-act="ss-play" id="ss-play" aria-label="Jeda"><svg class="i" aria-hidden="true"><use href="#i-pause"></use></svg></button><button type="button" class="ss-b xp" data-act="ss-next" aria-label="Gambar seterusnya"><svg class="i" aria-hidden="true"><use href="#i-next"></use></svg></button><button type="button" class="ss-b ss-mzp xm" data-act="ss-mzpv" id="ss-mzpv" aria-label="Lagu sebelum" hidden></button><button type="button" class="ss-b ss-mzb" data-act="ss-mz" id="ss-mz" aria-label="Pilih muzik" aria-pressed="false"></button><button type="button" class="ss-b ss-mzn xm" data-act="ss-mzn" id="ss-mzn" aria-label="Lagu seterusnya" hidden></button><button type="button" class="ss-b ss-mzl xm" data-act="ss-mzl" aria-label="Tukar lagu"><svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M4 7h12M4 12h12M4 17h7M19 14v6M16 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
   <div class="ss-pg"><i id="ss-pg"></i></div>
 </div>
 <div class="scrim" id="cap" hidden>
@@ -2330,7 +2338,8 @@ function ssOpen(){
   ssMz(true);ssUi();ssShow(0);ssHideLater();
 }
 function ssUi(){$('ss-play').innerHTML='<svg class="i" aria-hidden="true"><use href="#i-'+(SS.playing?'pause':'play')+'"></use></svg>';$('ss-play').setAttribute('aria-label',SS.playing?'Jeda':'Main');$('ss-shuf').setAttribute('aria-pressed',SS.shuf);ssMzUi();}
-function ssMzUi(){const b=$('ss-mz');if(!b||typeof MZI==='undefined')return;const pl=MZ.st==='playing';b.innerHTML=pl?'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>':MZI.note;b.setAttribute('aria-pressed',pl?'true':'false');b.setAttribute('aria-label',pl?'Jeda muzik':MZ.url?'Main muzik':'Pilih muzik');}
+function ssMzUi(){const b=$('ss-mz');if(!b||typeof MZI==='undefined')return;const pl=MZ.st==='playing';b.innerHTML=pl?'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>':MZI.note;b.setAttribute('aria-pressed',pl?'true':'false');b.setAttribute('aria-label',pl?'Jeda muzik':MZ.url?'Main muzik':'Pilih muzik');const n=$('ss-mzn');if(n){n.hidden=!mzHasList();n.innerHTML=MZI.nx;}const pv=$('ss-mzpv');if(pv){pv.hidden=!mzHasList();pv.innerHTML=MZI.pv;}}
+function ssExpand(g){const el=$('ss');if(!el)return;el.classList.toggle('ex-p',g==='p');el.classList.toggle('ex-m',g==='m');clearTimeout(SS.exT);SS.exT=setTimeout(()=>{el.classList.remove('ex-p','ex-m');},4500);}
 function ssMz(on){const d=document.getElementById('mzs'),p=on?$('ss'):document.body;if(d&&d.parentNode!==p)p.appendChild(d);}
 function ssHideLater(){clearTimeout(SS.hideT);SS.hideT=setTimeout(()=>{if(SS.playing)$('ss').classList.add('ch');},3500);}
 function ssCap(p,bits){
@@ -2382,7 +2391,7 @@ function ssToggle(){
 }
 function ssClose(){
   clearTimeout(SS.tm);clearTimeout(SS.hideT);SS.tok++;
-  try{mzSheet(false);}catch(e){}ssMz(false);
+  try{mzSheet(false);}catch(e){}ssMz(false);clearTimeout(SS.exT);$('ss').classList.remove('ex-p','ex-m');
   $('ss').hidden=true;
   try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});}catch(e){}
   try{if(SS.wl){SS.wl.release();SS.wl=null;}}catch(e){}
@@ -3862,6 +3871,8 @@ const MZI={
   play:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>',
   pause:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>',
   stop:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>',
+  nx:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M6 6l6 6-6 6M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  pv:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M18 6l-6 6 6 6M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   dn:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   up:'<svg viewBox="0 0 24 24" class="mzi" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
@@ -3871,7 +3882,13 @@ function mzPillHtml(){
   const sp=MZ.em.t==='frame',pl=MZ.st==='playing';
   return '<div class="mzp" id="mzp"><span class="mzp-i">'+(pl?'<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>':MZI.note)+'</span><button type="button" class="mzp-t mzp-pick" data-act="mz-pick" aria-label="Tukar muzik">'+esc(MZ.title||'Muzik keluarga')+'</button>'+
     (sp?'<button type="button" class="mzp-b" data-act="mz-sp" aria-label="Buka atau tutup pemain">'+(MZ.sp?MZI.up:MZI.dn)+'</button>'
-       :'<button type="button" class="mzp-b" data-act="mz-pp" aria-label="'+(pl?'Jeda':'Main')+'">'+(pl?MZI.pause:MZI.play)+'</button><button type="button" class="mzp-b" data-act="mz-stop" aria-label="Henti">'+MZI.stop+'</button>')+'</div>';
+       :'<button type="button" class="mzp-b" data-act="mz-pp" aria-label="'+(pl?'Jeda':'Main')+'">'+(pl?MZI.pause:MZI.play)+'</button>'+(mzHasList()?'<button type="button" class="mzp-b" data-act="mz-next" aria-label="Lagu seterusnya">'+MZI.nx+'</button>':'')+'<button type="button" class="mzp-b" data-act="mz-stop" aria-label="Henti">'+MZI.stop+'</button>')+'</div>';
+}
+function mzHasList(){return !!(MZ.em&&MZ.em.t==='yt'&&MZ.em.list);}
+function mzSkip(n){
+  if(!mzHasList()){toast('Butang ini untuk senarai main YouTube');return;}
+  if(!MZ.pl||!(MZ.pl.nextVideo&&MZ.pl.previousVideo)){toast('Pemain belum sedia, cuba sebentar lagi');return;}
+  try{if(n>0)MZ.pl.nextVideo();else MZ.pl.previousVideo();}catch(e){}
 }
 function mzNow(){
   const e=document.getElementById('mzs-now');if(!e)return;
@@ -3880,7 +3897,7 @@ function mzNow(){
   e.hidden=false;
   e.innerHTML='<span class="mzs-nt"><small>'+(pl?'Sedang dimainkan':'Dipilih')+'</small><b>'+esc(MZ.title||'Muzik keluarga')+'</b></span>'+
     (sp?'<button type="button" class="mzp-b" data-act="mz-sp" aria-label="Buka atau tutup pemain">'+(MZ.sp?MZI.up:MZI.dn)+'</button>'
-      :'<button type="button" class="mzp-b" data-act="mz-pp" aria-label="'+(pl?'Jeda':'Main')+'">'+(pl?MZI.pause:MZI.play)+'</button><button type="button" class="mzp-b" data-act="mz-stop" aria-label="Henti">'+MZI.stop+'</button>');
+      :(mzHasList()?'<button type="button" class="mzp-b" data-act="mz-prev" aria-label="Lagu sebelum">'+MZI.pv+'</button>':'')+'<button type="button" class="mzp-b" data-act="mz-pp" aria-label="'+(pl?'Jeda':'Main')+'">'+(pl?MZI.pause:MZI.play)+'</button>'+(mzHasList()?'<button type="button" class="mzp-b" data-act="mz-next" aria-label="Lagu seterusnya">'+MZI.nx+'</button>':'')+'<button type="button" class="mzp-b" data-act="mz-stop" aria-label="Henti">'+MZI.stop+'</button>');
 }
 function mzRefresh(){const el=document.getElementById('mzp');if(el)el.outerHTML=mzPillHtml();ssMzUi();mzNow();}
 function mzYtLoad(cb){
@@ -4916,7 +4933,11 @@ document.addEventListener('click',e=>{
   else if(a==='mz-stop')mzStop();
   else if(a==='mz-sp'){MZ.sp=!MZ.sp;const h=document.getElementById('mz-host');if(h)h.classList.toggle('show',MZ.sp);mzRefresh();}
   else if(a==='mz-pick'||a==='ss-mzl')mzSheet(true);
-  else if(a==='ss-mz'){if(MZ.url&&MZ.em&&MZ.em.t!=='frame')mzPP();else mzSheet(true);}
+  else if(a==='mz-next')mzSkip(1);
+  else if(a==='ss-mzn'){mzSkip(1);ssExpand('m');}
+  else if(a==='ss-mzpv'){mzSkip(-1);ssExpand('m');}
+  else if(a==='mz-prev')mzSkip(-1);
+  else if(a==='ss-mz'){if(MZ.url&&MZ.em&&MZ.em.t!=='frame')mzPP();else mzSheet(true);ssExpand('m');}
   else if(a==='mz-x')mzSheet(false);
   else if(a==='mz-paste')mzPaste();
   else if(a==='mz-use2'){const i=document.getElementById('mz-in2');if(i)mzUse(i.value);}
@@ -4951,9 +4972,9 @@ document.addEventListener('click',e=>{
   else if(a==='vplay')vplay(id);
   else if(a==='slide')ssOpen();
   else if(a==='ss-close')ssClose();
-  else if(a==='ss-prev'){ssShow(SS.i-1);ssHideLater();}
-  else if(a==='ss-next'){ssShow(SS.i+1);ssHideLater();}
-  else if(a==='ss-play')ssToggle();
+  else if(a==='ss-prev'){ssShow(SS.i-1);ssHideLater();ssExpand('p');}
+  else if(a==='ss-next'){ssShow(SS.i+1);ssHideLater();ssExpand('p');}
+  else if(a==='ss-play'){ssToggle();ssExpand('p');}
   else if(a==='ss-shuf'){SS.shuf=!SS.shuf;const cur=SS.items[SS.i];SS.items=ssBuild();const k=SS.items.findIndex(x=>cur&&x.id===cur.id);ssUi();if(!SS.shuf&&k>=0)SS.i=k;ssHideLater();}
   else if(a==='cal-open')openCal();
   else if(a==='bb-open')openBb();
