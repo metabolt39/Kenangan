@@ -1373,6 +1373,14 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .trb{padding:0 18px 0 14px}
 .trz button{width:46px}
 @media (min-width:900px) and (min-height:480px){.trs #tr-b>.trbar{margin-bottom:0}}
+
+.ss::after{content:"";position:absolute;left:0;right:0;bottom:0;height:52%;z-index:1;pointer-events:none;background:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) 40%,rgba(0,0,0,.7))}
+.ss-cap::before{display:none!important}
+.ss-bot{align-items:center;justify-content:center}
+.ss.ch .ss-bot{opacity:.78;padding:4px;gap:2px;transform:translateX(-50%);background:rgba(20,20,22,.55)}
+.ss.ch .ss-bot .ss-b,.ss.ch .ss-bot .ss-b.big{width:44px;height:44px}
+.ss.ch .ss-bot .ss-b.big{background:rgba(255,255,255,.92)}
+.ss-bot .ss-b{flex:none}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
