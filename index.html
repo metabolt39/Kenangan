@@ -1234,15 +1234,22 @@ html{overscroll-behavior-y:contain}
 
 .trbt{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
 @media print{
-  @page{margin:12mm}
   body.trp>*:not(#tr){display:none!important}
-  body.trp #tr{position:static!important;background:none!important;display:block!important;overflow:visible!important;height:auto!important}
-  body.trp #tr .sheet{position:static!important;box-shadow:none!important;max-width:none!important;max-height:none!important;overflow:visible!important;transform:none!important;animation:none!important;background:#fff!important}
-  body.trp #tr .icon-btn,body.trp .trbar,body.trp .tra2,body.trp .trf,body.trp .trd,body.trp #tr-b>.hint{display:none!important}
-  body.trp .trw{overflow:visible!important;max-height:none!important;border:0!important;background:none!important}
-  body.trp .trsvg{width:100%!important;height:auto!important}
+  html,body{background:#fff!important}
+  body.trp{padding:0!important;margin:0!important;min-height:0!important;height:auto!important;overflow:visible!important}
+  body.trp #tr{--ink:#1f2a26;--ink-2:#5b6661;--surface:#fff;--teal:#2A7A63;position:static!important;background:none!important;display:block!important;overflow:visible!important;height:auto!important;padding:0!important;color:#1f2a26!important}
+  body.trp #tr .sheet{position:static!important;box-shadow:none!important;max-width:none!important;width:auto!important;max-height:none!important;overflow:visible!important;transform:none!important;animation:none!important;background:#fff!important;border:2.5px solid #2A7A63!important;border-radius:14px!important;outline:6px solid #fff;padding:6mm 8mm 5mm!important;margin:0!important;box-sizing:border-box!important;height:var(--trsh,188mm)!important;display:flex!important;flex-direction:column;break-inside:avoid;page-break-inside:avoid;color:#1f2a26!important}
+  body.trp #tr .sheet-h{justify-content:center!important;margin:0 0 3mm!important;padding:0 0 3mm!important;border-bottom:1.5px solid #cfe0d8}
+  body.trp #tr .sheet-h h2{font-size:22pt!important;text-align:center;margin:0!important}
+  body.trp #tr .icon-btn,body.trp .trbar,body.trp .tra2,body.trp .trf,body.trp .trd,body.trp .trside,body.trp #tr-b>.hint{display:none!important}
+  body.trp #tr-b{display:flex!important;flex:1;min-height:0;align-items:center;justify-content:center}
+  body.trp .trw{overflow:visible!important;max-height:none!important;border:0!important;background:none!important;padding:0!important;display:flex;justify-content:center}
+  body.trp .trsvg{width:100%!important;height:auto!important;max-height:var(--trph,150mm)!important}
+  body.trp .trr{filter:none!important}
   body.trp .trn{animation:none!important;opacity:1!important}
   body.trp .trk{display:none}
+  body.trp #tr .sheet>.sheet-h{flex:none}
+  body.trp #tr .sheet::after{content:'Kenangan Keluarga';display:block;text-align:center;font-size:8pt;color:#7a8680;margin-top:2mm;letter-spacing:.08em}
 }
 
 .bbs{margin-bottom:10px}
@@ -2659,10 +2666,14 @@ async function trShare(){
 }
 function trPrint(){
   if(!S.tree.length){toast('Tambah nama dahulu.');return;}
+  const svg=document.querySelector('#tr-b .trsvg'), vb=svg&&svg.viewBox.baseVal, land=!!vb&&vb.width/vb.height>1.05;
+  const pg=document.createElement('style');pg.id='trpg';
+  pg.textContent='@page{size:A4 '+(land?'landscape':'portrait')+';margin:9mm}body.trp #tr{--trph:'+(land?'140mm':'218mm')+';--trsh:'+(land?'188mm':'276mm')+'}';
+  document.head.appendChild(pg);
   document.body.classList.add('trp');
-  const done=()=>{document.body.classList.remove('trp');window.removeEventListener('afterprint',done);};
+  const done=()=>{document.body.classList.remove('trp');if(pg.parentNode)pg.remove();window.removeEventListener('afterprint',done);};
   window.addEventListener('afterprint',done);
-  setTimeout(()=>{try{window.print();}catch(e){done();}},60);
+  setTimeout(()=>{try{window.print();}catch(e){done();}},80);
 }
 
 /* salasilah: cubit untuk zum dan seret dengan tetikus */
