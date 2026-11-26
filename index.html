@@ -2841,7 +2841,6 @@ function ucDraw(cv,name,age,img,ti){
   x.fillStyle=T.mu;x.font='italic 400 38px '+SF;
   const ws='Semoga Allah memberkati umur anda, melimpahkan kesihatan dan rezeki.'.split(' ');let ln='',y=1190;
   ws.forEach(w=>{const tt=ln?ln+' '+w:w;if(x.measureText(tt).width>W-240){x.fillText(ln,W/2,y);y+=52;ln=w;}else ln=tt;});x.fillText(ln,W/2,y);
-  x.globalAlpha=.7;x.font='500 28px '+SF;x.fillText('Keluarga Kenangan',W/2,H-64);x.globalAlpha=1;
 }
 function ucOpen(i){
   const b=S.bd[i];if(!b)return;const inf=bdInfo(b);let img=null,ti=0;
