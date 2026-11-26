@@ -1514,12 +1514,23 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .ls-opt.ok{background:#2A7A63;color:#fff;border-color:#2A7A63}.ls-opt.no{background:#c0463a;color:#fff;border-color:#c0463a}
 .ls-end{text-align:center}.ls-big{font-size:44px}.ls-end h3{font-size:34px;margin:4px 0}.ls-a{display:flex;gap:8px;justify-content:center;margin-top:10px}
 
-.lk-box{max-width:520px;overflow:auto}
-.lk-c{width:100%;height:auto;aspect-ratio:1;border-radius:16px;border:1px solid var(--line);background:#fff;touch-action:none;cursor:crosshair}
-.lk-t{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
-.lk-p{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.lk-s{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);padding:0}
+.ucw{position:fixed;inset:0;z-index:85;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 10px) 12px calc(env(safe-area-inset-bottom,0px) + 10px)}
+.ucb{background:var(--surface);color:var(--ink);border-radius:24px;padding:14px;max-width:420px;width:100%;max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.ucc{width:100%;height:auto;max-height:62vh;object-fit:contain;border-radius:16px}
+.uca{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.uc-b{margin-left:auto;flex:none;min-height:34px!important;padding:0 12px!important;font-size:13px!important}
+.lk-box{max-width:520px;gap:10px}
+.lk-box .ls-h h2{font-size:19px}
+.lk-tp{display:flex;gap:6px;overflow-x:auto;padding:2px 0 4px;margin:0 -4px;scrollbar-width:none}
+.lk-tp::-webkit-scrollbar{display:none}
+.lk-tp .chip{flex:none;min-height:38px;padding:0 12px;font-size:14px;white-space:nowrap}
+.lk-c{display:block;width:min(100%,calc(100dvh - 400px));max-width:100%;min-width:220px;height:auto;aspect-ratio:1;margin:0 auto;border-radius:16px;border:1px solid var(--line);background:#fff;touch-action:none;cursor:crosshair}
+.lk-p{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;justify-items:center;max-width:340px;margin:0 auto;width:100%}
+.lk-s{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);padding:0}
 .lk-s.on{outline:3px solid var(--teal,#2A7A63);outline-offset:2px}
+.lk-tl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lk-tl .chip{justify-content:center;min-height:42px;padding:0 6px;font-size:14px;white-space:nowrap}
+body:has(#lk) .fab,body:has(#ls) .fab{display:none}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2970,10 +2981,10 @@ function lkOpen(){
   if(document.getElementById('lk'))return;
   const o=document.createElement('div');o.id='lk';o.className='ucw';o.setAttribute('role','dialog');o.setAttribute('aria-label','Ruang Lukis');
   o.innerHTML='<div class="ucb lk-box"><div class="ls-h"><h2>🎨 Ruang Lukis</h2><button type="button" class="chip" data-k="x">Tutup</button></div>'
-   +'<div class="lk-t">'+LKT.map(t=>'<button type="button" class="chip" data-k="t" data-v="'+t[1]+'">'+t[0]+' '+t[1]+'</button>').join('')+'</div>'
+   +'<div class="lk-tp">'+LKT.map(t=>'<button type="button" class="chip" data-k="t" data-v="'+t[1]+'">'+t[0]+' '+t[1]+'</button>').join('')+'</div>'
    +'<canvas class="lk-c" width="720" height="720"></canvas>'
    +'<div class="lk-p">'+LKC.map(c=>'<button type="button" class="lk-s" data-k="c" data-v="'+c+'" style="background:'+c+'" aria-label="Warna '+c+'"></button>').join('')+'</div>'
-   +'<div class="lk-t"><button type="button" class="chip pri" data-k="m" data-v="brush">🖌️ Berus</button><button type="button" class="chip" data-k="m" data-v="fill">🪣 Isi warna</button><button type="button" class="chip" data-k="m" data-v="erase">🧽 Padam</button><button type="button" class="chip" data-k="z">↩️ Undur</button><button type="button" class="chip" data-k="sz">● Saiz</button><button type="button" class="chip pri" data-k="save">Simpan / Kongsi</button></div></div>';
+   +'<div class="lk-tl"><button type="button" class="chip pri" data-k="m" data-v="brush">🖌️ Berus</button><button type="button" class="chip" data-k="m" data-v="fill">🪣 Isi</button><button type="button" class="chip" data-k="m" data-v="erase">🧽 Padam</button><button type="button" class="chip" data-k="z">↩️ Undur</button><button type="button" class="chip" data-k="sz">● Sederhana</button><button type="button" class="chip" data-k="save" id="lk-sv">📤 Simpan</button></div></div>';
   document.body.appendChild(o);
   const cv=o.querySelector('canvas'),x=cv.getContext('2d');let col='#e53935',mode='brush',sz=14,hist=[],drawing=false,lx=0,ly=0;
   const snap=()=>{try{hist.push(x.getImageData(0,0,720,720));if(hist.length>12)hist.shift();}catch(e){}};
@@ -2998,7 +3009,7 @@ function lkOpen(){
     else if(k==='m'){mode=t.dataset.v;mark();}
     else if(k==='t'){if(!hist.length||confirm('Mulakan lukisan baharu? Lukisan semasa akan hilang.'))load(t.dataset.v);}
     else if(k==='z'){const h=hist.pop();if(h)x.putImageData(h,0,0);}
-    else if(k==='sz'){sz=sz>=40?8:sz+12;t.textContent='● Saiz '+(sz<=8?'kecil':sz<=20?'sederhana':sz<=32?'besar':'sangat besar');}
+    else if(k==='sz'){sz=sz>=40?8:sz+12;t.textContent='● '+(sz<=8?'Kecil':sz<=20?'Sederhana':sz<=32?'Besar':'Sangat besar');}
     else if(k==='save')cv.toBlob(bl=>{
       if(!bl)return;const fl=new File([bl],'lukisan.png',{type:'image/png'});
       if(navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],text:'Lukisan dari Kenangan'}).catch(()=>{});}
