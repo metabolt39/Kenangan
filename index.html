@@ -1418,6 +1418,26 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .dke{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
 .dke .chip{font-size:20px;padding:6px 12px}
 .dke .chip[aria-pressed="true"]{background:var(--teal,#2A7A63);border-color:transparent}
+
+.jgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.jgrid .jt{flex-direction:column;align-items:flex-start;gap:12px;padding:16px 14px 14px;min-height:118px;border-radius:22px}
+.jgrid .jt-i{width:46px;height:46px;border-radius:15px;font-size:24px}
+.jgrid .jt-i svg{width:24px;height:24px}
+.jgrid .jt-t{width:100%}
+.jgrid .jt-t b{font-size:16px}
+.jgrid .jt-t span:last-child{font-size:12.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (min-width:700px){.jgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.sgg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.sgg .sg{margin-top:0!important}
+.sgg .sg[open]{grid-column:1/-1}
+#set-admin:not([hidden]){display:contents}
+.setp .sg-i{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:var(--accent-soft);color:var(--teal)}
+.setp .sg-i svg{width:21px;height:21px}
+.sgg .sg:not([open])>summary{flex-direction:column;align-items:flex-start;gap:10px;min-height:92px;padding:14px;position:relative}
+.sgg .sg:not([open])>summary::after{position:absolute;right:14px;top:16px;width:7px;height:7px}
+.sgg .sg:not([open]) .sg-t small{display:none}
+.sgg .sg:not([open]) .sg-t b{font-size:15.5px}
+@media (min-width:700px){.sgg{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1593,7 +1613,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   <section class="sheet setp" role="dialog" aria-modal="true" aria-labelledby="set-t">
     <div class="sheet-h"><h2 id="set-t">Tetapan</h2><button type="button" class="icon-btn" data-act="set-close" aria-label="Tutup tetapan"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
     <div class="set-me" id="set-me"></div>
-    <details class="sg"><summary><span class="sg-t"><b>Paparan</b><small id="sg-ui">Tema, mod dan saiz tulisan</small></span></summary>
+    <div class="sgg">
+    <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-sun"></use></svg></span><span class="sg-t"><b>Paparan</b><small id="sg-ui">Tema, mod dan saiz tulisan</small></span></summary>
       <div class="sg-b">
     <div class="tiles" id="set-skins" role="group" aria-label="Tema warna"></div>
     <div class="set-sub">Mod paparan</div>
@@ -1603,13 +1624,13 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <div class="set-sub">Saiz tulisan</div>
     <div class="segc" id="set-big" role="group" aria-label="Saiz tulisan"></div>
       </div></details>
-    <details class="sg"><summary><span class="sg-t"><b>Cuaca dan lokasi</b><small id="sg-loc">Bandar untuk cuaca dan waktu solat</small></span></summary>
+    <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-pin"></use></svg></span><span class="sg-t"><b>Cuaca dan lokasi</b><small id="sg-loc">Bandar untuk cuaca dan waktu solat</small></span></summary>
       <div class="sg-b">
     <p class="set-p" id="set-loc"></p>
     <div class="set-row"><button type="button" class="btn sm" data-act="gps"><svg class="i" aria-hidden="true"><use href="#i-pin"></use></svg> Guna lokasi automatik</button><button type="button" class="btn sm ghost" data-act="city">Tukar bandar</button></div>
     <form class="cityf" id="cityf" hidden><input id="cityi" type="text" maxlength="60" placeholder="cth. Ipoh, Kuching, Johor Bahru" aria-label="Nama bandar" autocomplete="off"><button class="btn" type="submit">Cari</button><button class="btn ghost" type="button" data-act="gps"><svg class="i" aria-hidden="true"><use href="#i-pin"></use></svg> Guna lokasi</button></form>
       </div></details>
-    <details class="sg"><summary><span class="sg-t"><b>Notifikasi dan waktu solat</b><small>Peringatan walaupun app ditutup</small></span></summary>
+    <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-bell"></use></svg></span><span class="sg-t"><b>Notifikasi dan waktu solat</b><small>Peringatan walaupun app ditutup</small></span></summary>
       <div class="sg-b">
     <p class="set-p" id="set-nt"></p>
     <div class="set-row"><button type="button" class="btn sm" data-act="nt" id="nt-b">Hidupkan notifikasi</button> <button type="button" class="btn sm ghost" data-act="nt-test" id="nt-test" hidden>Hantar ujian</button></div>
@@ -1620,29 +1641,30 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <p class="set-p" id="pray-st"></p>
     </div>
       </div></details>
-    <details class="sg"><summary><span class="sg-t"><b>Muzik</b><small>Pautan muzik pada peranti ini</small></span></summary>
+    <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-play"></use></svg></span><span class="sg-t"><b>Muzik</b><small>Pautan muzik pada peranti ini</small></span></summary>
       <div class="sg-b">
     <p class="set-p">Tampal pautan YouTube (video atau playlist), Spotify atau fail .mp3. Di halaman Utama hanya jalur kecil dengan tajuk dan butang main akan keluar. Pautan disimpan pada peranti ini sahaja.</p>
     <div class="set-row"><input id="mz-in" type="url" class="mz-in" placeholder="https://youtu.be/…" autocomplete="off" inputmode="url" aria-label="Pautan muzik"></div>
     <div class="set-row"><button type="button" class="btn sm" data-act="mz-save">Simpan muzik</button><button type="button" class="btn sm ghost" data-act="mz-clear">Padam</button></div>
       </div></details>
-    <details class="sg"><summary><span class="sg-t"><b>Hari lahir keluarga</b><small>Tambah dan urus</small></span></summary>
+    <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-cake"></use></svg></span><span class="sg-t"><b>Hari lahir keluarga</b><small>Tambah dan urus</small></span></summary>
       <div class="sg-b">
     <div class="bd-l" id="set-bdl"></div>
     <div class="bd-f"><label class="bdc"><span>Nama</span><input id="bd-n" type="text" maxlength="40" placeholder="cth. Atok" aria-label="Nama" autocomplete="off"></label><label class="bdc"><span>Tarikh lahir</span><input id="bd-d" type="date" aria-label="Tarikh lahir" max="2100-12-31"></label><button type="button" class="btn sm" data-act="bd-add">Tambah hari lahir</button></div>
       </div></details>
-    <details class="sg"><summary><span class="sg-t"><b>Ruang simpanan</b><small id="sg-st">Anggaran ruang gambar</small></span></summary>
+    <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-chart"></use></svg></span><span class="sg-t"><b>Ruang simpanan</b><small id="sg-st">Anggaran ruang gambar</small></span></summary>
       <div class="sg-b">
     <div class="stor" id="set-store" aria-live="polite"></div>
       </div></details>
     <div id="set-admin" hidden>
-      <details class="sg"><summary><span class="sg-t"><b>Pentadbir</b><small>Jemput, sandar dan import</small></span></summary><div class="sg-b">
+      <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-users"></use></svg></span><span class="sg-t"><b>Pentadbir</b><small>Jemput, sandar dan import</small></span></summary><div class="sg-b">
       <div class="set-list">
         <button type="button" class="set-item" data-act="invite">Jemput ahli keluarga</button>
         <button type="button" class="set-item" data-act="backup">Sandarkan semua kenangan</button>
         <button type="button" class="set-item" data-act="import">Import kenangan lama</button>
       </div>
       </div></details>
+    </div>
     </div>
   </section>
 </div>
@@ -2544,7 +2566,7 @@ function closeCal(){$('cal').hidden=true;S.calDel='';if($('sheet').hidden&&$('lb
 function normTr(id,d){const sp=Array.isArray(d.sp)?d.sp.filter(x=>typeof x==='string'&&x):[];if(typeof d.sid==='string'&&d.sid&&sp.indexOf(d.sid)<0)sp.push(d.sid);return {id:id,name:str(d.name).trim().slice(0,40),g:d.g==='p'?'p':'l',born:str(d.born).trim().slice(0,4),dead:!!d.dead,died:str(d.died).trim().slice(0,4),fid:str(d.fid),mid:str(d.mid),sp:sp.slice(0,8),by:str(d.by),at:Number(d.at)||0};}
 function trTile(){
   const n=S.tree.length;
-  return '<button type="button" class="jt" data-act="tr-open"><span class="jt-i emo" aria-hidden="true">🌳</span><span class="jt-t"><b>Salasilah Keluarga</b><span>'+(n?n+' insan tercatat dalam salasilah':'Supaya generasi akan datang mengenal asal-usulnya')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+  return '<button type="button" class="jt" data-act="tr-open"><span class="jt-i emo" aria-hidden="true">🌳</span><span class="jt-t"><b>Salasilah</b><span>'+(n?n+' insan':'Asal-usul keluarga')+'</span></span></button>';
 }
 const TRW=96,TRH=68,TRG=18,TRS=22,TRY=54,TRP=16;
 function trSpMap(T){
@@ -2705,7 +2727,7 @@ function trFail(){toast('Tak dapat simpan. Pastikan peraturan "tree" sudah ditam
 const DKE=['📁','🪪','📄','🏠','🚗','💊','💰','🕌','🎓','📸'];
 function dkTile(){
   const n=S.docs.length;
-  return '<button type="button" class="jt" data-act="dk-open"><span class="jt-i emo" aria-hidden="true">🗂️</span><span class="jt-t"><b>Dokumen Penting</b><span>'+(n?n+' pautan folder Google Drive':'Pautan terus ke folder Google Drive')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+  return '<button type="button" class="jt" data-act="dk-open"><span class="jt-i emo" aria-hidden="true">🗂️</span><span class="jt-t"><b>Dokumen</b><span>'+(n?n+' pautan Drive':'Pautan Google Drive')+'</span></span></button>';
 }
 function dkHost(u){try{return new URL(u).hostname.replace(/^www\./,'');}catch(e){return '';}}
 function dkUrl(v){
@@ -3052,7 +3074,7 @@ async function trDelete(){
 function normGr(id,d){const f=v=>typeof v==='number'&&isFinite(v)&&v>0?v:null;return {id:id,baby:str(d.baby),on:validDate(d.on)?d.on:'',kg:f(d.kg),cm:f(d.cm),by:str(d.by),at:num(d.at)};}
 function bbTile(){
   const n=S.albums.filter(a=>a.born).length;
-  return '<button type="button" class="jt" data-act="bb-open"><span class="jt-i emo" aria-hidden="true">🍼</span><span class="jt-t"><b>Tumbesaran Si Kecil</b><span>'+(n?'Gambar, berat dan tinggi dari bulan ke bulan':'Himpunan gambar serta catatan berat dan tinggi')+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+  return '<button type="button" class="jt" data-act="bb-open"><span class="jt-i emo" aria-hidden="true">🍼</span><span class="jt-t"><b>Si Kecil</b><span>'+(n?'Tumbesaran bulanan':'Berat, tinggi, gambar')+'</span></span></button>';
 }
 function bbMonths(born,on){
   const a=born.split('-').map(Number), b=on.split('-').map(Number);
@@ -3179,8 +3201,8 @@ function capWait(n){if(n<=0)return 'Sudah boleh dibuka';if(n<31)return n+' hari 
 function capTile(){
   const open=S.caps.filter(c=>capOpen(c)&&Date.now()-new Date(c.openOn+'T00:00:00').getTime()<14*864e5).length;
   const wait=S.caps.filter(c=>!capOpen(c)).length;
-  const sub=open?open+' warkah sudah boleh dibuka!':wait?wait+' warkah sedang menunggu':'Titipkan pesanan untuk dibuka pada hari yang dijanjikan';
-  return '<button type="button" class="jt" data-act="cap-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-lock"></use></svg>'+'</span><span class="jt-t"><b>Warkah Masa</b><span>'+esc(sub)+'</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
+  const sub=open?open+' boleh dibuka!':wait?wait+' menunggu':'Pesanan masa depan';
+  return '<button type="button" class="jt" data-act="cap-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-lock"></use></svg>'+'</span><span class="jt-t"><b>Warkah Masa</b><span>'+esc(sub)+'</span></span></button>';
 }
 function openCap(){
   const d=$('cap-d'); if(d&&!d.value){const t=new Date();t.setFullYear(t.getFullYear()+1);d.value=ymd(t);}
@@ -3219,7 +3241,7 @@ function statData(y){
     rx:S.likes.filter(l=>ids.has(l.postId)).length,cm:S.comments.filter(c=>ids.has(c.postId)).length};
 }
 function statYears(){const a=Array.from(new Set(P.map(p=>+String(dateOf(p)).slice(0,4)).filter(Boolean))).sort((a,b)=>b-a);return a.length?a:[new Date().getFullYear()];}
-function statTile(){if(DEMO||!P.length)return '';const y=statYears()[0];return '<button type="button" class="jt" data-act="stat-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-chart"></use></svg>'+'</span><span class="jt-t"><b>Imbas '+y+'</b><span>Kenangan, gambar dan destinasi sepanjang tahun</span></span><span class="jt-a" aria-hidden="true">›</span></button>';}
+function statTile(){if(DEMO||!P.length)return '';const y=statYears()[0];return '<button type="button" class="jt" data-act="stat-open"><span class="jt-i emo" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-chart"></use></svg>'+'</span><span class="jt-t"><b>Imbas '+y+'</b><span>Rumusan setahun</span></span></button>';}
 function openStat(){if(!S.statY)S.statY=statYears()[0];$('stat').hidden=false;document.body.style.overflow='hidden';renderStat();}
 function closeStat(){$('stat').hidden=true;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden)document.body.style.overflow='';}
 function renderStat(){
@@ -4466,9 +4488,8 @@ function keluargaHtml(){
   if(DEMO)return demoBanner();
   let h=lokasiHtml();
   h+=sec('Kalendar dan hari lahir')+calHtml()+bdHtml();
-  h+=sec('Ruang Keluarga')+'<div class="jts">'+capTile()+trTile()+bbTile()+statTile()+dkTile()+'</div>';
-  h+=sec('Simpanan Selamat')+backupBanner();
-  h+='<div class="jts"><button type="button" class="jt" data-act="settings"><span class="jt-i emo" aria-hidden="true">'+icon('download')+'</span><span class="jt-t"><b>Tetapan &amp; Simpanan</b><span>Salinan kenangan, tema, hari lahir dan akaun</span></span><span class="jt-a" aria-hidden="true">›</span></button></div>';
+  h+=sec('Ruang Keluarga')+'<div class="jts jgrid">'+capTile()+trTile()+bbTile()+statTile()+dkTile()+'<button type="button" class="jt" data-act="settings"><span class="jt-i emo" aria-hidden="true">'+icon('download')+'</span><span class="jt-t"><b>Tetapan</b><span>Simpanan &amp; akaun</span></span></button></div>';
+  {const bk=backupBanner();if(bk)h+=sec('Simpanan Selamat')+bk;}
   return h;
 }
 function utamaHtml(m){
