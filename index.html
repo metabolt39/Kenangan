@@ -1487,6 +1487,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .nw-l{list-style:none;margin:2px 0 6px;padding:0;display:flex;flex-direction:column;gap:10px}
 .nw-l a{font-weight:600;font-size:15.5px;line-height:1.4;color:var(--ink);text-decoration:none}
 .nw-l small{display:block;margin-top:2px;font-size:12px;color:var(--ink-2)}
+
+.uc-b{margin-left:auto;flex:none;min-height:34px!important;padding:0 12px!important;font-size:13px!important}
+.ucw{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.ucb{background:var(--surface);border-radius:24px;padding:14px;max-width:420px;width:100%;max-height:94vh;display:flex;flex-direction:column;gap:12px}
+.ucc{width:100%;height:auto;max-height:68vh;object-fit:contain;border-radius:16px}
+.uca{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2800,6 +2806,60 @@ function nwHtml(){
   else b='<span>'+(S.newsBusy?'Memuatkan berita…':S.newsErr?'Berita tidak dapat dimuatkan sekarang.':'Memuatkan berita…')+'</span>';
   return '<div class="intl nw"><span class="intl-e">📰</span><div class="intl-t"><small>Berita ringkas</small>'+b+'<div class="intl-b"><button type="button" class="chip" data-act="nw-ref">Segar semula</button><button type="button" class="chip" data-act="nw-hide">Sembunyi</button></div></div></div>';
 }
+/* ---------- Kad ucapan hari lahir ---------- */
+const UCT=[
+ {n:'Hijau emas',c:['#1f6b57','#2A7A63','#e8a93a'],a:'#f6d98a',t:'#ffffff'},
+ {n:'Biru malam',c:['#121a38','#25407c','#6e82d4'],a:'#f2d28b',t:'#ffffff'},
+ {n:'Krim lembut',c:['#fff3ec','#fbdcd6','#f3c3a6'],a:'#b9853a',t:'#5a2d2d'}];
+function ucStar(x,cx,cy,r,rot){x.beginPath();for(let k=0;k<16;k++){const R=k%2?r*.64:r,an=rot+k*Math.PI/8;x[k?'lineTo':'moveTo'](cx+R*Math.cos(an),cy+R*Math.sin(an));}x.closePath();}
+function ucDraw(cv,name,age,img,ti){
+  const T=UCT[ti||0],W=1080,H=1350,x=cv.getContext('2d');cv.width=W;cv.height=H;
+  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,T.c[0]);g.addColorStop(.55,T.c[1]);g.addColorStop(1,T.c[2]);
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.strokeStyle=T.a;x.lineWidth=3;
+  [[0,0],[W,0],[0,H],[W,H]].forEach(c=>{[250,190,130].forEach((r,j)=>{x.globalAlpha=.42-j*.08;ucStar(x,c[0],c[1],r,j*Math.PI/16);x.stroke();});x.globalAlpha=.25;x.beginPath();x.arc(c[0],c[1],300,0,7);x.stroke();});
+  x.globalAlpha=1;x.lineWidth=5;x.strokeRect(34,34,W-68,H-68);x.lineWidth=2;x.strokeRect(54,54,W-108,H-108);
+  x.textAlign='center';x.fillStyle=T.t;
+  x.font='600 40px Georgia,serif';x.globalAlpha=.9;x.fillText('بسم الله الرحمن الرحيم',W/2,140);x.globalAlpha=1;
+  x.font='italic 700 84px Georgia,serif';x.fillText('Selamat Hari Lahir',W/2,260);
+  x.fillStyle=T.a;[-1,0,1].forEach(k=>{ucStar(x,W/2+k*70,318,k?12:20,0);x.fill();});x.fillStyle=T.t;
+  const cy=img?660:580,r=img?285:0;
+  if(img){
+    x.save();x.beginPath();x.arc(W/2,cy,r,0,7);x.closePath();x.clip();
+    const s=Math.max(2*r/img.width,2*r/img.height),w=img.width*s,h=img.height*s;x.drawImage(img,W/2-w/2,cy-h/2,w,h);x.restore();
+    x.lineWidth=12;x.strokeStyle=T.a;x.beginPath();x.arc(W/2,cy,r+6,0,7);x.stroke();
+  }else{x.globalAlpha=.95;x.strokeStyle=T.a;x.lineWidth=6;ucStar(x,W/2,cy,190,0);x.stroke();ucStar(x,W/2,cy,130,Math.PI/8);x.stroke();x.fillStyle=T.a;ucStar(x,W/2,cy,52,0);x.fill();x.fillStyle=T.t;x.globalAlpha=1;}
+  let fs=96;x.font='700 '+fs+'px Georgia,serif';const nm=String(name);
+  while(x.measureText(nm).width>W-200&&fs>44){fs-=4;x.font='700 '+fs+'px Georgia,serif';}
+  const ny=img?1060:880;x.fillText(nm,W/2,ny);
+  if(age){x.font='600 54px Georgia,serif';x.fillText('Hari lahir ke-'+age,W/2,ny+78);}
+  x.font='400 38px Georgia,serif';
+  const t='Semoga panjang umur, murah rezeki dan sentiasa dalam lindungan Allah.',ws=t.split(' ');let ln='',y=ny+(age?166:106);
+  ws.forEach(w=>{const tt=ln?ln+' '+w:w;if(x.measureText(tt).width>W-260){x.fillText(ln,W/2,y);y+=54;ln=w;}else ln=tt;});x.fillText(ln,W/2,y);
+  x.globalAlpha=.8;x.font='600 32px Georgia,serif';x.fillText('Daripada keluarga Kenangan',W/2,H-92);x.globalAlpha=1;
+}
+function ucOpen(i){
+  const b=S.bd[i];if(!b)return;const inf=bdInfo(b);let img=null,ti=0;
+  const o=document.createElement('div');o.className='ucw';o.setAttribute('role','dialog');o.setAttribute('aria-label','Kad ucapan hari lahir');
+  o.innerHTML='<div class="ucb"><canvas class="ucc"></canvas><div class="uca">'+UCT.map((x,j)=>'<button type="button" class="chip" data-u="t'+j+'">'+x.n+'</button>').join('')+'</div><div class="uca"><button type="button" class="chip" data-u="pic">📷 Pilih gambar</button><button type="button" class="chip pri" data-u="share">Kongsi</button><button type="button" class="chip" data-u="x">Tutup</button></div><input type="file" accept="image/*" hidden></div>';
+  document.body.appendChild(o);
+  const cv=o.querySelector('canvas'),fi=o.querySelector('input'),draw=()=>ucDraw(cv,b.name,inf.age,img,ti);draw();
+  const close=()=>{o.remove();};
+  fi.addEventListener('change',()=>{const f=fi.files&&fi.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{img=im;draw();URL.revokeObjectURL(u);};im.src=u;});
+  o.addEventListener('click',e=>{
+    const t=e.target.closest('[data-u]');
+    if(!t){if(e.target===o)close();return;}
+    const k=t.dataset.u;
+    if(k==='x')close();
+    else if(k==='pic')fi.click();
+    else if(/^t\d$/.test(k)){ti=+k[1];draw();}
+    else if(k==='share')cv.toBlob(bl=>{
+      if(!bl)return;const fl=new File([bl],'ucapan-hari-lahir.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],text:'Selamat hari lahir, '+b.name+'!'}).catch(()=>{});}
+      else{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='ucapan-hari-lahir.png';document.body.appendChild(a);a.click();a.remove();toast('Kad disimpan. Boleh dihantar melalui WhatsApp.');}
+    },'image/png');
+  });
+}
 /* ---------- Hiburan ringan (pantun, teka-teki, jenaka, fakta, kuiz) ---------- */
 const HB=[
 ['pantun','🎋','Pantun',[
@@ -3673,7 +3733,7 @@ function bdHtml(){
   if(!l.length)return '';
   return sec('Hari lahir','<button type="button" class="lnk" data-act="settings">Urus</button>')+'<div class="bds">'+l.map(x=>{
     const t=x.i.days===0;
-    return '<div class="bd'+(t?' today':'')+'"><span class="bi" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-cake"></use></svg>'+'</span><div class="bt"><strong>'+esc(x.b.name)+'</strong><span>'+(t?'Hari ini hari lahir'+(x.i.age?' ke-'+x.i.age:'')+'! Ucaplah selamat.':(x.i.days===1?'Esok':'Dalam '+x.i.days+' hari')+' · '+esc(x.i.md)+(x.i.age?' · ke-'+x.i.age:''))+'</span></div></div>';
+    return '<div class="bd'+(t?' today':'')+'"><span class="bi" aria-hidden="true">'+'<svg class="i" aria-hidden="true"><use href="#i-cake"></use></svg>'+'</span><div class="bt"><strong>'+esc(x.b.name)+'</strong><span>'+(t?'Hari ini hari lahir'+(x.i.age?' ke-'+x.i.age:'')+'! Ucaplah selamat.':(x.i.days===1?'Esok':'Dalam '+x.i.days+' hari')+' · '+esc(x.i.md)+(x.i.age?' · ke-'+x.i.age:''))+'</span></div><button type="button" class="chip uc-b" data-act="uc-open" data-v="'+S.bd.indexOf(x.b)+'">🎂 Kad</button></div>';
   }).join('')+'</div>';
 }
 function throwHtml(){
@@ -5618,6 +5678,7 @@ document.addEventListener('click',e=>{
   else if(a==='nw-ref'){nwLoad(true);render();}
   else if(a==='nw-hide'){try{localStorage.setItem('kk-news','0');}catch(e){}render();}
   else if(a==='nw-show'){try{localStorage.removeItem('kk-news');}catch(e){}render();}
+  else if(a==='uc-open'){ucOpen(+v);}
   else if(a==='kf-next'){S.kfN++;S.kfShow=false;render();}
   else if(a==='kf-show'){S.kfShow=true;render();}
   else if(a==='dk-open')dkOpen();
