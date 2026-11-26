@@ -1476,6 +1476,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .jgrid.near .jt-t span:last-child{font-size:12px!important}
 #gl-b{max-width:440px;margin-left:auto;margin-right:auto}
 .mapc{max-width:760px;margin-left:auto;margin-right:auto}
+
+.hbcs{flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.hbc{min-height:34px!important;padding:0 11px!important;font-size:13px!important}
+.hb-p{font-family:var(--font-display);font-weight:600;line-height:1.55}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2768,6 +2772,62 @@ function openTr(){S.trCenter=true;S.trMode='';S.trDel=false;$('tr').hidden=false
 function closeTr(){$('tr').hidden=true;S.trMode='';S.trDel=false;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden)document.body.style.overflow='';}
 function trFail(){toast('Tak dapat simpan. Pastikan peraturan "tree" sudah ditambah di Firebase.');}
 
+/* ---------- Hiburan ringan (pantun, teka-teki, jenaka, fakta, kuiz) ---------- */
+const HB=[
+['pantun','🎋','Pantun',[
+'Pisang emas dibawa belayar,|Masak sebiji di atas peti;|Hutang emas boleh dibayar,|Hutang budi dibawa mati.',
+'Berakit-rakit ke hulu,|Berenang-renang ke tepian;|Bersakit-sakit dahulu,|Bersenang-senang kemudian.',
+'Kalau ada sumur di ladang,|Boleh kita menumpang mandi;|Kalau ada umur yang panjang,|Boleh kita berjumpa lagi.',
+'Pulau Pandan jauh ke tengah,|Gunung Daik bercabang tiga;|Hancur badan dikandung tanah,|Budi yang baik dikenang juga.',
+'Buah cempedak di luar pagar,|Ambil galah tolong jolokkan;|Saya budak baru belajar,|Kalau salah tolong tunjukkan.',
+'Tuailah padi antara masak,|Esok jangan layu-layuan;|Intailah kami antara nampak,|Esok jangan rindu-rinduan.']],
+['teka','🧩','Teka-teki',[
+['Apa yang makin diambil makin besar?','Lubang.'],
+['Apa yang ada mata tetapi tidak boleh melihat?','Jarum.'],
+['Apa yang ada kaki tetapi tidak boleh berjalan?','Meja.'],
+['Apa yang ada gigi tetapi tidak boleh menggigit?','Sikat.'],
+['Apa yang naik tetapi tidak pernah turun?','Umur.'],
+['Apa yang pecah tanpa disentuh?','Janji.'],
+['Apa yang ada bandar tetapi tiada rumah, ada sungai tetapi tiada air?','Peta.'],
+['Apa yang semakin pendek semakin ia menyala?','Lilin.'],
+['Apa yang basah ketika ia mengeringkan?','Tuala.']]],
+['jenaka','😄','Jenaka',[
+'Kenapa komputer pergi klinik? Sebab ada virus.',
+'Kenapa buku matematik sedih? Sebab banyak masalah.',
+'Anak: "Ayah, kenapa ayah garu kepala?" Ayah: "Sebab ayah seorang sahaja yang tahu mana yang gatal."',
+'Pelanggan: "Ada lalat dalam sup saya!" Pelayan: "Jangan risau, dia tak makan banyak."',
+'Kenapa kalendar sangat popular? Sebab tarikhnya banyak.',
+'Ibu: "Kenapa markah awak rendah?" Anak: "Sebab soalan tak sama dengan jawapan yang saya hafal."',
+'Kenapa pokok tak pernah sesat? Sebab dia sentiasa kenal akarnya.']],
+['fakta','🔭','Fakta menarik',[
+'Madu yang disimpan dengan betul boleh kekal elok sangat lama dan tidak mudah rosak.',
+'Gurita mempunyai tiga jantung.',
+'Lebah menari untuk memberitahu kawan-kawannya arah bunga.',
+'Burung kolibri boleh terbang ke belakang.',
+'Bunga terbesar di dunia, Rafflesia, tumbuh di hutan Sabah.',
+'Kubah Masjid Sultan Salahuddin Abdul Aziz Shah di Shah Alam antara yang terbesar di dunia.',
+'Jantung ikan paus biru sebesar sebuah kereta kecil.']],
+['kuiz','🎯','Kuiz ringkas',[
+['Berapa rukun Islam?','Lima.'],
+['Surah paling panjang dalam Al-Quran?','Al-Baqarah.'],
+['Bulan ke-9 dalam takwim Hijrah?','Ramadan.'],
+['Siapakah khalifah pertama selepas Rasulullah SAW?','Abu Bakar as-Siddiq r.a.'],
+['Berapa juzuk dalam Al-Quran?','30 juzuk.'],
+['Gunung tertinggi di Malaysia?','Gunung Kinabalu.'],
+['Haiwan kebangsaan Malaysia?','Harimau Malaya.'],
+['Sungai terpanjang di Malaysia?','Sungai Rajang.'],
+['Negeri terbesar di Semenanjung Malaysia?','Pahang.']]]];
+S.hbT=-1;S.hbN=0;S.hbShow=false;
+function hbHtml(){
+  if(S.hbT<0)S.hbT=dayOfYear()%HB.length;
+  const c=HB[S.hbT],L=c[3],it=L[(dayOfYear()*3+S.hbN)%L.length];
+  let body;
+  if(Array.isArray(it))body='<b>'+esc(it[0])+'</b>'+(S.hbShow?'<span><b>'+esc(it[1])+'</b></span>':'<div class="intl-b"><button type="button" class="chip" data-act="hb-show">Lihat jawapan</button></div>');
+  else if(c[0]==='pantun')body='<b class="hb-p">'+it.split('|').map(esc).join('<br>')+'</b>';
+  else body='<b>'+esc(it)+'</b>';
+  const chips=HB.map((x,i)=>'<button type="button" class="chip hbc'+(i===S.hbT?' pri':'')+'" data-act="hb-cat" data-v="'+i+'">'+x[1]+' '+x[2]+'</button>').join('');
+  return '<div class="intl hb"><span class="intl-e">'+c[1]+'</span><div class="intl-t"><small>Hiburan ringan</small><div class="intl-b hbcs">'+chips+'</div>'+body+'<div class="intl-b"><button type="button" class="chip" data-act="hb-next">Lagi ›</button></div></div></div>';
+}
 /* ---------- Tahukah awak? (fakta keluarga harian daripada salasilah) ---------- */
 S.kfN=0;S.kfShow=false;
 function kfName(p){return String(p.name).split(/\s+(?:bin|binti|bt|bte|b\.|bnt)\s+/i)[0].trim()||p.name;}
@@ -4326,6 +4386,7 @@ function interludes(){
   // keluarga (daripada salasilah)
   try{const L=kfFacts();if(L.length){const x=L[(dayOfYear()*7+S.kfN)%L.length];
     out.push('<div class="intl"><span class="intl-e">🌳</span><div class="intl-t"><small>Tahukah anda? · Keluarga</small>'+(x.q?'<b>'+x.q+'</b>'+(S.kfShow?'<span>'+x.a+'</span>':'<div class="intl-b"><button type="button" class="chip" data-act="kf-show">Lihat jawapan</button></div>'):'<b>'+x.t+'</b>')+'<div class="intl-b"><button type="button" class="chip" data-act="kf-next">Fakta lain ›</button></div></div></div>');}}catch(e){}
+  try{out.push(hbHtml());}catch(e){}
   // 4 doa
   const d=DOA[(doy+3)%DOA.length];
   out.push('<div class="intl"><span class="intl-e">🤲</span><div class="intl-t"><small>Doa · '+esc(d[0])+'</small><div class="ar" dir="rtl" lang="ar">'+d[1]+'</div><span>'+esc(d[2])+'</span></div></div>');
@@ -5522,6 +5583,9 @@ document.addEventListener('click',e=>{
   else if(a==='bb-del-ask'){S.bbDel=true;renderBb();}
   else if(a==='bb-del-no'){S.bbDel=false;renderBb();}
   else if(a==='bb-del-yes'){const bid=S.bbSel;S.bbDel=false;S.bbSel='';S.grow.filter(g=>g.baby===bid).forEach(g=>S.db.doc('tree/'+g.id).delete().catch(()=>{}));S.db.doc('albums/'+bid).delete().then(()=>toast('Baby dipadam. Gambar kekal dalam Galeri.')).catch(bbFail);renderBb();}
+  else if(a==='hb-cat'){S.hbT=+v;S.hbN=0;S.hbShow=false;render();}
+  else if(a==='hb-next'){S.hbN++;S.hbShow=false;render();}
+  else if(a==='hb-show'){S.hbShow=true;render();}
   else if(a==='kf-next'){S.kfN++;S.kfShow=false;render();}
   else if(a==='kf-show'){S.kfShow=true;render();}
   else if(a==='dk-open')dkOpen();
