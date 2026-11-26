@@ -1454,6 +1454,28 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .kf-a{margin:0 0 10px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--teal,#2A7A63) 12%,transparent);font-size:15px;line-height:1.45}
 .kf-n{display:block;margin-left:auto}
 #bb .chip.pri,.trs .chip.pri,button.chip.pri{background:#2A7A63!important;color:#fff!important;border-color:transparent!important}
+
+/* kemas: jarak dan keseragaman kad */
+.kf{margin:18px 0 22px!important;padding:14px 18px 12px!important}
+.kf-p{margin:0 0 8px!important}
+.kf-n{margin-top:2px}
+.intl{margin:12px 0!important;padding:14px 16px!important}
+.intl-t b{line-height:1.4}
+.intl-b{flex-wrap:wrap}
+.icard{margin-bottom:12px}
+.hint{line-height:1.55}
+
+/* kemas pusingan 2 */
+.cards .acard{height:100%}
+.acard .ac-t strong{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.jgrid.near{gap:10px}
+.jgrid.near .jt{flex-direction:row!important;align-items:center!important;min-height:0!important;padding:10px 12px!important;gap:10px!important;border-radius:18px!important}
+.jgrid.near .jt-i{width:40px!important;height:40px!important;border-radius:13px!important;flex:none}
+.jgrid.near .jt-t{min-width:0}
+.jgrid.near .jt-t b{font-size:14.5px!important}
+.jgrid.near .jt-t span:last-child{font-size:12px!important}
+#gl-b{max-width:440px;margin-left:auto;margin-right:auto}
+.mapc{max-width:760px;margin-left:auto;margin-right:auto}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -4578,7 +4600,7 @@ function todayStrip(){
 function keluargaHtml(){
   if(DEMO)return demoBanner();
   let h=lokasiHtml();
-  h+=sec('Kalendar dan hari lahir')+calHtml()+bdHtml();
+  h+=calHtml()+bdHtml();
   h+=kfHtml();
   h+=sec('Ruang Keluarga')+'<div class="jts jgrid">'+capTile()+trTile()+bbTile()+statTile()+dkTile()+'<button type="button" class="jt" data-act="settings"><span class="jt-i emo" aria-hidden="true">'+icon('download')+'</span><span class="jt-t"><b>Tetapan</b><span>Simpanan &amp; akaun</span></span></button></div>';
   {const bk=backupBanner();if(bk)h+=sec('Simpanan Selamat')+bk;}
