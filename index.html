@@ -2216,7 +2216,8 @@ function mapData(){
   P.forEach(p=>{
     if(!p.place)return;
     const inMy=p.lat!=null&&p.lon!=null&&MYB(p.lat,p.lon);
-    const g=inMy?[pk(p.place),p.lat,p.lon]:(ovsOf(p,true)?null:geo(p.place));
+    const kwo=ovsOf(p,true), forceAb=kwo&&!(inMy&&geo(p.place));
+    const g=forceAb?null:(inMy?[pk(p.place),p.lat,p.lon]:geo(p.place));
     if(g&&!MYB(g[1],g[2])){const gk='g'+pk(p.place);let ge=ab.get(gk);if(!ge){ge={key:'ab:'+gk,lat:g[1],lng:g[2],flag:'📍',label:String(p.place).split(',')[0].slice(0,24),posts:[],names:new Set()};ab.set(gk,ge);}ge.posts.push(p);ge.names.add(p.place);return;}
     if(!g){
       const o=ovsOf(p);
