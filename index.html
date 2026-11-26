@@ -2839,7 +2839,7 @@ function glDraw(){
 function glVec(lat,lng){const la=lat*Math.PI/180,lo=lng*Math.PI/180;return [Math.cos(la)*Math.cos(lo),Math.cos(la)*Math.sin(lo),Math.sin(la)];}
 function glSize(){
   const w=$('gl-w');if(!w)return;
-  const s=Math.max(240,Math.min(w.clientWidth,Math.round(window.innerHeight*.58)));
+  const s=Math.max(200,Math.min(Math.round(w.clientWidth*.72),Math.round(window.innerHeight*.4),320));
   if(s===GB.cw)return;
   GB.cw=s;const c=$('gl-c'),d=Math.min(3,window.devicePixelRatio||1);
   c.width=Math.round(s*d);c.height=Math.round(s*d);c.style.width=s+'px';c.style.height=s+'px';
