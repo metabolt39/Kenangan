@@ -1468,18 +1468,25 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* kemas pusingan 2 */
 .cards .acard{height:100%}
 .acard .ac-t strong{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media (min-width:700px){
 .jgrid.near{gap:10px}
 .jgrid.near .jt{flex-direction:row!important;align-items:center!important;min-height:0!important;padding:10px 12px!important;gap:10px!important;border-radius:18px!important}
 .jgrid.near .jt-i{width:40px!important;height:40px!important;border-radius:13px!important;flex:none}
 .jgrid.near .jt-t{min-width:0}
 .jgrid.near .jt-t b{font-size:14.5px!important}
 .jgrid.near .jt-t span:last-child{font-size:12px!important}
+}
+@media (max-width:699px){.jgrid.near .jt{padding:12px 10px 10px}.jgrid.near .jt-t span:last-child{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}.jgrid.near .jt-t b{font-size:14.5px}}
 #gl-b{max-width:440px;margin-left:auto;margin-right:auto}
 .mapc{max-width:760px;margin-left:auto;margin-right:auto}
 
 .hbcs{flex-wrap:wrap;gap:6px;margin:6px 0 8px}
 .hbc{min-height:34px!important;padding:0 11px!important;font-size:13px!important}
 .hb-p{font-family:var(--font-display);font-weight:600;line-height:1.55}
+
+.nw-l{list-style:none;margin:2px 0 6px;padding:0;display:flex;flex-direction:column;gap:10px}
+.nw-l a{font-weight:600;font-size:15.5px;line-height:1.4;color:var(--ink);text-decoration:none}
+.nw-l small{display:block;margin-top:2px;font-size:12px;color:var(--ink-2)}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2772,6 +2779,27 @@ function openTr(){S.trCenter=true;S.trMode='';S.trDel=false;$('tr').hidden=false
 function closeTr(){$('tr').hidden=true;S.trMode='';S.trDel=false;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden)document.body.style.overflow='';}
 function trFail(){toast('Tak dapat simpan. Pastikan peraturan "tree" sudah ditambah di Firebase.');}
 
+/* ---------- Berita ringkas (melalui Worker) ---------- */
+S.news=null;S.newsBusy=false;S.newsErr=false;
+function nwHidden(){try{return localStorage.getItem('kk-news')==='0';}catch(e){return false;}}
+function nwLoad(force){
+  if(S.newsBusy||typeof PUSH_URL==='undefined'||!PUSH_URL)return;
+  if(!force&&S.news&&Date.now()-S.news.at<9e5)return;
+  if(!force&&!S.news){try{const c=JSON.parse(localStorage.getItem('kk-newsc')||'null');if(c&&c.items&&Date.now()-c.at<9e5){S.news=c;return;}}catch(e){}}
+  S.newsBusy=true;S.newsErr=false;
+  fetch(PUSH_URL.replace(/\/$/,'')+'/news').then(r=>r.ok?r.json():Promise.reject()).then(d=>{
+    if(d&&Array.isArray(d.items)&&d.items.length){S.news={items:d.items.slice(0,4),at:Date.now()};try{localStorage.setItem('kk-newsc',JSON.stringify(S.news));}catch(e){}}else S.newsErr=true;
+  }).catch(()=>{S.newsErr=true;}).then(()=>{S.newsBusy=false;if(location.hash===''||location.hash==='#utama')render();});
+}
+function nwHtml(){
+  if(typeof PUSH_URL==='undefined'||!PUSH_URL)return '';
+  if(nwHidden())return '<div class="intl nw"><span class="intl-e">📰</span><div class="intl-t"><small>Berita ringkas disembunyikan</small><div class="intl-b"><button type="button" class="chip" data-act="nw-show">Tunjuk semula</button></div></div></div>';
+  nwLoad(false);
+  let b;
+  if(S.news&&S.news.items.length)b='<ul class="nw-l">'+S.news.items.map(i=>'<li><a href="'+esc(i.u)+'" target="_blank" rel="noopener noreferrer">'+esc(i.t)+'</a><small>'+esc(i.s)+'</small></li>').join('')+'</ul>';
+  else b='<span>'+(S.newsBusy?'Memuatkan berita…':S.newsErr?'Berita tidak dapat dimuatkan sekarang.':'Memuatkan berita…')+'</span>';
+  return '<div class="intl nw"><span class="intl-e">📰</span><div class="intl-t"><small>Berita ringkas</small>'+b+'<div class="intl-b"><button type="button" class="chip" data-act="nw-ref">Segar semula</button><button type="button" class="chip" data-act="nw-hide">Sembunyi</button></div></div></div>';
+}
 /* ---------- Hiburan ringan (pantun, teka-teki, jenaka, fakta, kuiz) ---------- */
 const HB=[
 ['pantun','🎋','Pantun',[
@@ -4387,6 +4415,7 @@ function interludes(){
   try{const L=kfFacts();if(L.length){const x=L[(dayOfYear()*7+S.kfN)%L.length];
     out.push('<div class="intl"><span class="intl-e">🌳</span><div class="intl-t"><small>Tahukah anda? · Keluarga</small>'+(x.q?'<b>'+x.q+'</b>'+(S.kfShow?'<span>'+x.a+'</span>':'<div class="intl-b"><button type="button" class="chip" data-act="kf-show">Lihat jawapan</button></div>'):'<b>'+x.t+'</b>')+'<div class="intl-b"><button type="button" class="chip" data-act="kf-next">Fakta lain ›</button></div></div></div>');}}catch(e){}
   try{out.push(hbHtml());}catch(e){}
+  try{const n=nwHtml();if(n)out.push(n);}catch(e){}
   // 4 doa
   const d=DOA[(doy+3)%DOA.length];
   out.push('<div class="intl"><span class="intl-e">🤲</span><div class="intl-t"><small>Doa · '+esc(d[0])+'</small><div class="ar" dir="rtl" lang="ar">'+d[1]+'</div><span>'+esc(d[2])+'</span></div></div>');
@@ -5586,6 +5615,9 @@ document.addEventListener('click',e=>{
   else if(a==='hb-cat'){S.hbT=+v;S.hbN=0;S.hbShow=false;render();}
   else if(a==='hb-next'){S.hbN++;S.hbShow=false;render();}
   else if(a==='hb-show'){S.hbShow=true;render();}
+  else if(a==='nw-ref'){nwLoad(true);render();}
+  else if(a==='nw-hide'){try{localStorage.setItem('kk-news','0');}catch(e){}render();}
+  else if(a==='nw-show'){try{localStorage.removeItem('kk-news');}catch(e){}render();}
   else if(a==='kf-next'){S.kfN++;S.kfShow=false;render();}
   else if(a==='kf-show'){S.kfShow=true;render();}
   else if(a==='dk-open')dkOpen();
