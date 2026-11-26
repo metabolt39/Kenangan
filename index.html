@@ -4301,6 +4301,9 @@ function interludes(){
   if(ta)facts.push(nameOf(ta)+' paling rajin berkongsi, '+auth[ta]+' kenangan setakat ini.');
   facts.push('Ada '+Object.keys(places).length+' tempat berbeza dalam peta kenangan anda.');
   out.push('<div class="intl"><span class="intl-e">💡</span><div class="intl-t"><small>Tahukah anda?</small><b>'+esc(facts[doy%facts.length])+'</b></div></div>');
+  // keluarga (daripada salasilah)
+  try{const L=kfFacts();if(L.length){const x=L[(dayOfYear()*7+S.kfN)%L.length];
+    out.push('<div class="intl"><span class="intl-e">🌳</span><div class="intl-t"><small>Tahukah anda? · Keluarga</small>'+(x.q?'<b>'+x.q+'</b>'+(S.kfShow?'<span>'+x.a+'</span>':'<div class="intl-b"><button type="button" class="chip" data-act="kf-show">Lihat jawapan</button></div>'):'<b>'+x.t+'</b>')+'<div class="intl-b"><button type="button" class="chip" data-act="kf-next">Fakta lain ›</button></div></div></div>');}}catch(e){}
   // 4 doa
   const d=DOA[(doy+3)%DOA.length];
   out.push('<div class="intl"><span class="intl-e">🤲</span><div class="intl-t"><small>Doa · '+esc(d[0])+'</small><div class="ar" dir="rtl" lang="ar">'+d[1]+'</div><span>'+esc(d[2])+'</span></div></div>');
