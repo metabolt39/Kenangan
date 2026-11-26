@@ -1438,6 +1438,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .sgg .sg:not([open]) .sg-t small{display:none}
 .sgg .sg:not([open]) .sg-t b{font-size:15.5px}
 @media (min-width:700px){.sgg{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.setp .set-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.setp .set-item{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;min-height:92px;padding:14px;border-radius:18px;font-size:15px}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1659,9 +1662,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <div id="set-admin" hidden>
       <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-users"></use></svg></span><span class="sg-t"><b>Pentadbir</b><small>Jemput, sandar dan import</small></span></summary><div class="sg-b">
       <div class="set-list">
-        <button type="button" class="set-item" data-act="invite">Jemput ahli keluarga</button>
-        <button type="button" class="set-item" data-act="backup">Sandarkan semua kenangan</button>
-        <button type="button" class="set-item" data-act="import">Import kenangan lama</button>
+        <button type="button" class="set-item" data-act="invite" aria-label="Jemput ahli keluarga"><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-users"></use></svg></span><span>Jemput</span></button>
+        <button type="button" class="set-item" data-act="backup" aria-label="Sandarkan semua kenangan"><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-download"></use></svg></span><span>Sandar</span></button>
+        <button type="button" class="set-item" data-act="import" aria-label="Import kenangan lama"><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-refresh"></use></svg></span><span>Import</span></button>
       </div>
       </div></details>
     </div>
