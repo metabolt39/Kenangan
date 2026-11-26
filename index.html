@@ -1445,6 +1445,14 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .jgrid.near{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 10px}
 .jgrid.near .jt{min-height:104px;padding:14px 12px 12px;text-decoration:none;color:inherit}
 .jgrid.near .jt-t b{font-size:15px}
+
+.kf{margin:4px 0 18px;padding:16px 18px;border-radius:22px;border:1px solid color-mix(in srgb,#f6b04b 38%,transparent);background:linear-gradient(135deg,color-mix(in srgb,#f6b04b 16%,var(--surface)),var(--surface))}
+.kf-h{display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:15px;color:var(--ink-2);margin-bottom:6px}
+.kf-i{font-size:18px}
+.kf-p{margin:0 0 10px;font-size:16.5px;line-height:1.5;color:var(--ink)}
+.kf-p b{color:var(--ink)}
+.kf-a{margin:0 0 10px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--teal,#2A7A63) 12%,transparent);font-size:15px;line-height:1.45}
+.kf-n{display:block;margin-left:auto}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -2737,6 +2745,46 @@ function openTr(){S.trCenter=true;S.trMode='';S.trDel=false;$('tr').hidden=false
 function closeTr(){$('tr').hidden=true;S.trMode='';S.trDel=false;if($('sheet').hidden&&$('lb').hidden&&$('set').hidden&&$('plc').hidden&&$('cal').hidden&&$('cap').hidden)document.body.style.overflow='';}
 function trFail(){toast('Tak dapat simpan. Pastikan peraturan "tree" sudah ditambah di Firebase.');}
 
+/* ---------- Tahukah awak? (fakta keluarga harian daripada salasilah) ---------- */
+S.kfN=0;S.kfShow=false;
+function kfName(p){return String(p.name).split(/\s+(?:bin|binti|bt|bte|b\.|bnt)\s+/i)[0].trim()||p.name;}
+function kfList(L,w){w=w||'dan';const a=L.map(kfName);return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' '+w+' '+a[a.length-1];}
+function kfFacts(){
+  const T=S.tree,by=id=>T.find(p=>p.id===id),out=[];
+  if(T.length<3)return out;
+  const kids=p=>T.filter(c=>c.fid===p.id||c.mid===p.id);
+  const depth=(p,seen)=>{seen=seen||{};if(seen[p.id])return 0;seen[p.id]=1;const a=by(p.fid),b=by(p.mid);return 1+Math.max(a?depth(a,seen):0,b?depth(b,seen):0);};
+  const gens=T.reduce((m,p)=>Math.max(m,depth(p)),0);
+  const desc=(p,seen)=>{seen=seen||{};let n=0;kids(p).forEach(c=>{if(!seen[c.id]){seen[c.id]=1;n+=1+desc(c,seen);}});return n;};
+  out.push({t:'Keluarga kita ada <b>'+T.length+' insan</b> yang tercatat'+(gens>1?', merentasi <b>'+gens+' generasi</b>':'')+'. Setiap nama ialah satu cerita.'});
+  const live=T.filter(p=>!p.dead&&trAgeN(p)!=null);
+  if(live.length>1){
+    const o=live.slice().sort((a,b)=>trAgeN(b)-trAgeN(a))[0],y=live.slice().sort((a,b)=>trAgeN(a)-trAgeN(b))[0];
+    out.push({t:'Ahli keluarga yang paling senior ialah <b>'+esc(kfName(o))+'</b>, kira-kira <b>'+trAgeN(o)+' tahun</b>. Jangan lupa tanya cerita zaman dahulu.'});
+    out.push({t:'Yang paling muda dalam salasilah ialah <b>'+esc(kfName(y))+'</b>'+(trAgeN(y)<1?', baru lahir tahun ini.':', kira-kira <b>'+trAgeN(y)+' tahun</b>.')});
+  }
+  T.filter(p=>kids(p).length>1).forEach(p=>{
+    const k=kids(p);out.push({t:'<b>'+esc(kfName(p))+'</b> mempunyai <b>'+k.length+' orang anak</b>: '+esc(kfList(k))+'.'});
+    const d=desc(p);if(d>k.length)out.push({t:'Keturunan <b>'+esc(kfName(p))+'</b> kini seramai <b>'+d+' orang</b> merangkumi anak, cucu dan seterusnya.'});
+  });
+  T.forEach(p=>{const sp=trSpouses(p);if(sp.length&&p.g==='l')out.push({t:'<b>'+esc(kfName(p))+'</b> berpasangan dengan <b>'+esc(kfList(sp))+'</b>.'});});
+  T.filter(p=>p.dead&&p.died).forEach(p=>{const a=trAgeN(p);out.push({t:'Al-Fatihah untuk <b>'+esc(kfName(p))+'</b>'+(a!=null?', kembali ke rahmatullah pada tahun '+esc(p.died)+' ketika berumur '+a+' tahun':'')+'. Semoga Allah mencucuri rahmat ke atas beliau. 🤍'});});
+  const dec={};T.forEach(p=>{if(/^\d{4}$/.test(p.born)){const d=Math.floor(+p.born/10)*10;(dec[d]=dec[d]||[]).push(p);}});
+  Object.keys(dec).forEach(d=>{if(dec[d].length>2)out.push({t:'<b>'+dec[d].length+' orang</b> dalam keluarga lahir pada tahun '+d+'-an, antaranya '+esc(kfList(dec[d].slice(0,3)))+'.'});});
+  T.forEach(c=>{const f=by(c.fid),m=by(c.mid),gp=[f&&by(f.fid),f&&by(f.mid),m&&by(m.fid),m&&by(m.mid)].filter(Boolean);
+    if(gp.length){const g=gp[0];out.push({q:'Siapakah '+(g.g==='l'?'datuk':'nenek')+' kepada <b>'+esc(kfName(c))+'</b>?',a:esc(kfList(gp.filter(x=>x.g===g.g),'dan'))+'. Nasab dihargai bila diingat.'});}
+    else if(f||m){const par=[f,m].filter(Boolean);out.push({q:'Siapakah ibu bapa kepada <b>'+esc(kfName(c))+'</b>?',a:esc(kfList(par))+'.'});}
+  });
+  return out;
+}
+function kfHtml(){
+  const L=kfFacts();if(!L.length)return '';
+  const i=(dayOfYear()*7+S.kfN)%L.length,x=L[i];
+  let h='<section class="kf" aria-label="Tahukah awak"><div class="kf-h"><span class="kf-i" aria-hidden="true">💡</span><b>Tahukah awak?</b></div>';
+  if(x.q)h+='<p class="kf-p">'+x.q+'</p>'+(S.kfShow?'<p class="kf-a">'+x.a+'</p>':'<button type="button" class="btn sm ghost" data-act="kf-show">Lihat jawapan</button>');
+  else h+='<p class="kf-p">'+x.t+'</p>';
+  return h+'<button type="button" class="lnk kf-n" data-act="kf-next">Fakta lain ›</button></section>';
+}
 /* ---------- dokumen penting (pautan Google Drive) ---------- */
 const DKE=['📁','🪪','📄','🏠','🚗','💊','💰','🕌','🎓','📸'];
 function dkTile(){
@@ -4527,6 +4575,7 @@ function keluargaHtml(){
   if(DEMO)return demoBanner();
   let h=lokasiHtml();
   h+=sec('Kalendar dan hari lahir')+calHtml()+bdHtml();
+  h+=kfHtml();
   h+=sec('Ruang Keluarga')+'<div class="jts jgrid">'+capTile()+trTile()+bbTile()+statTile()+dkTile()+'<button type="button" class="jt" data-act="settings"><span class="jt-i emo" aria-hidden="true">'+icon('download')+'</span><span class="jt-t"><b>Tetapan</b><span>Simpanan &amp; akaun</span></span></button></div>';
   {const bk=backupBanner();if(bk)h+=sec('Simpanan Selamat')+bk;}
   return h;
@@ -5447,6 +5496,8 @@ document.addEventListener('click',e=>{
   else if(a==='bb-del-ask'){S.bbDel=true;renderBb();}
   else if(a==='bb-del-no'){S.bbDel=false;renderBb();}
   else if(a==='bb-del-yes'){const bid=S.bbSel;S.bbDel=false;S.bbSel='';S.grow.filter(g=>g.baby===bid).forEach(g=>S.db.doc('tree/'+g.id).delete().catch(()=>{}));S.db.doc('albums/'+bid).delete().then(()=>toast('Baby dipadam. Gambar kekal dalam Galeri.')).catch(bbFail);renderBb();}
+  else if(a==='kf-next'){S.kfN++;S.kfShow=false;render();}
+  else if(a==='kf-show'){S.kfShow=true;render();}
   else if(a==='dk-open')dkOpen();
   else if(a==='dk-close')dkClose();
   else if(a==='dk-add'){S.dkMode='add';S.dkSel='';S.dkDel=false;S.dkEmo='📁';renderDk();const i=$('dk-tt');if(i)try{i.focus();}catch(e){}}
