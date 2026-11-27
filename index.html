@@ -3018,6 +3018,64 @@ function lkOpen(){
   });
 }
 function lkTile(){return '<button type="button" class="jt" data-act="lk-open"><span class="jt-i emo" aria-hidden="true">🎨</span><span class="jt-t"><b>Ruang Lukis</b><span>Lukis dan mewarna</span></span></button>';}
+/* ---------- Kad ucapan hari lahir ---------- */
+const UCT=[
+ {n:'Cerah',bg:'#F6F3EC',fg:'#1E2B26',ac:'#2A7A63',mu:'#6C756F'},
+ {n:'Gelap',bg:'#111715',fg:'#F2EBDD',ac:'#D9AE5B',mu:'#9A9B93'},
+ {n:'Hijau',bg:'#1D5846',fg:'#F6F1E4',ac:'#E5C27A',mu:'#BFD0C6'}];
+function ucStar(x,cx,cy,r,rot){x.beginPath();for(let k=0;k<16;k++){const R=k%2?r*.64:r,an=rot+k*Math.PI/8;x[k?'lineTo':'moveTo'](cx+R*Math.cos(an),cy+R*Math.sin(an));}x.closePath();}
+function ucDraw(cv,name,age,img,ti){
+  const T=UCT[ti||0],W=1080,H=1350,x=cv.getContext('2d'),SF='"Helvetica Neue",Arial,sans-serif',AR='"Noto Naskh Arabic","Geeza Pro","Traditional Arabic",serif';
+  cv.width=W;cv.height=H;x.fillStyle=T.bg;x.fillRect(0,0,W,H);x.textAlign='center';x.textBaseline='alphabetic';
+  x.save();x.strokeStyle=T.ac;x.lineWidth=2.5;x.globalAlpha=.42;
+  for(let gy=-1;gy<=H/150+1;gy++)for(let gx=-1;gx<=W/150+1;gx++){const px=gx*150,py=gy*150;ucStar(x,px,py,62,0);x.stroke();ucStar(x,px+75,py+75,24,Math.PI/8);x.stroke();x.beginPath();x.moveTo(px+75,py+28);x.lineTo(px+122,py+75);x.lineTo(px+75,py+122);x.lineTo(px+28,py+75);x.closePath();x.stroke();}
+  x.restore();
+  const rg=x.createRadialGradient(W/2,H/2,120,W/2,H/2,700);rg.addColorStop(0,T.bg);rg.addColorStop(.5,T.bg+'D0');rg.addColorStop(1,T.bg+'00');x.fillStyle=rg;x.fillRect(0,0,W,H);
+  x.strokeStyle=T.ac;x.globalAlpha=.55;x.lineWidth=3;x.strokeRect(40,40,W-80,H-80);x.lineWidth=1.5;x.strokeRect(58,58,W-116,H-116);x.globalAlpha=1;
+  [[40,40],[W-40,40],[40,H-40],[W-40,H-40]].forEach(c=>{x.fillStyle=T.bg;x.fillRect(c[0]-30,c[1]-30,60,60);x.strokeStyle=T.ac;x.lineWidth=3;ucStar(x,c[0],c[1],28,0);x.stroke();x.fillStyle=T.ac;ucStar(x,c[0],c[1],9,0);x.fill();});
+  x.fillStyle=T.ac;x.fillRect(W/2-36,96,72,6);
+  x.fillStyle=T.mu;x.font='600 34px '+SF;if('letterSpacing' in x)x.letterSpacing='9px';x.fillText('SELAMAT HARI LAHIR',W/2+5,170);if('letterSpacing' in x)x.letterSpacing='0px';
+  const cy=500,r=235;
+  if(img){
+    x.save();x.beginPath();x.arc(W/2,cy,r,0,7);x.closePath();x.clip();
+    const s=Math.max(2*r/img.width,2*r/img.height),w=img.width*s,h=img.height*s;x.drawImage(img,W/2-w/2,cy-h/2,w,h);x.restore();
+    x.lineWidth=4;x.strokeStyle=T.ac;x.beginPath();x.arc(W/2,cy,r+22,0,7);x.stroke();
+  }else{
+    x.lineWidth=4;x.strokeStyle=T.ac;x.beginPath();x.arc(W/2,cy,r+22,0,7);x.stroke();
+    x.fillStyle=T.fg;x.font='300 230px '+SF;x.fillText(age||'🎂',W/2,cy+80);
+  }
+  x.fillStyle=T.fg;let fs=104;x.font='700 '+fs+'px '+SF;const nm=String(name);
+  while(x.measureText(nm).width>W-160&&fs>48){fs-=4;x.font='700 '+fs+'px '+SF;}
+  x.fillText(nm,W/2,890);
+  if(age){x.fillStyle=T.mu;x.font='400 44px '+SF;x.fillText('Hari lahir ke-'+age,W/2,958);}
+  x.fillStyle=T.ac;x.globalAlpha=.6;x.fillRect(W/2-90,1020,180,2);x.globalAlpha=1;
+  x.fillStyle=T.fg;x.font='400 76px '+AR;if('direction' in x)x.direction='rtl';x.fillText('بارك الله في عمرك',W/2,1118);if('direction' in x)x.direction='ltr';
+  x.fillStyle=T.mu;x.font='italic 400 38px '+SF;
+  const ws='Semoga Allah memberkati umur anda, melimpahkan kesihatan dan rezeki.'.split(' ');let ln='',y=1190;
+  ws.forEach(w=>{const tt=ln?ln+' '+w:w;if(x.measureText(tt).width>W-240){x.fillText(ln,W/2,y);y+=52;ln=w;}else ln=tt;});x.fillText(ln,W/2,y);
+}
+function ucOpen(i){
+  const b=S.bd[i];if(!b)return;const inf=bdInfo(b);let img=null,ti=0;
+  const o=document.createElement('div');o.className='ucw';o.setAttribute('role','dialog');o.setAttribute('aria-label','Kad ucapan hari lahir');
+  o.innerHTML='<div class="ucb"><canvas class="ucc"></canvas><div class="uca">'+UCT.map((x,j)=>'<button type="button" class="chip" data-u="t'+j+'">'+x.n+'</button>').join('')+'</div><div class="uca"><button type="button" class="chip" data-u="pic">📷 Pilih gambar</button><button type="button" class="chip pri" data-u="share">Kongsi</button><button type="button" class="chip" data-u="x">Tutup</button></div><input type="file" accept="image/*" hidden></div>';
+  document.body.appendChild(o);
+  const cv=o.querySelector('canvas'),fi=o.querySelector('input'),draw=()=>ucDraw(cv,b.name,inf.age,img,ti);draw();
+  const close=()=>{o.remove();};
+  fi.addEventListener('change',()=>{const f=fi.files&&fi.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{img=im;draw();URL.revokeObjectURL(u);};im.src=u;});
+  o.addEventListener('click',e=>{
+    const t=e.target.closest('[data-u]');
+    if(!t){if(e.target===o)close();return;}
+    const k=t.dataset.u;
+    if(k==='x')close();
+    else if(k==='pic')fi.click();
+    else if(/^t\d$/.test(k)){ti=+k[1];draw();}
+    else if(k==='share')cv.toBlob(bl=>{
+      if(!bl)return;const fl=new File([bl],'ucapan-hari-lahir.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],text:'Selamat hari lahir, '+b.name+'!'}).catch(()=>{});}
+      else{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='ucapan-hari-lahir.png';document.body.appendChild(a);a.click();a.remove();toast('Kad disimpan. Boleh dihantar melalui WhatsApp.');}
+    },'image/png');
+  });
+}
 /* ---------- Hiburan ringan (pantun, teka-teki, jenaka, fakta, kuiz) ---------- */
 const HB=[
 ['pantun','🎋','Pantun',[
