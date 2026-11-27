@@ -3178,7 +3178,7 @@ const MTD=[
 ];
 
 /* ---------- Al-Ma'thurat Sughra ---------- */
-const MTF=[['Naskh','"Noto Naskh Arabic","Geeza Pro",serif'],['Amiri','"Amiri","Noto Naskh Arabic","Geeza Pro",serif'],['Aref Ruqaa','"Aref Ruqaa","Noto Naskh Arabic","Geeza Pro",serif'],['Reem Kufi','"Reem Kufi","Noto Naskh Arabic","Geeza Pro",sans-serif']];
+const MTF=[['Naskh','\'Noto Naskh Arabic\',\'Geeza Pro\',serif'],['Amiri','\'Amiri\',\'Noto Naskh Arabic\',\'Geeza Pro\',serif'],['Aref Ruqaa','\'Aref Ruqaa\',\'Noto Naskh Arabic\',\'Geeza Pro\',serif'],['Reem Kufi','\'Reem Kufi\',\'Noto Naskh Arabic\',\'Geeza Pro\',sans-serif']];
 let MTS_ff=0;try{MTS_ff=+localStorage.getItem('kk-mff')||0;}catch(e){}
 const MTS={pet:false,i:0,ff:MTS_ff%4,fs:+(()=>{try{return localStorage.getItem('kk-mfs')||26;}catch(e){return 26;}})(),c:{}};
 function mthPet(){return new Date().getHours()>=15;}
