@@ -1498,6 +1498,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .nwc:not(.has) .nwc-t{-webkit-line-clamp:6}
 .nwc small{margin-top:auto;font-size:12px;color:var(--ink-2)}
 .nws-m{margin:6px 2px;color:var(--ink-2);font-size:14px}
+.mthb{margin:10px 0 0}.mthb span{font-weight:600;color:var(--ink)}.mthb .chip{min-height:36px}.mthb+.nws-off{margin-top:8px}
 .nws-off{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:14px;color:var(--ink-2)}
 
 .ls-box{max-width:480px;overflow:auto}
@@ -3186,7 +3187,7 @@ function mthSub(s){return s.replace(/\{([^|}]*)\|([^}]*)\}/g,(m,a,b)=>MTS.pet?b:
 function mthCard(){
   if(hmOff('mth'))return '';
   const p=mthPet();
-  return '<div class="intl mthc"><span class="intl-e">📿</span><div class="intl-t"><small>Al-Ma’thurat · '+(p?'Petang':'Pagi')+'</small><div class="intl-b">Zikir '+(p?'petang':'pagi')+' dengan terjemahan</div><div class="intl-b"><button type="button" class="chip pri" data-act="mth-open">Baca</button></div></div></div>';
+  return '<div class="nws nws-off mthb"><span>📿 Al-Ma\u2019thurat \u00b7 '+(p?'Petang':'Pagi')+'</span><button type="button" class="chip pri" data-act="mth-open">Baca</button></div>';
 }
 function mthPaint(){
   const b=document.getElementById('mth-b');if(!b)return;
