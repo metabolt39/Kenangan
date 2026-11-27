@@ -23,6 +23,7 @@
 .gate-c .lnk{font-size:14px}</style>
 <title>Kenangan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600&family=Scheherazade+New:wght@400;700&display=swap">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&family=Share+Tech+Mono&family=Outfit:wght@500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Fraunces:ital,wght@0,600;0,700;1,600&family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700&family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap">
 </head>
@@ -3176,7 +3177,7 @@ const MTD=[
 ];
 
 /* ---------- Al-Ma'thurat Sughra ---------- */
-const MTF=[['Biasa','"Noto Naskh Arabic","Geeza Pro","Traditional Arabic",serif'],['Klasik','"Damascus","Al Nile","Baghdad","Noto Naskh Arabic",serif'],['Moden','"Al Nile","Farah","Noto Sans Arabic","Geeza Pro",sans-serif']];
+const MTF=[['Naskh','"Noto Naskh Arabic","Geeza Pro",serif'],['Amiri','"Amiri","Noto Naskh Arabic","Geeza Pro",serif'],['Scheherazade','"Scheherazade New","Noto Naskh Arabic","Geeza Pro",serif']];
 let MTS_ff=0;try{MTS_ff=+localStorage.getItem('kk-mff')||0;}catch(e){}
 const MTS={pet:false,i:0,ff:MTS_ff%3,fs:+(()=>{try{return localStorage.getItem('kk-mfs')||26;}catch(e){return 26;}})(),c:{}};
 function mthPet(){return new Date().getHours()>=15;}
