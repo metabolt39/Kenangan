@@ -1531,6 +1531,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .lk-tl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .lk-tl .chip{justify-content:center;min-height:42px;padding:0 6px;font-size:14px;white-space:nowrap}
 body:has(#lk) .fab,body:has(#ls) .fab{display:none}
+
+.hm-l{display:flex;flex-direction:column;gap:6px}
+.hm-r{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:0 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;font-size:15px;text-align:left}
+.hm-s{flex:none;position:relative;width:46px;height:28px;border-radius:99px;background:var(--line);transition:background .2s}
+.hm-s::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.hm-s.on{background:var(--teal,#2A7A63)}.hm-s.on::after{transform:translateX(18px)}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1754,6 +1760,8 @@ body:has(#lk) .fab,body:has(#ls) .fab{display:none}
       <div class="sg-b">
     <div class="stor" id="set-store" aria-live="polite"></div>
       </div></details>
+    <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-refresh"></use></svg></span><span class="sg-t"><b>Skrin Utama</b><small>Pilih kad yang dipaparkan</small></span></summary>
+      <div class="sg-b"><div id="set-hm"></div></div></details>
     <div id="set-admin" hidden>
       <details class="sg"><summary><span class="sg-i"><svg class="i" aria-hidden="true"><use href="#i-users"></use></svg></span><span class="sg-t"><b>Pentadbir</b><small>Jemput, sandar dan import</small></span></summary><div class="sg-b">
       <div class="set-list">
@@ -1882,6 +1890,7 @@ function prayUi(){
 }
 (function(){const st=document.getElementById('set');if(st)st.addEventListener('toggle',e=>{const t=e.target;if(t&&t.open&&t.classList&&t.classList.contains('sg'))st.querySelectorAll('.sg[open]').forEach(d=>{if(d!==t)d.open=false;});},true);})();
 function renderSet(){
+  try{hmPaint();}catch(e){}
   try{prayUi();}catch(e){}
   { const mi=document.getElementById('mz-in'); if(mi&&document.activeElement!==mi&&typeof MZ!=='undefined')mi.value=MZ.url||''; }
   const sk=$('set-skins'); if(!sk)return;
@@ -2434,6 +2443,7 @@ function plcCard(x){
   return '<button type="button" class="pcd" data-act="plc" data-v="'+x.i+'" aria-label="'+esc(x.n)+', '+esc(x.st)+'">'+plcImg(x.t,'pcd-i')+'<span class="pcd-t"><b>'+esc(x.n)+'</b><span>'+esc(x.st)+'</span></span><span class="pcd-c" aria-hidden="true">'+pc[2]+'</span></button>';
 }
 function teaserHtml(){
+  if(hmOff('jom'))return '';
   const fi=(dayOfYear()*7+S.discN)%PLC.length, f=PLC[fi];
   return '<button type="button" class="jt tz" data-act="tab" data-v="jelajah">'+plcImg(f[0],'jt-i')+'<span class="jt-t"><span class="pk">Jom ke mana? · cadangan hari ini</span><b>'+esc(f[1])+'</b><span>'+esc(f[2])+' · lihat '+PLC.length+' tempat menarik</span></span><span class="jt-a" aria-hidden="true">›</span></button>';
 }
@@ -2837,6 +2847,7 @@ function nwLoad(force){
 }
 function nwHtml(){
   if(typeof PUSH_URL==='undefined'||!PUSH_URL)return '';
+  if(hmOff('news'))return '';
   if(nwHidden())return '<div class="nws nws-off"><span>📰 Berita disembunyikan</span><button type="button" class="chip" data-act="nw-show">Tunjuk</button></div>';
   nwLoad(false);
   const L=S.news&&S.news.items.length?S.news.items:null;
@@ -2920,7 +2931,8 @@ function lsOpen(){
 function lsTile(){return '<button type="button" class="jt" data-act="ls-open"><span class="jt-i emo" aria-hidden="true">🎓</span><span class="jt-t"><b>Ruang Belajar</b><span>Latihan Pra hingga Tahun 6</span></span></button>';}
 /* ---------- Ruang Lukis (melukis dan mewarna) ---------- */
 const LKC=['#222222','#e53935','#fb8c00','#fdd835','#43a047','#00897b','#1e88e5','#5e35b1','#d81b60','#8d6e63','#9e9e9e','#ffffff'];
-const LKT=[['🕌','Masjid'],['🏠','Rumah'],['🌸','Bunga'],['🐟','Ikan'],['🌳','Pokok'],['✏️','Kosong']];
+const LKT=[['🕌','Masjid'],['🏠','Rumah'],['🌸','Bunga'],['🐟','Ikan'],['🌳','Pokok'],['🐱','Kucing'],['🚗','Kereta'],['✈️','Kapal terbang'],['🦋','Rama-rama'],['🌙','Bulan bintang'],['ا','Alif'],['ب','Ba'],['ت','Ta'],['ج','Jim'],['✏️','Kosong']];
+const LKJ={'Alif':'ا','Ba':'ب','Ta':'ت','Jim':'ج'};
 function lkTpl(x,k){
   x.fillStyle='#fff';x.fillRect(0,0,720,720);x.strokeStyle='#222';x.lineWidth=6;x.lineJoin='round';x.lineCap='round';
   const P=(fn)=>{x.beginPath();fn();x.fillStyle='#fff';x.fill();x.stroke();};
@@ -2949,6 +2961,44 @@ function lkTpl(x,k){
     P(()=>x.arc(220,330,22,0,7));x.fillStyle='#222';x.beginPath();x.arc(224,330,8,0,7);x.fill();
     P(()=>{x.arc(120,200,24,0,7);});P(()=>{x.arc(80,120,16,0,7);});P(()=>{x.arc(150,610,20,0,7);});
     P(()=>{x.moveTo(270,420);x.quadraticCurveTo(220,440,200,410);});
+  }else if(k==='Kucing'){
+    P(()=>x.ellipse(360,560,170,130,0,0,7));
+    P(()=>{x.moveTo(200,260);x.lineTo(215,110);x.lineTo(320,200);x.closePath();});P(()=>{x.moveTo(520,260);x.lineTo(505,110);x.lineTo(400,200);x.closePath();});
+    P(()=>x.arc(360,330,170,0,7));
+    [[300,310],[420,310]].forEach(e=>{P(()=>x.arc(e[0],e[1],30,0,7));x.fillStyle='#222';x.beginPath();x.arc(e[0],e[1]+4,12,0,7);x.fill();});
+    P(()=>{x.moveTo(340,375);x.lineTo(380,375);x.lineTo(360,400);x.closePath();});
+    P(()=>{x.moveTo(360,400);x.quadraticCurveTo(330,440,300,420);});P(()=>{x.moveTo(360,400);x.quadraticCurveTo(390,440,420,420);});
+    [[-1,0],[-1,25],[1,0],[1,25]].forEach(w=>{x.beginPath();x.moveTo(360+w[0]*60,390+w[1]/2);x.lineTo(360+w[0]*190,380+w[1]*1.5);x.stroke();});
+    P(()=>{x.moveTo(500,600);x.quadraticCurveTo(640,600,620,450);x.quadraticCurveTo(600,560,500,540);});
+  }else if(k==='Kereta'){
+    P(()=>{x.moveTo(110,460);x.lineTo(110,380);x.quadraticCurveTo(110,350,150,345);x.lineTo(240,340);x.lineTo(310,250);x.lineTo(500,250);x.lineTo(570,340);x.lineTo(590,345);x.quadraticCurveTo(630,355,630,390);x.lineTo(630,460);x.closePath();});
+    P(()=>{x.moveTo(260,340);x.lineTo(320,270);x.lineTo(355,270);x.lineTo(355,340);x.closePath();});P(()=>{x.moveTo(385,340);x.lineTo(385,270);x.lineTo(490,270);x.lineTo(545,340);x.closePath();});
+    P(()=>x.arc(220,470,62,0,7));P(()=>x.arc(220,470,26,0,7));P(()=>x.arc(520,470,62,0,7));P(()=>x.arc(520,470,26,0,7));
+    P(()=>x.rect(110,400,30,24));P(()=>x.rect(600,400,30,24));
+    P(()=>{x.moveTo(40,540);x.lineTo(680,540);x.lineTo(680,580);x.lineTo(40,580);x.closePath();});
+    P(()=>x.arc(130,160,40,0,7));P(()=>x.arc(180,160,30,0,7));P(()=>x.arc(580,130,50,0,7));
+  }else if(k==='Kapal terbang'){
+    P(()=>{x.moveTo(110,360);x.quadraticCurveTo(110,300,200,300);x.lineTo(560,300);x.quadraticCurveTo(650,310,670,360);x.quadraticCurveTo(650,410,560,420);x.lineTo(200,420);x.quadraticCurveTo(110,420,110,360);});
+    P(()=>{x.moveTo(250,300);x.lineTo(360,160);x.lineTo(430,160);x.lineTo(400,300);x.closePath();});P(()=>{x.moveTo(250,420);x.lineTo(360,560);x.lineTo(430,560);x.lineTo(400,420);x.closePath();});
+    P(()=>{x.moveTo(130,300);x.lineTo(90,200);x.lineTo(150,200);x.lineTo(210,300);x.closePath();});
+    [250,330,410,490].forEach(c=>P(()=>x.arc(c+40,350,22,0,7)));
+    P(()=>{x.arc(110,520,40,0,7);});P(()=>{x.arc(160,520,30,0,7);});P(()=>{x.arc(600,170,50,0,7);});
+  }else if(k==='Rama-rama'){
+    P(()=>x.ellipse(360,370,24,160,0,0,7));
+    P(()=>x.ellipse(240,270,120,90,-.5,0,7));P(()=>x.ellipse(480,270,120,90,.5,0,7));P(()=>x.ellipse(260,450,95,70,.5,0,7));P(()=>x.ellipse(460,450,95,70,-.5,0,7));
+    P(()=>x.arc(235,265,38,0,7));P(()=>x.arc(485,265,38,0,7));P(()=>x.arc(262,452,26,0,7));P(()=>x.arc(458,452,26,0,7));
+    P(()=>{x.moveTo(355,215);x.quadraticCurveTo(320,140,280,130);});P(()=>{x.moveTo(365,215);x.quadraticCurveTo(400,140,440,130);});
+  }else if(k==='Bulan bintang'){
+    const C1=[330,370],R1=210,C2=[430,330],R2=170,dx=C2[0]-C1[0],dy=C2[1]-C1[1],d=Math.hypot(dx,dy),aa=(R1*R1-R2*R2+d*d)/(2*d),hh=Math.sqrt(R1*R1-aa*aa),mx=C1[0]+aa*dx/d,my=C1[1]+aa*dy/d;
+    const P1=[mx+hh*dy/d,my-hh*dx/d],P2=[mx-hh*dy/d,my+hh*dx/d],ang=(c,p)=>Math.atan2(p[1]-c[1],p[0]-c[0]),sw=(u,v)=>(v-u+4*Math.PI)%(2*Math.PI);
+    const acw=(c,r,u,v,m)=>{const ok=sw(u,m)<=sw(u,v);x.arc(c[0],c[1],r,u,v,!ok);};
+    P(()=>{const o1=ang(C1,P1),o2=ang(C1,P2),mo=Math.atan2(C1[1]-C2[1],C1[0]-C2[0]);x.moveTo(P1[0],P1[1]);acw(C1,R1,o1,o2,mo);const i2=ang(C2,P2),i1=ang(C2,P1),mi=Math.atan2(C1[1]-C2[1],C1[0]-C2[0]);acw(C2,R2,i2,i1,mi);x.closePath();});
+    const star=(cx,cy,r)=>P(()=>{for(let i=0;i<10;i++){const R=i%2?r*.42:r,a=-Math.PI/2+i*Math.PI/5;x[i?'lineTo':'moveTo'](cx+R*Math.cos(a),cy+R*Math.sin(a));}x.closePath();});
+    star(500,360,70);star(610,200,38);star(620,520,32);star(150,120,30);
+  }else if(LKJ[k]){
+    x.font='bold 640px "Noto Naskh Arabic","Geeza Pro","Traditional Arabic",serif';x.textAlign='center';x.textBaseline='middle';
+    x.lineJoin='round';x.lineWidth=18;x.strokeStyle='#222';x.strokeText(LKJ[k],360,360);x.fillStyle='#fff';x.fillText(LKJ[k],360,360);
+    x.font='600 40px sans-serif';x.fillStyle='#555';x.textBaseline='alphabetic';x.fillText(k,360,690);
   }else if(k==='Pokok'){
     P(()=>x.rect(320,420,80,220));
     [[360,300,120],[260,360,90],[460,360,90],[310,220,80],[420,230,80]].forEach(c=>P(()=>x.arc(c[0],c[1],c[2],0,7)));
@@ -4662,6 +4712,20 @@ function burst(el,emo){
 }
 let _ut=0;['touchstart','touchmove','wheel'].forEach(ev=>window.addEventListener(ev,()=>{_ut=Date.now();window._utt=_ut;},{passive:true}));
 function keepScroll(){const y0=window.scrollY;[250,600,1200].forEach(t=>setTimeout(()=>{if(Date.now()-_ut>400&&Math.abs(window.scrollY-y0)>50)window.scrollTo(0,y0);},t));}
+/* ---------- Susun skrin Utama ---------- */
+const HMK=[['news','📰','Berita ringkas'],['jom','📍','Cadangan Jom ke mana?'],['hib','🎭','Hiburan ringan'],['kel','🌳','Fakta keluarga'],['fakta','💡','Tahukah anda?'],['doa','🤲','Doa harian'],['rnd','🎲','Kenangan rawak'],['lalu','🕰️','Hari ini tahun lalu']];
+function hmSet(){try{return new Set(JSON.parse(localStorage.getItem('kk-hm')||'[]'));}catch(e){return new Set();}}
+function hmOff(k){return hmSet().has(k);}
+function hmToggle(k){const h=hmSet();if(h.has(k))h.delete(k);else h.add(k);try{localStorage.setItem('kk-hm',JSON.stringify([...h]));}catch(e){}hmPaint();render();}
+function hmPaint(){
+  const e=document.getElementById('set-hm');if(!e)return;const h=hmSet();
+  e.innerHTML='<p class="hint">Pilih kad yang mahu dipaparkan di skrin Utama.</p><div class="hm-l">'+HMK.map(m=>'<button type="button" class="hm-r" role="switch" aria-checked="'+(!h.has(m[0]))+'" data-act="hm-tg" data-v="'+m[0]+'"><span>'+m[1]+' '+m[2]+'</span><i class="hm-s'+(h.has(m[0])?'':' on')+'"></i></button>').join('')+'</div>';
+}
+function hmFilter(out){
+  const h=hmSet();if(!h.size)return out;
+  const mk=[['rnd','intl rnd'],['lalu','🕰️'],['kel','Tahukah anda? · Keluarga'],['fakta','>Tahukah anda?<'],['hib','intl hb'],['doa','🤲']];
+  return out.filter(x=>!mk.some(m=>h.has(m[0])&&x.indexOf(m[1])>-1));
+}
 S.rndSeed=Math.floor(Math.random()*1e6);
 function interludes(){
   if(DEMO||P.length<3)return [];
@@ -4694,7 +4758,7 @@ function interludes(){
   // 4 doa
   const d=DOA[(doy+3)%DOA.length];
   out.push('<div class="intl"><span class="intl-e">🤲</span><div class="intl-t"><small>Doa · '+esc(d[0])+'</small><div class="ar" dir="rtl" lang="ar">'+d[1]+'</div><span>'+esc(d[2])+'</span></div></div>');
-  return out;
+  return hmFilter(out);
 }
 /* tarik ke bawah untuk muat semula */
 (function(){
@@ -5897,6 +5961,7 @@ document.addEventListener('click',e=>{
   else if(a==='uc-open'){ucOpen(+v);}
   else if(a==='ls-open'){lsOpen();}
   else if(a==='lk-open'){lkOpen();}
+  else if(a==='hm-tg'){hmToggle(v);}
   else if(a==='kf-next'){S.kfN++;S.kfShow=false;render();}
   else if(a==='kf-show'){S.kfShow=true;render();}
   else if(a==='dk-open')dkOpen();
