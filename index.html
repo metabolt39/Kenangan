@@ -434,6 +434,24 @@ button{cursor:pointer}
 /* Borang */
 .scrim{position:fixed;inset:0;z-index:70;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
 .sheet{width:100%;max-width:640px;max-height:94%;overflow-y:auto;background:var(--surface);border-radius:22px 22px 0 0;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.sheet.cmp{min-height:min(94%,780px);display:flex;flex-direction:column;gap:12px}
+.sheet.cmp .sheet-h h2{font-size:18px;flex:1;text-align:center}
+.cmp-go{min-height:40px;padding:0 20px;width:auto;font-size:15px}
+.cmp-who{display:flex;align-items:center;gap:12px;font-weight:700;font-size:17px}.cmp-who .av{width:44px;height:44px;border-radius:50%;object-fit:cover}
+.cmp-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}.cmp-chips::-webkit-scrollbar{display:none}
+.cch{flex:0 0 auto;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2,var(--bg));color:var(--ink);font:600 14px/1 inherit;font-family:inherit;white-space:nowrap}
+.cch[hidden]{display:none}
+.cch.on{border-color:var(--teal);background:var(--teal-soft);box-shadow:0 0 0 1px var(--teal)}
+.cmp-pn{display:none;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--bg)}.cmp-pn.on{display:block}
+.cmp-main{flex:1;min-height:0}.cmp-main textarea{flex:1;min-height:200px;border:0!important;background:transparent!important;padding:4px 2px!important;font-size:19px!important;line-height:1.5;resize:none!important}
+.cmp-main textarea:focus{outline:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.cmp-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cmp-tiles .pick{flex-direction:column;gap:6px;min-height:76px;border:1px solid var(--line);border-style:solid;background:var(--surface-2,var(--bg));font-size:15px}
+.cmp-tiles .pick .i{width:26px;height:26px}
+.feel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.feel button{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 14px/1.1 inherit;font-family:inherit;text-align:left}
+.feel button b{font-size:22px;font-weight:400}
+.feel button[aria-pressed="true"]{border-color:var(--teal);background:var(--teal-soft);box-shadow:0 0 0 2px var(--teal)}
 .sheet-h{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .sheet-h h2{margin:0;font:700 22px/1.2 var(--font-display)}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
@@ -1793,62 +1811,85 @@ body:has(#lk) .fab,body:has(#ls) .fab{display:none}
 </div>
 
 <div class="scrim" id="sheet" hidden>
-  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-t">
+  <section class="sheet cmp" role="dialog" aria-modal="true" aria-labelledby="sheet-t">
     <div class="sheet-h">
-      <h2 id="sheet-t">Kenangan baharu</h2>
       <button class="icon-btn" type="button" data-act="close-sheet" aria-label="Tutup"><svg class="i" aria-hidden="true"><use href="#i-x"></use></svg></button>
+      <h2 id="sheet-t">Kenangan baharu</h2>
+      <button class="btn cmp-go" type="button" id="submit" data-act="submit">Kongsi</button>
     </div>
-    <div class="field">
-      <span class="lbl">Gambar</span>
-      <input type="file" id="f-photos" accept="image/*" multiple hidden>
-      <button type="button" class="pick" id="pick" data-act="pick"><svg class="i" aria-hidden="true"><use href="#i-image"></use></svg><span id="pick-t">Pilih gambar</span></button>
-      <div class="prev" id="prev"></div>
-      <p class="hint" id="asset-note" hidden></p>
+    <div class="cmp-who" id="cmp-who"></div>
+    <div class="cmp-chips" id="cmp-chips" role="group" aria-label="Tambah butiran">
+      <button type="button" class="cch" data-act="cmp" data-v="tags">👥 Orang</button>
+      <button type="button" class="cch" data-act="cmp" data-v="place">📍 Tempat</button>
+      <button type="button" class="cch" data-act="cmp" data-v="feel" id="cch-feel">😊 Perasaan</button>
+      <button type="button" class="cch" data-act="cmp" data-v="date">📅 Tarikh</button>
+      <button type="button" class="cch" data-act="cmp" data-v="cat">🗂️ Album</button>
+      <button type="button" class="cch" data-act="cmp" data-v="alb" id="cch-alb" hidden>🎉 Acara</button>
     </div>
-    <div class="field">
-      <span class="lbl">Suara (pilihan)</span>
-      <div id="vc"></div>
+    <div class="cmp-pn" data-pn="tags">
+      <div class="field" id="f-tags-w" hidden>
+        <span class="lbl">Siapa dalam gambar?</span>
+        <div class="tagpick" id="f-tags" role="group" aria-label="Pilih ahli keluarga"></div>
+      </div>
     </div>
-    <div class="field">
-      <label class="lbl" for="f-story">Cerita</label>
-      <textarea id="f-story" rows="5" maxlength="5000" placeholder="Apa yang berlaku hari itu? Ada cerita lucu? Tulislah sepanjang yang awak mahu."></textarea>
-      <div class="hint" id="f-count" aria-live="polite"></div>
-    </div>
-    <div class="row2">
+    <div class="cmp-pn" data-pn="place">
       <div class="field">
         <label class="lbl" for="f-place">Tempat</label>
         <input id="f-place" list="dl-places" maxlength="120" placeholder="cth. Pantai Cenang, Langkawi" autocomplete="off">
         <datalist id="dl-places"></datalist>
         <div class="hint"><button type="button" class="lnk" data-act="gps-place"><svg class="i" aria-hidden="true"><use href="#i-pin"></use></svg> Guna lokasi saya sekarang</button> <span id="f-gps-s"></span></div>
       </div>
+    </div>
+    <div class="cmp-pn" data-pn="feel">
+      <div class="field">
+        <span class="lbl">Saya rasa...</span>
+        <div class="feel" id="feel" role="group" aria-label="Perasaan"></div>
+        <span class="lbl" id="emo-l">Atau tag emoji</span>
+        <div class="emo" id="emo" role="group" aria-labelledby="emo-l"></div>
+      </div>
+    </div>
+    <div class="cmp-pn" data-pn="date">
       <div class="field">
         <label class="lbl" for="f-date">Tarikh kenangan</label>
         <input type="date" id="f-date">
       </div>
     </div>
-    <div class="field">
-      <label class="lbl" for="f-cat">Album</label>
-      <select id="f-cat">
-        <option value="keluarga">Keluarga</option>
-        <option value="jalan">Jalan-jalan</option>
-        <option value="makan">Makan-makan</option>
-        <option value="lain">Lain-lain</option>
-      </select>
+    <div class="cmp-pn" data-pn="cat">
+      <div class="field">
+        <label class="lbl" for="f-cat">Album</label>
+        <select id="f-cat">
+          <option value="keluarga">Keluarga</option>
+          <option value="jalan">Jalan-jalan</option>
+          <option value="makan">Makan-makan</option>
+          <option value="lain">Lain-lain</option>
+        </select>
+      </div>
     </div>
-    <div class="field" id="f-tags-w" hidden>
-      <span class="lbl">Siapa dalam gambar?</span>
-      <div class="tagpick" id="f-tags" role="group" aria-label="Pilih ahli keluarga"></div>
+    <div class="cmp-pn" data-pn="alb">
+      <div class="field" id="f-album-w" hidden>
+        <label class="lbl" for="f-album">Acara bersama</label>
+        <select id="f-album"><option value="">Tiada</option></select>
+      </div>
     </div>
-    <div class="field" id="f-album-w" hidden>
-      <label class="lbl" for="f-album">Acara bersama</label>
-      <select id="f-album"><option value="">Tiada</option></select>
+    <div class="cmp-pn" data-pn="voice">
+      <div class="field">
+        <span class="lbl">Suara (pilihan)</span>
+        <div id="vc"></div>
+      </div>
     </div>
-    <div class="field">
-      <span class="lbl" id="emo-l">Tag emoji</span>
-      <div class="emo" id="emo" role="group" aria-labelledby="emo-l"></div>
+    <div class="field cmp-main">
+      <label class="lbl sr" for="f-story">Cerita</label>
+      <textarea id="f-story" rows="5" maxlength="5000" placeholder="Apa yang berlaku hari itu? Ada cerita lucu? Tulislah sepanjang yang awak mahu."></textarea>
+      <div class="hint" id="f-count" aria-live="polite"></div>
+      <div class="prev" id="prev"></div>
+      <p class="hint" id="asset-note" hidden></p>
     </div>
     <p class="status" id="status" role="status"></p>
-    <button class="btn block" type="button" id="submit" data-act="submit">Kongsi dengan keluarga</button>
+    <div class="cmp-tiles">
+      <input type="file" id="f-photos" accept="image/*" multiple hidden>
+      <button type="button" class="pick" id="pick" data-act="pick"><svg class="i" aria-hidden="true"><use href="#i-image"></use></svg><span id="pick-t">Pilih gambar</span></button>
+      <button type="button" class="pick" id="cmp-voice" data-act="cmp" data-v="voice">🎙️<span>Suara</span></button>
+    </div>
   </section>
 </div>
 
@@ -5559,7 +5600,21 @@ function renderTagPick(){
   w.hidden=!S.members.length;
   $('f-tags').innerHTML=S.members.map(m=>'<button type="button" data-act="tag-pick" data-v="'+esc(m.id)+'" aria-pressed="'+(F.tags.indexOf(m.id)>=0)+'">'+esc((m.name||'Ahli').split(/\s+/)[0])+'</button>').join('');
 }
+const FEELS=[['😊','Gembira'],['🥰','Bersyukur'],['🤲','Alhamdulillah'],['🤩','Teruja'],['🥳','Meriah'],['😌','Tenang'],['😋','Kenyang'],['🥹','Terharu'],['😴','Penat'],['😢','Sedih'],['🤒','Kurang sihat'],['🤗','Rindu']];
+const CMP={open:''};
+function cmpSync(){
+  const sh=$('sheet');if(!sh)return;
+  const has={tags:F.tags.length>0,place:!!($('f-place').value.trim()||F.coord),feel:!!F.emoji,date:!!F.dateTouched,cat:$('f-cat').value!=='keluarga',alb:!!$('f-album').value,voice:!!F.voice};
+  sh.querySelectorAll('.cch').forEach(c=>{const v=c.dataset.v;c.classList.toggle('on',!!has[v]||CMP.open===v);});
+  sh.querySelectorAll('.cmp-pn').forEach(x=>x.classList.toggle('on',x.dataset.pn===CMP.open));
+  const f=FEELS.find(x=>x[0]===F.emoji),cf=$('cch-feel');if(cf)cf.textContent=f?f[0]+' '+f[1]:(F.emoji?F.emoji+' Tag':'😊 Perasaan');
+  const ca=$('cch-alb');if(ca)ca.hidden=!S.albums.length;
+  const w=$('cmp-who');if(w&&S.myId)w.innerHTML=av(S.myId,'')+'<span>'+esc(nameOf(S.myId))+'</span>';
+}
+function cmpToggle(v){CMP.open=CMP.open===v?'':v;cmpSync();}
+document.addEventListener('DOMContentLoaded',()=>{const sh=$('sheet');if(sh){['input','change','click'].forEach(ev=>sh.addEventListener(ev,()=>setTimeout(cmpSync,0)));}});
 function renderEmoji(){
+  $('feel').innerHTML=FEELS.map(e=>'<button type="button" data-act="emoji" data-v="'+e[0]+'" aria-pressed="'+(F.emoji===e[0])+'"><b>'+e[0]+'</b>'+e[1]+'</button>').join('');
   $('emo').innerHTML=EMOJIS.map(e=>'<button type="button" data-act="emoji" data-v="'+e+'" aria-pressed="'+(F.emoji===e)+'" aria-label="Tag '+e+'">'+e+'</button>').join('');
 }
 function openSheet(){
@@ -5573,6 +5628,7 @@ function openSheet(){
   const as=$('f-album'); as.innerHTML='<option value="">Tiada</option>'+S.albums.slice().sort((a,b)=>b.createdAt-a.createdAt).map(a=>'<option value="'+esc(a.id)+'">'+a.emoji+' '+esc(a.name)+'</option>').join('');
   as.value=albumById(S.album)?S.album:''; $('f-album-w').hidden=!S.albums.length;
   renderEmoji(); setStatus('');F.voice=null;renderVoice();
+  CMP.open='';cmpSync();
   $('sheet').hidden=false;document.body.style.overflow='hidden';
   $('f-story').focus();
 }
@@ -5580,7 +5636,7 @@ function resetForm(){
   F.files.forEach(f=>{if(f.file)try{URL.revokeObjectURL(f.url);}catch(e){}});
   F.files=[];F.emoji='';F.edit='';F.dateTouched=false;F.tags=[];F.coord=null;F.voice=null;renderCoord();
   $('f-story').value='';$('f-place').value='';$('f-date').value='';updCount();
-  $('sheet-t').textContent='Kenangan baharu';$('submit').textContent='Kongsi dengan keluarga';
+  $('sheet-t').textContent='Kenangan baharu';$('submit').textContent='Kongsi';
   renderPreviews();renderEmoji();
 }
 function imgUrl(id){
@@ -5669,7 +5725,7 @@ function editPost(id){
   $('f-story').value=p.text;updCount();$('f-place').value=p.place;$('f-date').value=p.takenOn||'';
   $('f-cat').value=p.cat;$('f-album').value=albumById(p.album)?p.album:'';
   F.emoji=p.emoji;F.voice=p.voice?{id:p.voice,dur:p.vdur,url:''}:null;renderVoice();
-  $('sheet-t').textContent='Edit kenangan';$('submit').textContent='Simpan perubahan';
+  $('sheet-t').textContent='Edit kenangan';$('submit').textContent='Simpan';renderEmoji();cmpSync();
   renderPreviews();renderEmoji();
 }
 function closeSheet(){
@@ -6146,6 +6202,7 @@ document.addEventListener('click',e=>{
   else if(a==='pick')$('f-photos').click();
   else if(a==='rm-file'){const i=+t.dataset.i;const f=F.files[i];if(f){URL.revokeObjectURL(f.url);F.files.splice(i,1);renderPreviews();}}
   else if(a==='emoji'){F.emoji=F.emoji===v?'':v;renderEmoji();}
+  else if(a==='cmp'){cmpToggle(v);}
   else if(a==='submit')submit();
   else if(a==='edit')editPost(id);
   else if(a==='more'){if(S.more.has(id))S.more.delete(id);else S.more.add(id);render();}
