@@ -436,9 +436,11 @@ button{cursor:pointer}
 .sheet{width:100%;max-width:640px;max-height:94%;overflow-y:auto;background:var(--surface);border-radius:22px 22px 0 0;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
 .scrim:has(.cmp){align-items:stretch;justify-content:stretch;overscroll-behavior:none;touch-action:none}
 html:has(#sheet:not([hidden])),body:has(#sheet:not([hidden])){overflow:hidden!important;overscroll-behavior:none}
-.sheet.cmp{position:fixed;inset:0;width:100%;max-width:none;height:100vh;height:100dvh;max-height:none;min-height:0;border-radius:0;display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding-top:max(12px,env(safe-area-inset-top,0px))}
-.sheet.cmp .sheet-h{position:sticky;top:calc(-1 * max(12px,env(safe-area-inset-top,0px)));z-index:2;background:var(--surface);padding:6px 0}
-.sheet.cmp .cmp-tiles{position:sticky;bottom:calc(-1 * (12px + env(safe-area-inset-bottom,0px)));z-index:2;background:var(--surface);padding:8px 0 4px}
+.sheet.cmp{position:fixed;inset:0;width:100%;max-width:none;height:100vh;height:100dvh;max-height:none;min-height:0;border-radius:0;display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding-top:0;background:var(--bg)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;border:0!important}
+.sheet.cmp .sheet-h{position:sticky;top:0;z-index:2;background:var(--bg);padding:max(10px,env(safe-area-inset-top,0px)) 0 8px;margin:0}
+.sheet.cmp .cmp-tiles{position:sticky;bottom:0;z-index:2;background:var(--bg);padding:8px 0 calc(6px + env(safe-area-inset-bottom,0px));margin-top:auto}
+.scrim:has(.cmp){background:var(--bg)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+:root[data-glass="1"] .sheet.cmp,:root[data-glass="1"] .sheet.cmp .sheet-h,:root[data-glass="1"] .sheet.cmp .cmp-tiles{background:var(--bg)!important}
 @media(min-width:700px){.sheet.cmp{left:50%;right:auto;width:min(640px,100%);transform:translateX(-50%)}}
 .sheet.cmp .sheet-h h2{font-size:18px;flex:1;text-align:center}
 .cmp-go{min-height:40px;padding:0 20px;width:auto;font-size:15px}
@@ -5616,8 +5618,9 @@ function cmpSync(){
   const ca=$('cch-alb');if(ca)ca.hidden=!S.albums.length;
   const w=$('cmp-who');if(w&&S.myId)w.innerHTML=av(S.myId,'')+'<span>'+esc(nameOf(S.myId))+'</span>';
 }
+function cmpVV(){const sh=document.querySelector('.sheet.cmp'),sc=$('sheet');if(!sh||!sc||sc.hidden)return;const v=window.visualViewport;if(!v){return;}sh.style.bottom='auto';sh.style.top=v.offsetTop+'px';sh.style.height=v.height+'px';if(window.scrollY)window.scrollTo(0,0);}
 function cmpToggle(v){CMP.open=CMP.open===v?'':v;cmpSync();}
-document.addEventListener('DOMContentLoaded',()=>{const sh=$('sheet');if(sh){['input','change','click'].forEach(ev=>sh.addEventListener(ev,()=>setTimeout(cmpSync,0)));}});
+document.addEventListener('DOMContentLoaded',()=>{if(window.visualViewport){['resize','scroll'].forEach(ev=>window.visualViewport.addEventListener(ev,cmpVV));}const sh=$('sheet');if(sh){sh.addEventListener('focusin',()=>{setTimeout(cmpVV,50);setTimeout(cmpVV,300);});['input','change','click'].forEach(ev=>sh.addEventListener(ev,()=>setTimeout(cmpSync,0)));}});
 function renderEmoji(){
   $('feel').innerHTML=FEELS.map(e=>'<button type="button" data-act="emoji" data-v="'+e[0]+'" aria-pressed="'+(F.emoji===e[0])+'"><b>'+e[0]+'</b>'+e[1]+'</button>').join('');
   $('emo').innerHTML=EMOJIS.map(e=>'<button type="button" data-act="emoji" data-v="'+e+'" aria-pressed="'+(F.emoji===e)+'" aria-label="Tag '+e+'">'+e+'</button>').join('');
@@ -5634,8 +5637,8 @@ function openSheet(){
   as.value=albumById(S.album)?S.album:''; $('f-album-w').hidden=!S.albums.length;
   renderEmoji(); setStatus('');F.voice=null;renderVoice();
   CMP.open='';cmpSync();
-  $('sheet').hidden=false;document.body.style.overflow='hidden';
-  $('f-story').focus();
+  $('sheet').hidden=false;document.body.style.overflow='hidden';cmpVV();
+  $('f-story').focus();setTimeout(cmpVV,300);
 }
 function resetForm(){
   F.files.forEach(f=>{if(f.file)try{URL.revokeObjectURL(f.url);}catch(e){}});
