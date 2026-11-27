@@ -3085,13 +3085,17 @@ function lkOpen(){
 }
 function lkTile(){return '<button type="button" class="jt" data-act="lk-open"><span class="jt-i emo" aria-hidden="true">🎨</span><span class="jt-t"><b>Ruang Lukis</b><span>Lukis dan mewarna</span></span></button>';}
 /* ---------- Kad ucapan hari lahir ---------- */
+const UCAR=[['KFGQPC Madinah','KFGQPC Hafs'],['Amiri Quran','Amiri Quran'],['Scheherazade New','Scheherazade New'],['Naskh','Noto Naskh Arabic']];
+let UCF=0;try{UCF=(+localStorage.getItem('kk-uff')||0)%4;}catch(e){}
+function ucFont(){return '"'+UCAR[UCF][1]+'","Noto Naskh Arabic","Geeza Pro","Traditional Arabic",serif';}
+function ucLoad(cb){try{Promise.all(UCAR.map(f=>document.fonts.load('76px "'+f[1]+'"','بارك'))).then(cb,cb);}catch(e){}}
 const UCT=[
  {n:'Cerah',bg:'#F6F3EC',fg:'#1E2B26',ac:'#2A7A63',mu:'#6C756F'},
  {n:'Gelap',bg:'#111715',fg:'#F2EBDD',ac:'#D9AE5B',mu:'#9A9B93'},
  {n:'Hijau',bg:'#1D5846',fg:'#F6F1E4',ac:'#E5C27A',mu:'#BFD0C6'}];
 function ucStar(x,cx,cy,r,rot){x.beginPath();for(let k=0;k<16;k++){const R=k%2?r*.64:r,an=rot+k*Math.PI/8;x[k?'lineTo':'moveTo'](cx+R*Math.cos(an),cy+R*Math.sin(an));}x.closePath();}
 function ucDraw(cv,name,age,img,ti){
-  const T=UCT[ti||0],W=1080,H=1350,x=cv.getContext('2d'),SF='"Helvetica Neue",Arial,sans-serif',AR='"Noto Naskh Arabic","Geeza Pro","Traditional Arabic",serif';
+  const T=UCT[ti||0],W=1080,H=1350,x=cv.getContext('2d'),SF='"Helvetica Neue",Arial,sans-serif',AR=ucFont();
   cv.width=W;cv.height=H;x.fillStyle=T.bg;x.fillRect(0,0,W,H);x.textAlign='center';x.textBaseline='alphabetic';
   x.save();x.strokeStyle=T.ac;x.lineWidth=2.5;x.globalAlpha=.42;
   for(let gy=-1;gy<=H/150+1;gy++)for(let gx=-1;gx<=W/150+1;gx++){const px=gx*150,py=gy*150;ucStar(x,px,py,62,0);x.stroke();ucStar(x,px+75,py+75,24,Math.PI/8);x.stroke();x.beginPath();x.moveTo(px+75,py+28);x.lineTo(px+122,py+75);x.lineTo(px+75,py+122);x.lineTo(px+28,py+75);x.closePath();x.stroke();}
@@ -3123,9 +3127,9 @@ function ucDraw(cv,name,age,img,ti){
 function ucOpen(i){
   const b=S.bd[i];if(!b)return;const inf=bdInfo(b);let img=null,ti=0;
   const o=document.createElement('div');o.className='ucw';o.setAttribute('role','dialog');o.setAttribute('aria-label','Kad ucapan hari lahir');
-  o.innerHTML='<div class="ucb"><canvas class="ucc"></canvas><div class="uca">'+UCT.map((x,j)=>'<button type="button" class="chip" data-u="t'+j+'">'+x.n+'</button>').join('')+'</div><div class="uca"><button type="button" class="chip" data-u="pic">📷 Pilih gambar</button><button type="button" class="chip pri" data-u="share">Kongsi</button><button type="button" class="chip" data-u="x">Tutup</button></div><input type="file" accept="image/*" hidden></div>';
+  o.innerHTML='<div class="ucb"><canvas class="ucc"></canvas><div class="uca">'+UCT.map((x,j)=>'<button type="button" class="chip" data-u="t'+j+'">'+x.n+'</button>').join('')+'</div><div class="uca"><button type="button" class="chip" data-u="fnt" aria-label="Tukar gaya tulisan Arab">أب</button><button type="button" class="chip" data-u="pic">📷 Pilih gambar</button><button type="button" class="chip pri" data-u="share">Kongsi</button><button type="button" class="chip" data-u="x">Tutup</button></div><input type="file" accept="image/*" hidden></div>';
   document.body.appendChild(o);
-  const cv=o.querySelector('canvas'),fi=o.querySelector('input'),draw=()=>ucDraw(cv,b.name,inf.age,img,ti);draw();
+  const cv=o.querySelector('canvas'),fi=o.querySelector('input'),draw=()=>ucDraw(cv,b.name,inf.age,img,ti);draw();ucLoad(draw);
   const close=()=>{o.remove();};
   fi.addEventListener('change',()=>{const f=fi.files&&fi.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{img=im;draw();URL.revokeObjectURL(u);};im.src=u;});
   o.addEventListener('click',e=>{
@@ -3134,6 +3138,7 @@ function ucOpen(i){
     const k=t.dataset.u;
     if(k==='x')close();
     else if(k==='pic')fi.click();
+    else if(k==='fnt'){UCF=(UCF+1)%4;try{localStorage.setItem('kk-uff',UCF);}catch(_){}toast('Gaya: '+UCAR[UCF][0]);ucLoad(draw);draw();}
     else if(/^t\d$/.test(k)){ti=+k[1];draw();}
     else if(k==='share')cv.toBlob(bl=>{
       if(!bl)return;const fl=new File([bl],'ucapan-hari-lahir.png',{type:'image/png'});
