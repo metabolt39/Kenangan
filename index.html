@@ -1511,6 +1511,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .ls-m span{font-size:30px}.ls-m b{font-size:16px}.ls-m small{font-size:12px;color:var(--ink-2)}
 .ls-p{display:flex;justify-content:space-between;font-size:14px;color:var(--ink-2)}
 .ls-bar{height:8px;border-radius:8px;background:var(--line);overflow:hidden}.ls-bar i{display:block;height:100%;background:var(--teal,#2A7A63);transition:width .3s}
+.ls-pair{display:flex;align-items:stretch;gap:10px;margin-bottom:8px}.ls-pair>div{flex:1;font-size:30px;line-height:1.25;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:2px;padding:8px;border-radius:16px;background:var(--surface-2,rgba(128,128,128,.12));min-height:130px}.ls-pair>i{width:2px;background:var(--line,rgba(128,128,128,.4));border-radius:2px}
 .ls-q{text-align:center;padding:10px 0}.ls-q h3{margin:0;font-size:28px;line-height:1.3;font-family:var(--font-display)}.ls-e{font-size:72px;line-height:1.1;margin-bottom:6px}
 .ls-o{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ls-opt{min-height:60px;border-radius:16px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;font-size:21px;line-height:1.2;font-family:inherit;padding:8px}
@@ -2921,7 +2922,7 @@ function lsBody(){
   if(LST.done){const st=LST.sc>=9?3:LST.sc>=7?2:LST.sc>=5?1:0;
     return '<div class="ls-end"><div class="ls-big">'+lsStar(st)+'</div><h3>'+LST.sc+' / 10</h3><p>'+(st===3?'Hebat sekali! Alhamdulillah.':st===2?'Bagus! Sikit lagi.':st===1?'Boleh tahan. Cuba lagi, pasti lebih baik.':'Jangan putus asa. Cuba sekali lagi!')+'</p><div class="ls-a"><button type="button" class="chip pri" data-m="'+LST.mode+'">Main lagi</button><button type="button" class="chip" data-b="1">Kembali</button></div></div>';}
   const q=LST.q[LST.i];
-  return '<div class="ls-p"><span>Soalan '+(LST.i+1)+' / 10</span><span>⭐ '+LST.sc+'</span></div><div class="ls-bar"><i style="width:'+(LST.i*10)+'%"></i></div><div class="ls-q">'+(q.big?'<div class="ls-e"'+(q.big.length>8?' style="font-size:38px;word-break:break-all"':'')+'>'+q.big+'</div>':'')+'<h3>'+esc(q.t)+'</h3></div><div class="ls-o">'+q.o.map(o=>'<button type="button" class="ls-opt" data-o="'+esc(o)+'">'+esc(o)+'</button>').join('')+'</div>';
+  return '<div class="ls-p"><span>Soalan '+(LST.i+1)+' / 10</span><span>⭐ '+LST.sc+'</span></div><div class="ls-bar"><i style="width:'+(LST.i*10)+'%"></i></div><div class="ls-q">'+(q.big?(q.big.indexOf(' | ')>0?'<div class="ls-pair">'+q.big.split(' | ').map(g=>'<div>'+g+'</div>').join('<i></i>')+'</div>':'<div class="ls-e"'+(q.big.length>8?' style="font-size:38px;word-break:break-all"':'')+'>'+q.big+'</div>'):'')+'<h3>'+esc(q.t)+'</h3></div><div class="ls-o">'+q.o.map(o=>'<button type="button" class="ls-opt" data-o="'+esc(o)+'">'+esc(o)+'</button>').join('')+'</div>';
 }
 function lsPaint(){const b=document.getElementById('ls-b');if(b)b.innerHTML=lsBody();}
 function lsOpen(){
@@ -2936,7 +2937,7 @@ function lsOpen(){
     if(t.dataset.x)o.remove();
     else if(t.dataset.l){LST.r=+t.dataset.l.slice(1);lsPaint();}
     else if(t.dataset.b){LST.mode='';LST.done=false;lsPaint();}
-    else if(t.dataset.m){LST.mode=t.dataset.m;LST.i=0;LST.sc=0;LST.done=false;LST.lock=false;LST.q=[];const seen=new Set();let g=0;while(LST.q.length<10&&g++<200){const q=lsMk(LST.mode);const kq=q.t+'|'+(q.big||'')+'|'+q.c;if(!seen.has(kq)){seen.add(kq);LST.q.push(q);}}lsPaint();}
+    else if(t.dataset.m){LST.mode=t.dataset.m;LST.i=0;LST.sc=0;LST.done=false;LST.lock=false;LST.q=[];const seen=new Set();let g=0;while(LST.q.length<10&&g++<200){const q=lsMk(LST.mode);const kq=q.t+'|'+(q.big||'')+'|'+q.c;if(!seen.has(kq)){seen.add(kq);LST.q.push(q);}}while(LST.q.length<10)LST.q.push(lsMk(LST.mode));lsPaint();}
     else if(t.dataset.o!==undefined&&!LST.lock){
       LST.lock=true;const q=LST.q[LST.i],ok=t.dataset.o===q.c;if(ok)LST.sc++;
       t.classList.add(ok?'ok':'no');if(!ok)[...o.querySelectorAll('.ls-opt')].forEach(x=>{if(x.dataset.o===q.c)x.classList.add('ok');});
